@@ -1,6 +1,8 @@
 import * as React from "react";
 import styled from "@emotion/styled";
 
+type MarkerVariants = "horizontal" | "vertical";
+
 const markerVariants = {
   horizontal: {
     bottom: 1,
@@ -12,17 +14,23 @@ const markerVariants = {
   },
 };
 
-const Marker = styled.span(
+interface MarkerProps {
+  xPos: XPos;
+  yPos: YPos;
+  variant: MarkerVariants;
+}
+
+const Marker = styled.span<MarkerProps>(
   {
     position: "absolute",
     fontFamily: "Roboto, sans-serif",
     fontWeight: 700,
     fontSize: 10,
   },
-  ({ xPos, yPos }) => {
-    return { color: (xPos + yPos) % 2 !== 0 ? "#AE8867" : "#ECD9B9" };
-  },
-  ({ variant }) => markerVariants[variant]
+  (props) => ({
+    color: (props.xPos + props.yPos) % 2 !== 0 ? "#AE8867" : "#ECD9B9",
+    ...markerVariants[props.variant],
+  })
 );
 
 export const HorizontalMarker = ({ xPos, yPos }) => {

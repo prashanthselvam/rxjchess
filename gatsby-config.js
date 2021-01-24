@@ -10,9 +10,6 @@ module.exports = {
       resolve: "gatsby-plugin-root-import",
       options: {
         src: path.join(__dirname, "src"),
-
-        // Components
-        components: path.join(__dirname, "src/components"),
       },
     },
     {
@@ -29,6 +26,9 @@ module.exports = {
           },
         ],
       },
+    },
+    {
+      resolve: `gatsby-plugin-typescript`,
     },
   ],
 };

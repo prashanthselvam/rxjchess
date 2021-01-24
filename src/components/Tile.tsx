@@ -1,7 +1,12 @@
 import * as React from "react";
 import { VerticalMarker, HorizontalMarker } from "src/components/TileMarker";
 
-const Tile = ({ xPos, yPos }) => {
+interface TileProps {
+  xPos: XPos;
+  yPos: YPos;
+}
+
+const Tile = ({ xPos, yPos }: TileProps) => {
   return (
     <div
       css={{

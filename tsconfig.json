@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "jsxImportSource": "@emotion/react",
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "lib": ["dom", "esnext"],
+    "jsx": "react",
+    "target": "es5",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "types": ["node", "react", "react-dom", "jest"]
+  },
+  "include": [
+    "./src/**/*",
+    "./src/**/*.tsx"
+  ],
+  "exclude": [
+    "./node_modules"
+  ]
+}
