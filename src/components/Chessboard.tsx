@@ -2,10 +2,9 @@ import * as React from "react";
 import Tile from "src/components/Tile";
 import { whiteMap, blackMap } from "src/data/main";
 import { incremented, store } from "src/store";
-import { useState } from "react";
 
 const Chessboard = () => {
-  const [pov, setPov] = useState("white");
+  const [pov, setPov] = React.useState("white");
 
   const togglePov = () => {
     if (pov === "white") {
