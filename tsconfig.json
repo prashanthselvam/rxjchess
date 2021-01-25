@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "jsxImportSource": "@emotion/react",
+    "preserveConstEnums": true,
     "experimentalDecorators": true,
     "sourceMap": true,
     "strictNullChecks": true,
@@ -8,7 +9,7 @@
     "esModuleInterop": true,
     "lib": ["dom", "esnext"],
     "jsx": "react",
-    "target": "es5",
+    "target": "esnext",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",

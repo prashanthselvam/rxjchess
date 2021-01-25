@@ -33,20 +33,4 @@ const Marker = styled.span<MarkerProps>(
   })
 );
 
-export const HorizontalMarker = ({ xPos, yPos }) => {
-  const alphabet = "abcdefgh";
-
-  return (
-    <Marker xPos={xPos} yPos={yPos} variant="horizontal">
-      {alphabet[xPos]}
-    </Marker>
-  );
-};
-
-export const VerticalMarker = ({ xPos, yPos }) => {
-  return (
-    <Marker xPos={xPos} yPos={yPos} variant="vertical">
-      {yPos + 1}
-    </Marker>
-  );
-};
+export default Marker;
