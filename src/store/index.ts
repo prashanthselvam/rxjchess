@@ -1,5 +1,19 @@
 import { createSlice, configureStore } from "@reduxjs/toolkit";
 import { devToolsEnhancer } from "redux-devtools-extension";
+import { PieceIDs, TileIDs } from "src/data/constants";
+
+type TileMapData = {
+  pieceId: PieceIDs | undefined;
+  highlight: boolean;
+};
+
+type ChessGameState = {
+  status: GameStatus;
+  currentTurn: Players; // black or white
+  tileMap: Record<TileIDs, TileMapData>; // mapping of each tile to the piece ID that's on it
+  selectedTile: TileIDs | undefined;
+  isActiveCheck: boolean;
+};
 
 const counterSlice = createSlice({
   name: "counter",

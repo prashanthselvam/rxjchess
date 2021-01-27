@@ -99,3 +99,9 @@ export const TILES = {
   G8: "G8",
   H8: "H8",
 };
+
+type PieceIDKeys = keyof typeof PIECES;
+export type PieceIDs = typeof PIECES[PieceIDKeys];
+
+type TileIDKeys = keyof typeof TILES;
+export type TileIDs = typeof TILES[TileIDKeys];

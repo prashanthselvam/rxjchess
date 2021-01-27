@@ -1,11 +1,10 @@
 import * as React from "react";
 import Marker from "src/components/TileMarker";
-import Image from "./image";
 import Piece from "./Piece";
-import { TILES } from "src/data/constants";
+import { TileIDs } from "src/data/constants";
 
 interface TileProps {
-  id: keyof typeof TILES;
+  id: TileIDs;
   xPos: XPos;
   yPos: YPos;
 }
