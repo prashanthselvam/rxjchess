@@ -1,8 +1,11 @@
 import * as React from "react";
 import Marker from "src/components/TileMarker";
+import Image from "./image";
+import Piece from "./Piece";
+import { TILES } from "src/data/constants";
 
 interface TileProps {
-  id: string;
+  id: keyof typeof TILES;
   xPos: XPos;
   yPos: YPos;
 }
@@ -32,6 +35,15 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
           {id[1]}
         </Marker>
       )}
+      {id === "A1" && <Piece pieceId="WR1" />}
+      {id === "B1" && <Piece pieceId="WN1" />}
+      {id === "C1" && <Piece pieceId="WB1" />}
+      {id === "D1" && <Piece pieceId="WQ" />}
+      {id === "E1" && <Piece pieceId="WK" />}
+      {id === "F1" && <Piece pieceId="WB2" />}
+      {id === "G1" && <Piece pieceId="WN2" />}
+      {id === "H1" && <Piece pieceId="WR2" />}
+      {yPos === 1 && <Piece pieceId="WP1" />}
     </div>
   );
 };

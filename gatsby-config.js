@@ -5,7 +5,13 @@ module.exports = {
     title: "crazychess",
   },
   plugins: [
-    "gatsby-plugin-emotion",
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `images`,
+        path: path.join(__dirname, `src`, `images`),
+      },
+    },
     {
       resolve: "gatsby-plugin-root-import",
       options: {
@@ -30,5 +36,8 @@ module.exports = {
     {
       resolve: `gatsby-plugin-typescript`,
     },
+    `gatsby-transformer-sharp`,
+    `gatsby-plugin-sharp`,
+    `gatsby-plugin-emotion`,
   ],
 };
