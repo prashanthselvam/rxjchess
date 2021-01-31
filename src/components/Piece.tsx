@@ -1,9 +1,9 @@
 import Image from "./image";
 import * as React from "react";
-import { PieceIDs } from "src/data/constants";
+import { PieceID } from "src/data/constants";
 
 interface PieceProps {
-  pieceId: PieceIDs;
+  pieceId: PieceID;
   flipped?: boolean;
 }
 

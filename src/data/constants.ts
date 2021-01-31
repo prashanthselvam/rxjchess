@@ -101,7 +101,7 @@ export const TILES = {
 };
 
 type PieceIDKeys = keyof typeof PIECES;
-export type PieceIDs = typeof PIECES[PieceIDKeys];
+export type PieceID = typeof PIECES[PieceIDKeys];
 
 type TileIDKeys = keyof typeof TILES;
-export type TileIDs = typeof TILES[TileIDKeys];
+export type TileID = typeof TILES[TileIDKeys];

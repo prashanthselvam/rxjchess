@@ -1,6 +1,6 @@
-import { TILES, PIECES, TileIDs } from "src/data/constants";
+import { TILES, PIECES, TileID } from "src/data/constants";
 
-export const whiteMap: TileIDs[][] = [
+export const WHITE_MAP: TileID[][] = [
   [
     TILES.A1,
     TILES.B1,
@@ -83,14 +83,13 @@ export const whiteMap: TileIDs[][] = [
   ],
 ];
 
-export const blackMap = whiteMap
-  .map((row) => row.slice().reverse())
+export const BLACK_MAP = WHITE_MAP.map((row) => row.slice().reverse())
   .slice()
   .reverse();
 
 // Game Type
-const gameTypes = {
-  regular: {
+export const GAME_TYPES = {
+  REGULAR: {
     initialPositions: {
       [TILES.A1]: PIECES.WR1,
       [TILES.B1]: PIECES.WN1,

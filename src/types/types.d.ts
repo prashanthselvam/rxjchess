@@ -3,4 +3,6 @@ type YPos = number;
 
 type Players = "B" | "W";
 
-type GameStatus = "not started" | "in progress" | "game over";
+type GameStatus = "NOT STARTED" | "IN PROGRESS" | "GAME OVER";
+
+type GameTypes = "REGULAR";

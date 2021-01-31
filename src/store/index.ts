@@ -1,44 +1,57 @@
-import { createSlice, configureStore } from "@reduxjs/toolkit";
+import { createSlice, configureStore, PayloadAction } from "@reduxjs/toolkit";
 import { devToolsEnhancer } from "redux-devtools-extension";
-import { PieceIDs, TileIDs } from "src/data/constants";
+import { PieceID, TileID, TILES } from "src/data/constants";
+import { GAME_TYPES } from "../data/main";
 
 type TileMapData = {
-  pieceId: PieceIDs | undefined;
+  pieceId: PieceID | undefined;
   highlight: boolean;
 };
 
 type ChessGameState = {
   status: GameStatus;
   currentTurn: Players; // black or white
-  tileMap: Record<TileIDs, TileMapData>; // mapping of each tile to the piece ID that's on it
-  selectedTile: TileIDs | undefined;
+  tileMap: Record<TileID, TileMapData>; // mapping of each tile to the piece ID that's on it
+  selectedTile: TileID | undefined;
   isActiveCheck: boolean;
 };
 
-const counterSlice = createSlice({
-  name: "counter",
-  initialState: {
-    value: 0,
-  },
+const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
+  return { ...acc, [curr]: { pieceId: undefined, highlight: false } };
+}, {});
+
+const initialState: ChessGameState = {
+  status: "NOT STARTED",
+  currentTurn: "W",
+  tileMap: tileMapInitialState,
+  selectedTile: undefined,
+  isActiveCheck: false,
+};
+
+const gameSlice = createSlice({
+  name: "gameSlice",
+  initialState: initialState,
   reducers: {
-    incremented: (state) => {
-      // Redux Toolkit allows us to write "mutating" logic in reducers. It
-      // doesn't actually mutate the state because it uses the Immer library,
-      // which detects changes to a "draft state" and produces a brand new
-      // immutable state based off those changes
-      state.value += 1;
-    },
-    decremented: (state) => {
-      state.value -= 1;
+    newGame(state, action: PayloadAction<{ gameType: GameTypes }>) {
+      const { gameType } = action.payload;
+      const initialPositions = GAME_TYPES[gameType].initialPositions;
+
+      Object.entries(initialPositions).forEach(([tileId, pieceId]) => {
+        state.tileMap[tileId] = { pieceId: pieceId, highlight: false };
+      });
     },
   },
 });
 
-export const { incremented, decremented } = counterSlice.actions;
+export const { newGame } = gameSlice.actions;
 
-export const store = configureStore(
-  {
-    reducer: counterSlice.reducer,
+export const store = configureStore({
+  reducer: gameSlice.reducer,
+  devTools: {
+    serialize: {
+      options: {
+        undefined: true,
+      },
+    },
   },
-  devToolsEnhancer()
-);
+});

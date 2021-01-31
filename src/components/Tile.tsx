@@ -1,15 +1,20 @@
 import * as React from "react";
 import Marker from "src/components/TileMarker";
 import Piece from "./Piece";
-import { TileIDs } from "src/data/constants";
+import { TileID } from "src/data/constants";
+import { useSelector } from "react-redux";
 
 interface TileProps {
-  id: TileIDs;
+  id: TileID;
   xPos: XPos;
   yPos: YPos;
 }
 
+// const useTileState = (tileId: TileID) => {};
+
 const Tile = ({ id, xPos, yPos }: TileProps) => {
+  const { pieceId, highlighted } = useSelector((state) => state.tileMap[id]);
+
   return (
     <div
       css={{
@@ -34,15 +39,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
           {id[1]}
         </Marker>
       )}
-      {id === "A1" && <Piece pieceId="WR1" />}
-      {id === "B1" && <Piece pieceId="WN1" />}
-      {id === "C1" && <Piece pieceId="WB1" />}
-      {id === "D1" && <Piece pieceId="WQ" />}
-      {id === "E1" && <Piece pieceId="WK" />}
-      {id === "F1" && <Piece pieceId="WB2" />}
-      {id === "G1" && <Piece pieceId="WN2" />}
-      {id === "H1" && <Piece pieceId="WR2" />}
-      {yPos === 1 && <Piece pieceId="WP1" />}
+      {pieceId && <Piece pieceId={pieceId} />}
     </div>
   );
 };
