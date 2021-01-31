@@ -9,6 +9,7 @@ import { PieceID, TileID, TILES } from "src/data/constants";
 import { GAME_TYPES } from "src/data/main";
 import { createEpicMiddleware } from "redux-observable";
 import rootEpic from "./epics";
+import { clearHighlights } from "./utils";
 
 type TileMapData = {
   pieceId: PieceID | undefined;
@@ -17,7 +18,7 @@ type TileMapData = {
 
 export type TileMap = Record<TileID, TileMapData>;
 
-type ChessGameState = {
+export type ChessGameState = {
   status: GameStatus;
   currentTurn: Player; // black or white
   tileMap: TileMap; // mapping of each tile to the piece ID that's on it
@@ -77,22 +78,12 @@ const gameSlice = createSlice({
       }
     },
     selectTile(state, action: PayloadAction<{ tileId: TileID }>) {
-      // Clear existing highlights
-      Object.entries(state.tileMap).forEach(([tileId, { highlight }]) => {
-        if (highlight) {
-          state.tileMap[tileId].highlight = false;
-        }
-      });
-
+      clearHighlights(state);
       state.selectedTile = action.payload.tileId;
     },
     deselect(state) {
+      clearHighlights(state);
       state.selectedTile = undefined;
-      Object.entries(state.tileMap).forEach(([tileId, { highlight }]) => {
-        if (highlight) {
-          state.tileMap[tileId].highlight = false;
-        }
-      });
     },
     highlightPossibleMoves(
       state,
@@ -101,6 +92,25 @@ const gameSlice = createSlice({
       action.payload.possibleMoves.forEach(
         (id) => (state.tileMap[id].highlight = true)
       );
+    },
+    moveToTile(state, action: PayloadAction<{ targetTileId: TileID }>) {
+      const { selectedTile, tileMap } = state;
+      const { targetTileId } = action.payload;
+
+      state.tileMap = {
+        ...tileMap,
+        [selectedTile!]: { pieceId: undefined, highlight: false },
+        [targetTileId]: {
+          pieceId: tileMap[selectedTile!].pieceId,
+          highlight: false,
+        },
+      };
+
+      if (state.currentTurn === "W") {
+        state.currentTurn = "B";
+      } else {
+        state.currentTurn = "W";
+      }
     },
   },
 });

@@ -124,6 +124,12 @@ const selectTileEpic = (action$, state$) =>
     })
   );
 
-const gameEpics = [selectTileEpic];
+const postMoveCleanupEpic = (action$, state$) =>
+  action$.pipe(
+    filter(actions.moveToTile.match),
+    mergeMap(() => of(actions.deselect()))
+  );
+
+const gameEpics = [selectTileEpic, postMoveCleanupEpic];
 
 export default gameEpics;

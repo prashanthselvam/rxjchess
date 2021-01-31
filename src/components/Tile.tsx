@@ -37,6 +37,8 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
   const onClick = () => {
     if (isSelectable && !isSelected) {
       store.dispatch(actions.selectTile({ tileId: id }));
+    } else if (highlight) {
+      store.dispatch(actions.moveToTile({ targetTileId: id }));
     } else {
       store.dispatch(actions.deselect());
     }
