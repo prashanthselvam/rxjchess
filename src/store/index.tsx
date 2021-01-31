@@ -70,15 +70,29 @@ const gameSlice = createSlice({
     togglePov(state) {
       if (state.pov === "W") {
         state.pov = "B";
+        state.currentTurn = "B";
       } else {
         state.pov = "W";
+        state.currentTurn = "W";
       }
     },
-    selectTile(
-      state,
-      action: PayloadAction<{ tileId: TileID; xPos: XPos; yPos: YPos }>
-    ) {
+    selectTile(state, action: PayloadAction<{ tileId: TileID }>) {
+      // Clear existing highlights
+      Object.entries(state.tileMap).forEach(([tileId, { highlight }]) => {
+        if (highlight) {
+          state.tileMap[tileId].highlight = false;
+        }
+      });
+
       state.selectedTile = action.payload.tileId;
+    },
+    deselect(state) {
+      state.selectedTile = undefined;
+      Object.entries(state.tileMap).forEach(([tileId, { highlight }]) => {
+        if (highlight) {
+          state.tileMap[tileId].highlight = false;
+        }
+      });
     },
     highlightPossibleMoves(
       state,

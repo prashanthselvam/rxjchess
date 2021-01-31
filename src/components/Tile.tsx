@@ -11,12 +11,36 @@ interface TileProps {
   yPos: YPos;
 }
 
+const Highlight = () => (
+  <div
+    css={{
+      position: "absolute",
+      height: 14,
+      width: 14,
+      borderRadius: 25,
+      top: "50%",
+      left: "50%",
+      margin: "-7px 0 0 -7px",
+      backgroundColor: "rgba(78, 45, 174, 0.60)",
+    }}
+  />
+);
+
 const Tile = ({ id, xPos, yPos }: TileProps) => {
+  const currentTurn = useSelector((state) => state.currentTurn);
+  const selectedTile = useSelector((state) => state.selectedTile);
   const { pieceId, highlight } = useSelector((state) => state.tileMap[id]);
 
-  const onClick = () =>
-    pieceId &&
-    store.dispatch(actions.selectTile({ tileId: id, xPos: xPos, yPos: yPos }));
+  const isSelected = selectedTile === id;
+  const isSelectable = pieceId && pieceId[0] === currentTurn;
+
+  const onClick = () => {
+    if (isSelectable && !isSelected) {
+      store.dispatch(actions.selectTile({ tileId: id }));
+    } else {
+      store.dispatch(actions.deselect());
+    }
+  };
 
   return (
     <div
@@ -24,8 +48,8 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
         position: "relative",
         height: 70,
         width: 70,
-        backgroundColor: highlight
-          ? "red"
+        backgroundColor: isSelected
+          ? "#6787AE"
           : (xPos + yPos) % 2 === 0
           ? "#AE8867"
           : "#ECD9B9",
@@ -47,6 +71,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
           {id[1]}
         </Marker>
       )}
+      {highlight && <Highlight />}
       {pieceId && <Piece pieceId={pieceId} />}
     </div>
   );
