@@ -14,6 +14,7 @@ type ChessGameState = {
   tileMap: Record<TileID, TileMapData>; // mapping of each tile to the piece ID that's on it
   selectedTile: TileID | undefined;
   isActiveCheck: boolean;
+  pov: Players;
 };
 
 const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
@@ -26,6 +27,7 @@ const initialState: ChessGameState = {
   tileMap: tileMapInitialState,
   selectedTile: undefined,
   isActiveCheck: false,
+  pov: "W",
 };
 
 const gameSlice = createSlice({
@@ -40,10 +42,17 @@ const gameSlice = createSlice({
         state.tileMap[tileId] = { pieceId: pieceId, highlight: false };
       });
     },
+    togglePov(state) {
+      if (state.pov === "W") {
+        state.pov = "B";
+      } else {
+        state.pov = "W";
+      }
+    },
   },
 });
 
-export const { newGame } = gameSlice.actions;
+export const { newGame, togglePov } = gameSlice.actions;
 
 export const store = configureStore({
   reducer: gameSlice.reducer,

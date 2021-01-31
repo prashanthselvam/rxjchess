@@ -29,7 +29,13 @@ const Image = (props) => (
         return null;
       }
 
-      return <Img alt={props.alt} fixed={image.node.childImageSharp.fixed} />;
+      return (
+        <Img
+          alt={props.alt}
+          fixed={image.node.childImageSharp.fixed}
+          style={props.style}
+        />
+      );
     }}
   />
 );

@@ -23,6 +23,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
         width: 70,
         backgroundColor: (xPos + yPos) % 2 === 0 ? "#AE8867" : "#ECD9B9",
       }}
+      onClick={() => console.log(pieceId)}
     >
       {/*<span style={{ fontSize: 10 }}>{`yPos: ${yPos}`}</span>*/}
       {/*<br />*/}
