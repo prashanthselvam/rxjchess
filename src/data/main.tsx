@@ -126,3 +126,21 @@ export const GAME_TYPES = {
     },
   },
 };
+
+const PAWN_MOVES = [
+  {
+    xOffset: 0,
+    yOffset: 1,
+    canTakeAtDestination: false,
+  },
+  {
+    xOffset: 0,
+    yOffset: 2,
+    canTakeAtDestination: false,
+  },
+  {
+    xOffset: 1,
+    yOffset: 1,
+    canTakeAtDestination: true,
+  },
+];

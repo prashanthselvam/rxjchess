@@ -3,6 +3,7 @@ import Marker from "src/components/TileMarker";
 import Piece from "./Piece";
 import { TileID } from "src/data/constants";
 import { useSelector } from "react-redux";
+import { store, actions } from "src/store";
 
 interface TileProps {
   id: TileID;
@@ -10,10 +11,12 @@ interface TileProps {
   yPos: YPos;
 }
 
-// const useTileState = (tileId: TileID) => {};
-
 const Tile = ({ id, xPos, yPos }: TileProps) => {
-  const { pieceId, highlighted } = useSelector((state) => state.tileMap[id]);
+  const { pieceId, highlight } = useSelector((state) => state.tileMap[id]);
+
+  const onClick = () =>
+    pieceId &&
+    store.dispatch(actions.selectTile({ tileId: id, xPos: xPos, yPos: yPos }));
 
   return (
     <div
@@ -21,9 +24,13 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
         position: "relative",
         height: 70,
         width: 70,
-        backgroundColor: (xPos + yPos) % 2 === 0 ? "#AE8867" : "#ECD9B9",
+        backgroundColor: highlight
+          ? "red"
+          : (xPos + yPos) % 2 === 0
+          ? "#AE8867"
+          : "#ECD9B9",
       }}
-      onClick={() => console.log(pieceId)}
+      onClick={onClick}
     >
       {/*<span style={{ fontSize: 10 }}>{`yPos: ${yPos}`}</span>*/}
       {/*<br />*/}

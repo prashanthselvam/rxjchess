@@ -1,14 +1,15 @@
 import * as React from "react";
 import Tile from "src/components/Tile";
 import { WHITE_MAP, BLACK_MAP } from "src/data/main";
-import { store, newGame, togglePov } from "src/store";
+import { store, actions } from "src/store";
 import { useSelector } from "react-redux";
 
 const Chessboard = () => {
   const pov = useSelector((state) => state.pov);
 
-  const togglePovClick = () => store.dispatch(togglePov());
-  const startNewGame = () => store.dispatch(newGame({ gameType: "REGULAR" }));
+  const togglePovClick = () => store.dispatch(actions.togglePov());
+  const startNewGame = () =>
+    store.dispatch(actions.newGame({ gameType: "REGULAR" }));
 
   const drawRow = (yPos) => {
     return (
