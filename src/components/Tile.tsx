@@ -1,12 +1,12 @@
 import * as React from "react";
 import Marker from "src/components/TileMarker";
 import Piece from "./Piece";
-import { TileID } from "src/data/constants";
+import { TileId } from "src/data/constants";
 import { useSelector } from "react-redux";
 import { store, actions } from "src/store";
 
 interface TileProps {
-  id: TileID;
+  id: TileId;
   xPos: XPos;
   yPos: YPos;
 }

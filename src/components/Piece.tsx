@@ -1,10 +1,10 @@
 import Image from "./image";
 import * as React from "react";
-import { PieceID } from "src/data/constants";
+import { PieceId } from "src/data/constants";
 import { useSelector } from "react-redux";
 
 interface PieceProps {
-  pieceId: PieceID;
+  pieceId: PieceId;
   flipped?: boolean;
 }
 

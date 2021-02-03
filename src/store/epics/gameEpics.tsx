@@ -8,58 +8,20 @@ import {
   tap,
 } from "rxjs/operators";
 import { actions, TileMap } from "../index";
-import { PieceID, TileID } from "../../data/constants";
+import { PieceId, TileId } from "../../data/constants";
 import { BLACK_MAP, WHITE_MAP } from "../../data/main";
 import { of } from "rxjs";
 import * as stream from "stream";
+import {
+  bishopMoves,
+  kingMoves,
+  knightMoves,
+  pawnMoves,
+  queenMoves,
+  rookMoves,
+} from "src/data/moveFunctions";
 
 const consoleLog = (x) => console.log(x);
-
-/**
- * getRelativePos - util function to get the x & y coordinates of a piece relative
- * to that piece's player's POV. This saves us from having to calculate possible moves
- * differently for white & black.
- *
- * @param player
- * @param tileId
- */
-const getRelativePos = (player: Player, tileId: TileID) => {
-  const map = player === "W" ? WHITE_MAP : BLACK_MAP;
-
-  return map
-    .map((row, yPos) => {
-      if (row.includes(tileId)) {
-        return [row.indexOf(tileId), yPos];
-      }
-    })
-    .find((x) => Array.isArray(x));
-};
-
-/**
- *
- */
-const pawnMoves = (player: Player, tileId: TileID) => {
-  const map = player === "W" ? WHITE_MAP : BLACK_MAP;
-
-  const isFirstMove =
-    (player === "W" && parseInt(tileId[1]) === 2) ||
-    (player === "B" && parseInt(tileId[1]) === 7);
-
-  // @ts-ignore
-  const lala = getRelativePos(player, tileId);
-
-  console.log({ lala });
-
-  // @ts-ignore
-  const [relativeX, relativeY] = lala;
-  // const [relativeX, relativeY] = getRelativePos(player, tileId);
-
-  const moves = [map[relativeY + 1][relativeX]];
-
-  console.log({ tileId, relativeX, relativeY, map });
-
-  return isFirstMove ? [...moves, map[relativeY + 2][relativeX]] : moves;
-};
 
 /**
  * determinePossibleMoves - Receives information about the piece that might move, where it is,
@@ -75,14 +37,19 @@ const pawnMoves = (player: Player, tileId: TileID) => {
  */
 const determinePossibleMoves = (
   player: Player,
-  pieceId: PieceID,
-  tileId: TileID,
-  whiteOccupiedTiles: TileID[],
-  blackOccupiedTiles: TileID[],
-  peggedTiles: TileID[]
+  pieceId: PieceId,
+  tileId: TileId,
+  whiteOccupiedTiles: TileId[],
+  blackOccupiedTiles: TileId[],
+  peggedTiles: TileId[]
 ) => {
   const pieceToMoveMap = {
     P: pawnMoves,
+    R: rookMoves,
+    N: knightMoves,
+    B: bishopMoves,
+    Q: queenMoves,
+    K: kingMoves,
   };
 
   // Determine what type of piece this is

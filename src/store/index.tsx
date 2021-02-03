@@ -5,29 +5,29 @@ import {
   AnyAction,
   getDefaultMiddleware,
 } from "@reduxjs/toolkit";
-import { PieceID, TileID, TILES } from "src/data/constants";
+import { PieceId, TileId, TILES } from "src/data/constants";
 import { GAME_TYPES } from "src/data/main";
 import { createEpicMiddleware } from "redux-observable";
 import rootEpic from "./epics";
 import { clearHighlights } from "./utils";
 
 type TileMapData = {
-  pieceId: PieceID | undefined;
+  pieceId: PieceId | undefined;
   highlight: boolean;
 };
 
-export type TileMap = Record<TileID, TileMapData>;
+export type TileMap = Record<TileId, TileMapData>;
 
 export type ChessGameState = {
   status: GameStatus;
   currentTurn: Player; // black or white
   tileMap: TileMap; // mapping of each tile to the piece ID that's on it
-  selectedTile: TileID | undefined;
+  selectedTile: TileId | undefined;
   isActiveCheck: boolean;
   pov: Player;
-  whiteOccupiedTiles: TileID[] | undefined;
-  blackOccupiedTiles: TileID[] | undefined;
-  peggedTiles: TileID[] | undefined;
+  whiteOccupiedTiles: TileId[] | undefined;
+  blackOccupiedTiles: TileId[] | undefined;
+  peggedTiles: TileId[] | undefined;
 };
 
 const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
@@ -52,8 +52,8 @@ const gameSlice = createSlice({
   reducers: {
     newGame(state, action: PayloadAction<{ gameType: GameTypes }>) {
       const { gameType } = action.payload;
-      const whiteOccupiedTiles: TileID[] = [];
-      const blackOccupiedTiles: TileID[] = [];
+      const whiteOccupiedTiles: TileId[] = [];
+      const blackOccupiedTiles: TileId[] = [];
       const initialPositions = GAME_TYPES[gameType].initialPositions;
 
       Object.entries(initialPositions).forEach(([tileId, pieceId]) => {
@@ -77,7 +77,7 @@ const gameSlice = createSlice({
         state.currentTurn = "W";
       }
     },
-    selectTile(state, action: PayloadAction<{ tileId: TileID }>) {
+    selectTile(state, action: PayloadAction<{ tileId: TileId }>) {
       clearHighlights(state);
       state.selectedTile = action.payload.tileId;
     },
@@ -87,13 +87,13 @@ const gameSlice = createSlice({
     },
     highlightPossibleMoves(
       state,
-      action: PayloadAction<{ possibleMoves: TileID[] }>
+      action: PayloadAction<{ possibleMoves: TileId[] }>
     ) {
       action.payload.possibleMoves.forEach(
         (id) => (state.tileMap[id].highlight = true)
       );
     },
-    moveToTile(state, action: PayloadAction<{ targetTileId: TileID }>) {
+    moveToTile(state, action: PayloadAction<{ targetTileId: TileId }>) {
       const { selectedTile, tileMap } = state;
       const { targetTileId } = action.payload;
 

@@ -1,4 +1,6 @@
 import { ChessGameState } from "./index";
+import { TileId } from "../data/constants";
+import { BLACK_MAP, WHITE_MAP } from "../data/main";
 
 /**
  * Clears highlights from all the tiles in tileMap in state

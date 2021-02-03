@@ -1,6 +1,6 @@
-import { TILES, PIECES, TileID } from "src/data/constants";
+import { TILES, PIECES, TileId } from "src/data/constants";
 
-export const WHITE_MAP: TileID[][] = [
+export const WHITE_MAP: TileId[][] = [
   [
     TILES.A1,
     TILES.B1,
