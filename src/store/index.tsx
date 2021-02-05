@@ -56,6 +56,9 @@ const gameSlice = createSlice({
       const blackOccupiedTiles: TileId[] = [];
       const initialPositions = GAME_TYPES[gameType].initialPositions;
 
+      // Clear the board
+      state.tileMap = tileMapInitialState;
+
       Object.entries(initialPositions).forEach(([tileId, pieceId]) => {
         const player = _getPlayer(pieceId);
         if (player === "W") {
@@ -66,6 +69,7 @@ const gameSlice = createSlice({
         state.tileMap[tileId] = { pieceId: pieceId, highlight: false };
       });
 
+      state.currentTurn = "W";
       state.whiteOccupiedTiles = whiteOccupiedTiles;
       state.blackOccupiedTiles = blackOccupiedTiles;
     },

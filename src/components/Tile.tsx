@@ -11,20 +11,26 @@ interface TileProps {
   yPos: YPos;
 }
 
-const Highlight = () => (
-  <div
-    css={{
-      position: "absolute",
-      height: 14,
-      width: 14,
-      borderRadius: 25,
-      top: "50%",
-      left: "50%",
-      margin: "-7px 0 0 -7px",
-      backgroundColor: "rgba(78, 45, 174, 0.60)",
-    }}
-  />
-);
+const Highlight = ({ canTake }) => {
+  if (canTake) {
+    return <div>KILL</div>;
+  } else {
+    return (
+      <div
+        css={{
+          position: "absolute",
+          height: 14,
+          width: 14,
+          borderRadius: 25,
+          top: "50%",
+          left: "50%",
+          margin: "-7px 0 0 -7px",
+          backgroundColor: "rgba(78, 45, 174, 0.40)",
+        }}
+      />
+    );
+  }
+};
 
 const Tile = ({ id, xPos, yPos }: TileProps) => {
   const currentTurn = useSelector((state) => state.currentTurn);
@@ -73,7 +79,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
           {id[1]}
         </Marker>
       )}
-      {highlight && <Highlight />}
+      {highlight && <Highlight canTake={!!pieceId} />}
       {pieceId && <Piece pieceId={pieceId} />}
     </div>
   );
