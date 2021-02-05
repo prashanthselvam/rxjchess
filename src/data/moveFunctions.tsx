@@ -1,13 +1,34 @@
-import { BLACK_MAP, WHITE_MAP } from "./main";
+import { BLACK_BOARD, WHITE_BOARD } from "./main";
 import { TileId } from "./constants";
 import range from "lodash/range";
+import { TileMap } from "../store";
+import { getPlayer } from "../store/utils";
 
 /**
- * _getMap - Get the board layout depending on player perspective
+ * _getBoard - Get the board layout depending on player perspective
  *
  * @param player
  */
-const _getMap = (player: Player) => (player === "W" ? WHITE_MAP : BLACK_MAP);
+const _getBoard = (player: Player) =>
+  player === "W" ? WHITE_BOARD : BLACK_BOARD;
+
+/**
+ * _getTile - Given a board map and a x & y position, returns the tileId at that position
+ *
+ * @param board
+ * @param x
+ * @param y
+ */
+const _getTile = (board: TileId[][], x: XPos, y: YPos) => board[y][x];
+
+/**
+ * _getTileOccupant - Given a tileMap and a tileId, returns the pieceId stationed at that tile
+ *
+ * @param tileMap
+ * @param tileId
+ */
+const _getTileOccupant = (tileMap: TileMap, tileId: TileId) =>
+  tileMap[tileId]?.pieceId;
 
 /**
  * _getRelativePos - util function to get the x & y coordinates of a piece relative
@@ -18,9 +39,9 @@ const _getMap = (player: Player) => (player === "W" ? WHITE_MAP : BLACK_MAP);
  * @param tileId
  */
 const _getRelativePos = (player: Player, tileId: TileId) => {
-  const map = player === "W" ? WHITE_MAP : BLACK_MAP;
+  const board = player === "W" ? WHITE_BOARD : BLACK_BOARD;
 
-  return map
+  return board
     .map((row, yPos) => {
       if (row.includes(tileId)) {
         return [row.indexOf(tileId), yPos];
@@ -29,8 +50,8 @@ const _getRelativePos = (player: Player, tileId: TileId) => {
     .find((x) => Array.isArray(x));
 };
 
-export const pawnMoves = (player: Player, tileId: TileId) => {
-  const map = _getMap(player);
+export const pawnMoves = (player: Player, tileId: TileId, tileMap: TileMap) => {
+  const board = _getBoard(player);
   // @ts-ignore
   const [x, y] = _getRelativePos(player, tileId);
 
@@ -38,13 +59,35 @@ export const pawnMoves = (player: Player, tileId: TileId) => {
     (player === "W" && parseInt(tileId[1]) === 2) ||
     (player === "B" && parseInt(tileId[1]) === 7);
 
-  const moves = [map[y + 1][x]];
+  // Determine the tiles where pawn can move forward
+  const allForwardMoves = [_getTile(board, x, y + 1)];
+  isFirstMove && allForwardMoves.push(_getTile(board, x, y + 2));
 
-  return isFirstMove ? [...moves, map[y + 2][x]] : moves;
+  const nearestOccupiedIndex = allForwardMoves.findIndex(
+    (tileId) => !!tileMap?.[tileId]?.pieceId
+  );
+
+  const possibleForwardMoves =
+    nearestOccupiedIndex > -1
+      ? allForwardMoves.slice(0, nearestOccupiedIndex)
+      : allForwardMoves;
+
+  // Determine the tiles where pawn can take (i.e. diagonal and one step away)
+  const allTakeMoves = [
+    _getTile(board, x - 1, y + 1),
+    _getTile(board, x + 1, y + 1),
+  ];
+
+  const possibleTakeMoves = allTakeMoves.filter((tileId) => {
+    const occupant = _getTileOccupant(tileMap, tileId);
+    return occupant && getPlayer(occupant) !== player;
+  });
+
+  return possibleForwardMoves.concat(possibleTakeMoves);
 };
 
-export const rookMoves = (player: Player, tileId: TileId) => {
-  const map = _getMap(player);
+export const rookMoves = (player: Player, tileId: TileId, tileMap: TileMap) => {
+  const map = _getBoard(player);
   // @ts-ignore
   const [x, y] = _getRelativePos(player, tileId);
 
@@ -58,8 +101,12 @@ export const rookMoves = (player: Player, tileId: TileId) => {
   return [...horizontalMoves, ...verticalMoves];
 };
 
-export const knightMoves = (player: Player, tileId: TileId) => {
-  const map = _getMap(player);
+export const knightMoves = (
+  player: Player,
+  tileId: TileId,
+  tileMap: TileMap
+) => {
+  const map = _getBoard(player);
   // @ts-ignore
   const [x, y] = _getRelativePos(player, tileId);
 
@@ -79,8 +126,12 @@ export const knightMoves = (player: Player, tileId: TileId) => {
     .map(([x, y]) => map[y][x]);
 };
 
-export const bishopMoves = (player: Player, tileId: TileId) => {
-  const map = _getMap(player);
+export const bishopMoves = (
+  player: Player,
+  tileId: TileId,
+  tileMap: TileMap
+) => {
+  const map = _getBoard(player);
   // @ts-ignore
   const [x, y] = _getRelativePos(player, tileId);
 
@@ -113,13 +164,20 @@ export const bishopMoves = (player: Player, tileId: TileId) => {
   );
 };
 
-export const queenMoves = (player: Player, tileId: TileId) => {
+export const queenMoves = (
+  player: Player,
+  tileId: TileId,
+  tileMap: TileMap
+) => {
   // The queen moves essentially like a bishop plus rook so let's just use those
-  return [...bishopMoves(player, tileId), ...rookMoves(player, tileId)];
+  return [
+    ...bishopMoves(player, tileId, tileMap),
+    ...rookMoves(player, tileId, tileMap),
+  ];
 };
 
-export const kingMoves = (player: Player, tileId: TileId) => {
-  const map = _getMap(player);
+export const kingMoves = (player: Player, tileId: TileId, tileMap: TileMap) => {
+  const map = _getBoard(player);
   // @ts-ignore
   const [x, y] = _getRelativePos(player, tileId);
   const indexInRange = (n) => n >= 0 && n <= 7;

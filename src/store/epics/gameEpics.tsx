@@ -9,7 +9,7 @@ import {
 } from "rxjs/operators";
 import { actions, TileMap } from "../index";
 import { PieceId, TileId } from "../../data/constants";
-import { BLACK_MAP, WHITE_MAP } from "../../data/main";
+import { BLACK_BOARD, WHITE_BOARD } from "../../data/main";
 import { of } from "rxjs";
 import * as stream from "stream";
 import {
@@ -41,7 +41,8 @@ const determinePossibleMoves = (
   tileId: TileId,
   whiteOccupiedTiles: TileId[],
   blackOccupiedTiles: TileId[],
-  peggedTiles: TileId[]
+  peggedTiles: TileId[],
+  tileMap: TileMap
 ) => {
   const pieceToMoveMap = {
     P: pawnMoves,
@@ -57,7 +58,7 @@ const determinePossibleMoves = (
   const movesFunc = pieceToMoveMap?.[pieceType];
 
   // Get the moves
-  return movesFunc ? movesFunc(player, tileId) : [];
+  return movesFunc ? movesFunc(player, tileId, tileMap) : [];
 
   // Get the rule set for this piece
   // Run the rule set against the board maps to determine where the piece can go
@@ -84,7 +85,8 @@ const selectTileEpic = (action$, state$) =>
         tileId,
         whiteOccupiedTiles,
         blackOccupiedTiles,
-        peggedTiles
+        peggedTiles,
+        tileMap
       );
 
       return of(actions.highlightPossibleMoves({ possibleMoves }));
@@ -94,7 +96,9 @@ const selectTileEpic = (action$, state$) =>
 const postMoveCleanupEpic = (action$, state$) =>
   action$.pipe(
     filter(actions.moveToTile.match),
-    mergeMap(() => of(actions.deselect()))
+    mergeMap(() => {
+      return of(actions.deselect(), actions.populateOccupiedTiles());
+    })
   );
 
 const gameEpics = [selectTileEpic, postMoveCleanupEpic];

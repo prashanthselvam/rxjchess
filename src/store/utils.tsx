@@ -1,6 +1,6 @@
 import { ChessGameState } from "./index";
-import { TileId } from "../data/constants";
-import { BLACK_MAP, WHITE_MAP } from "../data/main";
+import { PieceId, TileId } from "../data/constants";
+import { BLACK_BOARD, WHITE_BOARD } from "../data/main";
 
 /**
  * Clears highlights from all the tiles in tileMap in state
@@ -13,4 +13,12 @@ export const clearHighlights = (state: ChessGameState) => {
       state.tileMap[tileId].highlight = false;
     }
   });
+};
+
+export const getPlayer = (pieceId: PieceId) => {
+  if (pieceId.slice(0, 1) === "W") {
+    return "W";
+  } else {
+    return "B";
+  }
 };

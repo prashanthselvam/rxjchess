@@ -1,6 +1,6 @@
 import * as React from "react";
 import Tile from "src/components/Tile";
-import { WHITE_MAP, BLACK_MAP } from "src/data/main";
+import { WHITE_BOARD, BLACK_BOARD } from "src/data/main";
 import { store, actions } from "src/store";
 import { useSelector } from "react-redux";
 
@@ -16,7 +16,7 @@ const Chessboard = () => {
       <div key={yPos} style={{ display: "flex" }}>
         {[...Array(8).keys()].map((xPos) => {
           const key =
-            pov === "W" ? WHITE_MAP[yPos][xPos] : BLACK_MAP[yPos][xPos];
+            pov === "W" ? WHITE_BOARD[yPos][xPos] : BLACK_BOARD[yPos][xPos];
           return <Tile key={key} id={key} xPos={xPos} yPos={yPos} />;
         })}
       </div>

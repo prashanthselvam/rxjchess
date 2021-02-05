@@ -9,7 +9,7 @@ import { PieceId, TileId, TILES } from "src/data/constants";
 import { GAME_TYPES } from "src/data/main";
 import { createEpicMiddleware } from "redux-observable";
 import rootEpic from "./epics";
-import { clearHighlights } from "./utils";
+import { clearHighlights, getPlayer } from "./utils";
 
 type TileMapData = {
   pieceId: PieceId | undefined;
@@ -57,7 +57,8 @@ const gameSlice = createSlice({
       const initialPositions = GAME_TYPES[gameType].initialPositions;
 
       Object.entries(initialPositions).forEach(([tileId, pieceId]) => {
-        if (pieceId.slice(0, 1) === "W") {
+        const player = getPlayer(pieceId);
+        if (player === "W") {
           whiteOccupiedTiles.push(tileId);
         } else {
           blackOccupiedTiles.push(tileId);
@@ -111,6 +112,24 @@ const gameSlice = createSlice({
       } else {
         state.currentTurn = "W";
       }
+    },
+    populateOccupiedTiles(state) {
+      const whiteOccupiedTiles: TileId[] = [];
+      const blackOccupiedTiles: TileId[] = [];
+
+      Object.entries(state.tileMap)
+        .filter(([_, { pieceId }]) => !!pieceId)
+        .forEach(([tileId, { pieceId }]) => {
+          const player = getPlayer(pieceId!);
+          if (player === "W") {
+            whiteOccupiedTiles.push(tileId);
+          } else {
+            blackOccupiedTiles.push(tileId);
+          }
+        });
+
+      state.whiteOccupiedTiles = whiteOccupiedTiles;
+      state.blackOccupiedTiles = blackOccupiedTiles;
     },
   },
 });

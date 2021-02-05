@@ -1,6 +1,6 @@
 import { TILES, PIECES, TileId } from "src/data/constants";
 
-export const WHITE_MAP: TileId[][] = [
+export const WHITE_BOARD: TileId[][] = [
   [
     TILES.A1,
     TILES.B1,
@@ -83,7 +83,7 @@ export const WHITE_MAP: TileId[][] = [
   ],
 ];
 
-export const BLACK_MAP = WHITE_MAP.map((row) => row.slice().reverse())
+export const BLACK_BOARD = WHITE_BOARD.map((row) => row.slice().reverse())
   .slice()
   .reverse();
 
