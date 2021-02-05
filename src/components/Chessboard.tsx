@@ -1,6 +1,6 @@
 import * as React from "react";
 import Tile from "src/components/Tile";
-import { WHITE_BOARD, BLACK_BOARD } from "src/data/main";
+import { WHITE_BOARD, BLACK_BOARD } from "src/types/constants";
 import { store, actions } from "src/store";
 import { useSelector } from "react-redux";
 

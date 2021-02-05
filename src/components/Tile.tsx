@@ -1,7 +1,7 @@
 import * as React from "react";
 import Marker from "src/components/TileMarker";
 import Piece from "./Piece";
-import { TileId } from "src/data/constants";
+import { TileId } from "src/types/constants";
 import { useSelector } from "react-redux";
 import { store, actions } from "src/store";
 

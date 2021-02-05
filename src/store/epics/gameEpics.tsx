@@ -8,7 +8,7 @@ import {
   tap,
 } from "rxjs/operators";
 import { actions, TileMap } from "../index";
-import { PieceId, TileId } from "../../data/constants";
+import { PieceId, TileId } from "../../types/constants";
 import { BLACK_BOARD, WHITE_BOARD } from "../../data/main";
 import { of } from "rxjs";
 import * as stream from "stream";
@@ -19,7 +19,7 @@ import {
   pawnMoves,
   queenMoves,
   rookMoves,
-} from "src/data/moveFunctions";
+} from "src/store/moveFunctions";
 
 const consoleLog = (x) => console.log(x);
 

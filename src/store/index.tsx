@@ -5,11 +5,11 @@ import {
   AnyAction,
   getDefaultMiddleware,
 } from "@reduxjs/toolkit";
-import { PieceId, TileId, TILES } from "src/data/constants";
-import { GAME_TYPES } from "src/data/main";
+import { PieceId, TileId, TILES } from "src/types/constants";
+import { GAME_TYPES } from "src/types/constants";
 import { createEpicMiddleware } from "redux-observable";
 import rootEpic from "./epics";
-import { clearHighlights, getPlayer } from "./utils";
+import { _clearHighlights, _getPlayer } from "./utils";
 
 type TileMapData = {
   pieceId: PieceId | undefined;
@@ -57,7 +57,7 @@ const gameSlice = createSlice({
       const initialPositions = GAME_TYPES[gameType].initialPositions;
 
       Object.entries(initialPositions).forEach(([tileId, pieceId]) => {
-        const player = getPlayer(pieceId);
+        const player = _getPlayer(pieceId);
         if (player === "W") {
           whiteOccupiedTiles.push(tileId);
         } else {
@@ -79,11 +79,11 @@ const gameSlice = createSlice({
       }
     },
     selectTile(state, action: PayloadAction<{ tileId: TileId }>) {
-      clearHighlights(state);
+      _clearHighlights(state);
       state.selectedTile = action.payload.tileId;
     },
     deselect(state) {
-      clearHighlights(state);
+      _clearHighlights(state);
       state.selectedTile = undefined;
     },
     highlightPossibleMoves(
@@ -120,7 +120,7 @@ const gameSlice = createSlice({
       Object.entries(state.tileMap)
         .filter(([_, { pieceId }]) => !!pieceId)
         .forEach(([tileId, { pieceId }]) => {
-          const player = getPlayer(pieceId!);
+          const player = _getPlayer(pieceId!);
           if (player === "W") {
             whiteOccupiedTiles.push(tileId);
           } else {
