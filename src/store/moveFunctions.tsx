@@ -67,24 +67,23 @@ export const knightMoves = (
   tileId: TileId,
   tileMap: TileMap
 ) => {
-  const map = _getBoard(player);
+  const board = _getBoard(player);
   // @ts-ignore
   const [x, y] = _getRelativePos(player, tileId);
+  const indexInRange = (n) => n >= 0 && n <= 7;
 
-  // Probably a cool loop for this but can figure out later
-  const allOptions = [
-    [x + 1, y + 2],
-    [x + 1, y - 2],
-    [x - 1, y + 2],
-    [x - 1, y - 2],
-    [x + 2, y + 1],
-    [x + 2, y - 1],
-    [x - 2, y + 1],
-    [x - 2, y - 1],
-  ];
-  return allOptions
-    .filter(([x, y]) => x >= 0 && x <= 7 && y >= 0 && y <= 7)
-    .map(([x, y]) => map[y][x]);
+  return [-2, -1, 1, 2]
+    .filter((n) => indexInRange(y + n))
+    .flatMap((yOffset) => {
+      const xOffsets = Math.abs(yOffset) == 2 ? [-1, 1] : [-2, 2];
+      return xOffsets
+        .filter((n) => indexInRange(x + n))
+        .map((xOffset) => _getTile(board, x + xOffset, y + yOffset));
+    })
+    .filter((tileId) => {
+      const occupant = _getTileOccupant(tileMap, tileId);
+      return !occupant || _getPlayer(occupant) !== player;
+    });
 };
 
 export const bishopMoves = (
