@@ -10,7 +10,12 @@ import {
   _getPossibleMoves,
 } from "./utils";
 
-export const pawnMoves = (player: Player, tileId: TileId, tileMap: TileMap) => {
+export const pawnMoves = (
+  player: Player,
+  tileId: TileId,
+  tileMap: TileMap,
+  { canBeEnpassant }
+) => {
   const board = _getBoard(player);
   // @ts-ignore
   const [x, y] = _getRelativePos(player, tileId);
@@ -40,6 +45,14 @@ export const pawnMoves = (player: Player, tileId: TileId, tileMap: TileMap) => {
     const occupant = _getTileOccupant(tileMap, tileId);
     return occupant && _getPlayer(occupant) !== player;
   });
+
+  // Check if there's a piece we can en-passant and if so, add the appropriate tile
+  if (canBeEnpassant) {
+    const [epX, epY] = _getRelativePos(player, canBeEnpassant);
+    if (y + 1 === epY && Math.abs(x - epX) === 1) {
+      possibleTakeMoves.push(canBeEnpassant);
+    }
+  }
 
   return [...possibleForwardMoves, ...possibleTakeMoves];
 };

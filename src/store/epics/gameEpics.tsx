@@ -43,7 +43,8 @@ const determinePossibleMoves = (
   blackOccupiedTiles: TileId[],
   peggedTiles: TileId[],
   tileMap: TileMap,
-  canCastle
+  canCastle,
+  canBeEnpassant
 ) => {
   const pieceToMoveMap = {
     P: pawnMoves,
@@ -59,7 +60,9 @@ const determinePossibleMoves = (
   const movesFunc = pieceToMoveMap?.[pieceType];
 
   // Get the moves
-  return movesFunc ? movesFunc(player, tileId, tileMap, { canCastle }) : [];
+  return movesFunc
+    ? movesFunc(player, tileId, tileMap, { canCastle, canBeEnpassant })
+    : [];
 
   // Get the rule set for this piece
   // Run the rule set against the board maps to determine where the piece can go
@@ -79,6 +82,7 @@ const selectTileEpic = (action$, state$) =>
         blackOccupiedTiles,
         peggedTiles,
         canCastle,
+        canBeEnpassant,
       } = state$.value;
 
       const possibleMoves = determinePossibleMoves(
@@ -89,7 +93,8 @@ const selectTileEpic = (action$, state$) =>
         blackOccupiedTiles,
         peggedTiles,
         tileMap,
-        canCastle
+        canCastle,
+        canBeEnpassant
       );
 
       return of(actions.highlightPossibleMoves({ possibleMoves }));

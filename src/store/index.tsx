@@ -9,7 +9,13 @@ import { PieceId, PIECES, TileId, TILES } from "src/types/constants";
 import { GAME_TYPES } from "src/types/constants";
 import { createEpicMiddleware } from "redux-observable";
 import rootEpic from "./epics";
-import { _clearHighlights, _getPlayer } from "./utils";
+import {
+  _clearHighlights,
+  _getBoard,
+  _getPlayer,
+  _getRelativePos,
+  _getTile,
+} from "./utils";
 
 type TileMapData = {
   pieceId: PieceId | undefined;
@@ -30,6 +36,7 @@ export type ChessGameState = {
   peggedTiles: TileId[] | undefined;
   movedPieces: Record<PieceId, boolean>;
   canCastle: Record<Player, TileId[]>;
+  canBeEnpassant: TileId | undefined;
 };
 
 const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
@@ -48,6 +55,7 @@ const initialState: ChessGameState = {
   peggedTiles: undefined,
   movedPieces: {},
   canCastle: { W: [], B: [] },
+  canBeEnpassant: undefined,
 };
 
 const gameSlice = createSlice({
@@ -97,10 +105,18 @@ const gameSlice = createSlice({
       );
     },
     moveToTile(state, action: PayloadAction<{ targetTileId: TileId }>) {
-      const { selectedTile, tileMap, movedPieces, currentTurn } = state;
+      const {
+        selectedTile,
+        tileMap,
+        movedPieces,
+        currentTurn,
+        canBeEnpassant,
+      } = state;
       const { targetTileId } = action.payload;
       const pieceId = tileMap[selectedTile!].pieceId!;
+      const board = _getBoard(currentTurn);
 
+      // Update tile map based on where we're moving the piece
       state.tileMap = {
         ...tileMap,
         [selectedTile!]: { pieceId: undefined, highlight: false },
@@ -110,6 +126,7 @@ const gameSlice = createSlice({
         },
       };
 
+      // See if the move was actually a castle, in which case we need to update the appropriate rook as well
       if (pieceId[1] === "K" && !movedPieces?.[pieceId]) {
         if (currentTurn === "W") {
           if (targetTileId === TILES.C1) {
@@ -142,11 +159,35 @@ const gameSlice = createSlice({
         }
       }
 
+      // If the move was an en-passant take by a pawn then remove the taken pawn from board
+      if (pieceId[1] === "P" && targetTileId === canBeEnpassant) {
+        // @ts-ignore
+        const [epX, epY] = _getRelativePos(currentTurn, targetTileId);
+        const takeTileId = _getTile(board, epX, epY - 1);
+
+        state.tileMap = {
+          ...state.tileMap,
+          [takeTileId]: { pieceId: undefined, highlight: false },
+        };
+      }
+
+      // Check if this was a pawn's first move and if it can now be taken via en-passant
+      state.canBeEnpassant = undefined;
+      if (pieceId[1] === "P" && !movedPieces?.[pieceId]) {
+        // @ts-ignore
+        const [targetX, targetY] = _getRelativePos(currentTurn, targetTileId);
+        if (targetY === 3) {
+          state.canBeEnpassant = _getTile(board, targetX, 2);
+        }
+      }
+
+      // Update the movedPieces object to recognize the moved piece
       state.movedPieces = {
         ...movedPieces,
         [pieceId]: true,
       };
 
+      // Switch turns
       if (currentTurn === "W") {
         state.currentTurn = "B";
       } else {
