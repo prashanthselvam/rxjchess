@@ -13,7 +13,19 @@ interface TileProps {
 
 const Highlight = ({ canTake }) => {
   if (canTake) {
-    return <div>KILL</div>;
+    return (
+      <div
+        css={{
+          position: "absolute",
+          width: 66,
+          height: 66,
+          border: "2px #9e0016 solid",
+          top: "50%",
+          left: "50%",
+          margin: "-35px 0 0 -35px",
+        }}
+      />
+    );
   } else {
     return (
       <div
@@ -25,7 +37,7 @@ const Highlight = ({ canTake }) => {
           top: "50%",
           left: "50%",
           margin: "-7px 0 0 -7px",
-          backgroundColor: "rgba(78, 45, 174, 0.40)",
+          backgroundColor: "rgb(131,138,25,0.3)",
         }}
       />
     );
@@ -57,10 +69,10 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
         height: 70,
         width: 70,
         backgroundColor: isSelected
-          ? "#6787AE"
+          ? "#67ae68"
           : (xPos + yPos) % 2 === 0
-          ? "#AE8867"
-          : "#ECD9B9",
+          ? "#365488"
+          : "#eee7dc",
       }}
       onClick={onClick}
     >
@@ -79,8 +91,8 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
           {id[1]}
         </Marker>
       )}
-      {highlight && <Highlight canTake={!!pieceId} />}
       {pieceId && <Piece pieceId={pieceId} />}
+      {highlight && <Highlight canTake={!!pieceId} />}
     </div>
   );
 };
