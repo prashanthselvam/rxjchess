@@ -143,13 +143,18 @@ export const queenMoves = (
   ];
 };
 
-export const kingMoves = (player: Player, tileId: TileId, tileMap: TileMap) => {
+export const kingMoves = (
+  player: Player,
+  tileId: TileId,
+  tileMap: TileMap,
+  { canCastle }
+) => {
   const board = _getBoard(player);
   // @ts-ignore
   const [x, y] = _getRelativePos(player, tileId);
   const indexInRange = (n) => n >= 0 && n <= 7;
 
-  return [-1, 0, 1]
+  const regularMoves = [-1, 0, 1]
     .filter((n) => indexInRange(y + n))
     .flatMap((yOffset) => {
       return [-1, 0, 1]
@@ -161,4 +166,8 @@ export const kingMoves = (player: Player, tileId: TileId, tileMap: TileMap) => {
       const occupant = _getTileOccupant(tileMap, tileId);
       return !occupant || _getPlayer(occupant) !== player;
     });
+
+  const castleMoves = canCastle[player];
+
+  return [...regularMoves, ...castleMoves];
 };

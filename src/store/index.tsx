@@ -5,7 +5,7 @@ import {
   AnyAction,
   getDefaultMiddleware,
 } from "@reduxjs/toolkit";
-import { PieceId, TileId, TILES } from "src/types/constants";
+import { PieceId, PIECES, TileId, TILES } from "src/types/constants";
 import { GAME_TYPES } from "src/types/constants";
 import { createEpicMiddleware } from "redux-observable";
 import rootEpic from "./epics";
@@ -25,9 +25,11 @@ export type ChessGameState = {
   selectedTile: TileId | undefined;
   isActiveCheck: boolean;
   pov: Player;
-  whiteOccupiedTiles: TileId[] | undefined;
-  blackOccupiedTiles: TileId[] | undefined;
+  whiteAttackedTiles: TileId[] | undefined;
+  blackAttackedTiles: TileId[] | undefined;
   peggedTiles: TileId[] | undefined;
+  movedPieces: Record<PieceId, boolean>;
+  canCastle: Record<Player, TileId[]>;
 };
 
 const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
@@ -41,9 +43,11 @@ const initialState: ChessGameState = {
   selectedTile: undefined,
   isActiveCheck: false,
   pov: "W",
-  whiteOccupiedTiles: undefined,
-  blackOccupiedTiles: undefined,
+  whiteAttackedTiles: undefined,
+  blackAttackedTiles: undefined,
   peggedTiles: undefined,
+  movedPieces: {},
+  canCastle: { W: [], B: [] },
 };
 
 const gameSlice = createSlice({
@@ -60,18 +64,12 @@ const gameSlice = createSlice({
       state.tileMap = tileMapInitialState;
 
       Object.entries(initialPositions).forEach(([tileId, pieceId]) => {
-        const player = _getPlayer(pieceId);
-        if (player === "W") {
-          whiteOccupiedTiles.push(tileId);
-        } else {
-          blackOccupiedTiles.push(tileId);
-        }
         state.tileMap[tileId] = { pieceId: pieceId, highlight: false };
       });
 
       state.currentTurn = "W";
-      state.whiteOccupiedTiles = whiteOccupiedTiles;
-      state.blackOccupiedTiles = blackOccupiedTiles;
+      state.whiteAttackedTiles = whiteOccupiedTiles;
+      state.blackAttackedTiles = blackOccupiedTiles;
     },
     togglePov(state) {
       if (state.pov === "W") {
@@ -99,41 +97,115 @@ const gameSlice = createSlice({
       );
     },
     moveToTile(state, action: PayloadAction<{ targetTileId: TileId }>) {
-      const { selectedTile, tileMap } = state;
+      const { selectedTile, tileMap, movedPieces, currentTurn } = state;
       const { targetTileId } = action.payload;
+      const pieceId = tileMap[selectedTile!].pieceId!;
 
       state.tileMap = {
         ...tileMap,
         [selectedTile!]: { pieceId: undefined, highlight: false },
         [targetTileId]: {
-          pieceId: tileMap[selectedTile!].pieceId,
+          pieceId,
           highlight: false,
         },
       };
 
-      if (state.currentTurn === "W") {
+      if (pieceId[1] === "K" && !movedPieces?.[pieceId]) {
+        if (currentTurn === "W") {
+          if (targetTileId === TILES.C1) {
+            state.tileMap = {
+              ...state.tileMap,
+              [TILES.A1]: { pieceId: undefined, highlight: false },
+              [TILES.D1]: { pieceId: PIECES.WR1, highlight: false },
+            };
+          } else if (targetTileId === TILES.G1) {
+            state.tileMap = {
+              ...state.tileMap,
+              [TILES.H1]: { pieceId: undefined, highlight: false },
+              [TILES.F1]: { pieceId: PIECES.WR2, highlight: false },
+            };
+          }
+        } else if (currentTurn === "B") {
+          if (targetTileId === TILES.C8) {
+            state.tileMap = {
+              ...state.tileMap,
+              [TILES.A8]: { pieceId: undefined, highlight: false },
+              [TILES.D8]: { pieceId: PIECES.BR1, highlight: false },
+            };
+          } else if (targetTileId === TILES.G8) {
+            state.tileMap = {
+              ...state.tileMap,
+              [TILES.H8]: { pieceId: undefined, highlight: false },
+              [TILES.F8]: { pieceId: PIECES.WR2, highlight: false },
+            };
+          }
+        }
+      }
+
+      state.movedPieces = {
+        ...movedPieces,
+        [pieceId]: true,
+      };
+
+      if (currentTurn === "W") {
         state.currentTurn = "B";
       } else {
         state.currentTurn = "W";
       }
     },
-    populateOccupiedTiles(state) {
-      const whiteOccupiedTiles: TileId[] = [];
-      const blackOccupiedTiles: TileId[] = [];
+    // populateOccupiedTiles(state) {
+    //   const whiteOccupiedTiles: TileId[] = [];
+    //   const blackOccupiedTiles: TileId[] = [];
+    //
+    //   Object.entries(state.tileMap)
+    //     .filter(([_, { pieceId }]) => !!pieceId)
+    //     .forEach(([tileId, { pieceId }]) => {
+    //       const player = _getPlayer(pieceId!);
+    //       if (player === "W") {
+    //         whiteOccupiedTiles.push(tileId);
+    //       } else {
+    //         blackOccupiedTiles.push(tileId);
+    //       }
+    //     });
+    //   //
+    //   // state.whiteOccupiedTiles = whiteOccupiedTiles;
+    //   // state.blackOccupiedTiles = blackOccupiedTiles;
+    // },
+    determineCastleEligibility(state) {
+      const { movedPieces, tileMap } = state;
+      const canCastle: Record<Player, TileId[]> = { W: [], B: [] };
 
-      Object.entries(state.tileMap)
-        .filter(([_, { pieceId }]) => !!pieceId)
-        .forEach(([tileId, { pieceId }]) => {
-          const player = _getPlayer(pieceId!);
-          if (player === "W") {
-            whiteOccupiedTiles.push(tileId);
-          } else {
-            blackOccupiedTiles.push(tileId);
-          }
-        });
+      if (!movedPieces?.[PIECES.WK]) {
+        if (
+          !movedPieces?.[PIECES.WR1] &&
+          !(tileMap.B1.pieceId || tileMap.C1.pieceId || tileMap.D1.pieceId)
+        ) {
+          canCastle.W.push(TILES.C1);
+        }
+        if (
+          !movedPieces?.[PIECES.WR2] &&
+          !(tileMap.F1.pieceId || tileMap.G1.pieceId)
+        ) {
+          canCastle.W.push(TILES.G1);
+        }
+      }
 
-      state.whiteOccupiedTiles = whiteOccupiedTiles;
-      state.blackOccupiedTiles = blackOccupiedTiles;
+      if (movedPieces?.[PIECES.BK]) {
+      } else {
+        if (
+          !movedPieces?.[PIECES.BR1] &&
+          !(tileMap.B8.pieceId || tileMap.C8.pieceId || tileMap.D8.pieceId)
+        ) {
+          canCastle.B.push(TILES.C8);
+        }
+        if (
+          !movedPieces?.[PIECES.BR2] &&
+          !(tileMap.F8.pieceId || tileMap.G8.pieceId)
+        ) {
+          canCastle.B.push(TILES.G8);
+        }
+      }
+      state.canCastle = canCastle;
     },
   },
 });
