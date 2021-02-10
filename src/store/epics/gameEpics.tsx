@@ -36,7 +36,7 @@ const determinePossibleMoves = (
   const attackedTiles =
     player === "W" ? blackAttackedTiles : whiteAttackedTiles;
 
-  return movesFunc(player, tileId, tileMap, {
+  return movesFunc(player, tileId, tileMap, false, {
     canCastle,
     canBeEnpassant,
     attackedTiles,

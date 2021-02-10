@@ -44,7 +44,8 @@ export const _getBoard = (player: Player) =>
  * @param x
  * @param y
  */
-export const _getTile = (board: TileId[][], x: XPos, y: YPos) => board[y][x];
+export const _getTile = (board: TileId[][], x: XPos, y: YPos) =>
+  board?.[y]?.[x];
 
 /**
  * _getTileOccupant - Given a tileMap and a tileId, returns the pieceId stationed at that tile

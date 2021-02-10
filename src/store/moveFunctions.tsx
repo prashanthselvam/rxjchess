@@ -15,10 +15,8 @@ export const pawnMoves = (
   player: Player,
   tileId: TileId,
   tileMap: TileMap,
-  {
-    canBeEnpassant = undefined,
-    forAttackCalc = false,
-  }: { canBeEnpassant?: TileId | undefined; forAttackCalc?: boolean } = {}
+  forAttackCalc: boolean = false,
+  { canBeEnpassant = undefined }: { canBeEnpassant?: TileId | undefined } = {}
 ) => {
   const board = _getBoard(player);
   // @ts-ignore
@@ -28,8 +26,12 @@ export const pawnMoves = (
     (player === "W" && parseInt(tileId[1]) === 2) ||
     (player === "B" && parseInt(tileId[1]) === 7);
 
+  const indexInRange = (n) => n >= 0 && n <= 7;
+
   // Determine the tiles where pawn can move forward
-  const allForwardMoves = [_getTile(board, x, y + 1)];
+  const allForwardMoves = indexInRange(y + 1)
+    ? [_getTile(board, x, y + 1)]
+    : [];
   isFirstMove && allForwardMoves.push(_getTile(board, x, y + 2));
 
   const possibleForwardMoves = _getPossibleMoves(
@@ -68,7 +70,7 @@ export const rookMoves = (
   player: Player,
   tileId: TileId,
   tileMap: TileMap,
-  { forAttackCalc = false }: { forAttackCalc?: boolean } = {}
+  forAttackCalc: boolean = false
 ) => {
   const board = _getBoard(player);
   // @ts-ignore
@@ -91,7 +93,7 @@ export const knightMoves = (
   player: Player,
   tileId: TileId,
   tileMap: TileMap,
-  { forAttackCalc = false }: { forAttackCalc?: boolean } = {}
+  forAttackCalc: boolean = false
 ) => {
   const board = _getBoard(player);
   // @ts-ignore
@@ -119,7 +121,7 @@ export const bishopMoves = (
   player: Player,
   tileId: TileId,
   tileMap: TileMap,
-  { forAttackCalc = false }: { forAttackCalc?: boolean } = {}
+  forAttackCalc: boolean = false
 ) => {
   const board = _getBoard(player);
   // @ts-ignore
@@ -167,12 +169,12 @@ export const queenMoves = (
   player: Player,
   tileId: TileId,
   tileMap: TileMap,
-  { forAttackCalc = false }: { forAttackCalc?: boolean } = {}
+  forAttackCalc: boolean = false
 ) => {
   // The queen moves essentially like a bishop plus rook so let's just use those
   return [
-    ...bishopMoves(player, tileId, tileMap, { forAttackCalc }),
-    ...rookMoves(player, tileId, tileMap, { forAttackCalc }),
+    ...bishopMoves(player, tileId, tileMap, forAttackCalc),
+    ...rookMoves(player, tileId, tileMap, forAttackCalc),
   ];
 };
 
@@ -180,6 +182,7 @@ export const kingMoves = (
   player: Player,
   tileId: TileId,
   tileMap: TileMap,
+  forAttackCalc?: boolean,
   {
     canCastle = { W: [], B: [] },
     attackedTiles = [],
@@ -217,7 +220,7 @@ export const getAttackedTiles = (player: Player, tileMap: TileMap) =>
     .flatMap(([tileId, { pieceId }]) => {
       const pieceType = _getPieceType(pieceId!);
       const moveFunc = pieceToMoveMap[pieceType];
-      return moveFunc(player, tileId, tileMap, { forAttackCalc: true });
+      return moveFunc(player, tileId, tileMap, true);
     });
 
 export const pieceToMoveMap = {
