@@ -86,11 +86,13 @@ export const _getRelativePos = (player: Player, tileId: TileId) => {
  * @param tileMap
  * @param player
  * @param canTakeAtDestination
+ * @param forAttackCalc
  */
 export const _getPossibleMoves = (
   allMoves: TileId[],
   tileMap: TileMap,
   player: Player,
+  forAttackCalc: boolean,
   canTakeAtDestination: boolean = true
 ) => {
   const nearestOccupiedIndex = allMoves.findIndex(
@@ -104,7 +106,7 @@ export const _getPossibleMoves = (
       player;
 
   if (nearestOccupiedIndex > -1) {
-    if (canTakeAtIndex) {
+    if (canTakeAtIndex || forAttackCalc) {
       return allMoves.slice(0, nearestOccupiedIndex + 1);
     } else {
       return allMoves.slice(0, nearestOccupiedIndex);

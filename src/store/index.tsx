@@ -24,6 +24,7 @@ type TileMapData = {
 };
 
 export type TileMap = Record<TileId, TileMapData>;
+export type CanCastle = Record<Player, TileId[]>;
 
 export type ChessGameState = {
   status: GameStatus;
@@ -36,7 +37,7 @@ export type ChessGameState = {
   blackAttackedTiles: TileId[] | undefined;
   peggedTiles: TileId[] | undefined;
   movedPieces: Record<PieceId, boolean>;
-  canCastle: Record<Player, TileId[]>;
+  canCastle: CanCastle;
   canBeEnpassant: TileId | undefined;
 };
 
@@ -183,6 +184,17 @@ const gameSlice = createSlice({
         [pieceId]: true,
       };
     },
+    updateAttackedTiles(
+      state,
+      action: PayloadAction<{ player: Player; attackedTiles: TileId[] }>
+    ) {
+      const { player, attackedTiles } = action.payload;
+      if (player === "W") {
+        state.whiteAttackedTiles = attackedTiles;
+      } else {
+        state.blackAttackedTiles = attackedTiles;
+      }
+    },
     switchTurns(state) {
       if (state.currentTurn === "W") {
         state.currentTurn = "B";
@@ -243,6 +255,12 @@ const gameSlice = createSlice({
         }
       }
       state.canCastle = canCastle;
+    },
+    highlightTiles(state, action: PayloadAction<{ tiles: TileId[] }>) {
+      const { tiles } = action.payload;
+      tiles.forEach((id) => {
+        state.tileMap[id].highlight = true;
+      });
     },
   },
 });

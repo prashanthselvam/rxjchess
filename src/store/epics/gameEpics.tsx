@@ -1,27 +1,9 @@
-import {
-  concatMap,
-  filter,
-  ignoreElements,
-  map,
-  mergeMap,
-  pairwise,
-  pluck,
-  tap,
-} from "rxjs/operators";
+import { filter, mergeMap, pluck } from "rxjs/operators";
 import { actions, TileMap } from "../index";
 import { PieceId, TileId } from "../../types/constants";
-import { BLACK_BOARD, WHITE_BOARD } from "../../data/main";
-import { from, of } from "rxjs";
-import * as stream from "stream";
-import {
-  bishopMoves,
-  kingMoves,
-  knightMoves,
-  pawnMoves,
-  queenMoves,
-  rookMoves,
-} from "src/store/moveFunctions";
-import { _getPieceType } from "../utils";
+import { of } from "rxjs";
+import { getAttackedTiles, pieceToMoveMap } from "src/store/moveFunctions";
+import { _getPieceType, _getPlayer } from "../utils";
 import { AnyAction } from "@reduxjs/toolkit";
 
 const consoleLog = (x) => console.log(x);
@@ -42,35 +24,23 @@ const determinePossibleMoves = (
   player: Player,
   pieceId: PieceId,
   tileId: TileId,
-  whiteOccupiedTiles: TileId[],
-  blackOccupiedTiles: TileId[],
   peggedTiles: TileId[],
+  whiteAttackedTiles: TileId[],
+  blackAttackedTiles: TileId[],
   tileMap: TileMap,
   canCastle,
   canBeEnpassant
 ) => {
-  const pieceToMoveMap = {
-    P: pawnMoves,
-    R: rookMoves,
-    N: knightMoves,
-    B: bishopMoves,
-    Q: queenMoves,
-    K: kingMoves,
-  };
-
-  // Determine what type of piece this is
-  const pieceType = pieceId[1];
+  const pieceType = _getPieceType(pieceId);
   const movesFunc = pieceToMoveMap?.[pieceType];
+  const attackedTiles =
+    player === "W" ? blackAttackedTiles : whiteAttackedTiles;
 
-  // Get the moves
-  return movesFunc
-    ? movesFunc(player, tileId, tileMap, { canCastle, canBeEnpassant })
-    : [];
-
-  // Get the rule set for this piece
-  // Run the rule set against the board maps to determine where the piece can go
-  // Run against occupied tiles info to determine where piece can actually go
-  // Return tiles the piece can go to
+  return movesFunc(player, tileId, tileMap, {
+    canCastle,
+    canBeEnpassant,
+    attackedTiles,
+  });
 };
 
 const selectTileEpic = (action$, state$) =>
@@ -81,9 +51,9 @@ const selectTileEpic = (action$, state$) =>
       const {
         currentTurn,
         tileMap,
-        whiteOccupiedTiles,
-        blackOccupiedTiles,
         peggedTiles,
+        whiteAttackedTiles,
+        blackAttackedTiles,
         canCastle,
         canBeEnpassant,
       } = state$.value;
@@ -92,9 +62,9 @@ const selectTileEpic = (action$, state$) =>
         currentTurn,
         tileMap[tileId].pieceId,
         tileId,
-        whiteOccupiedTiles,
-        blackOccupiedTiles,
         peggedTiles,
+        whiteAttackedTiles,
+        blackAttackedTiles,
         tileMap,
         canCastle,
         canBeEnpassant
@@ -125,9 +95,15 @@ const postCleanupCalcsEpic = (action$, state$) =>
     filter(actions.runPostMoveCalcs.match),
     pluck("payload"),
     mergeMap(({ pieceId, targetTileId }) => {
+      const { tileMap } = state$.value;
+      const player = _getPlayer(pieceId);
+
+      const attackedTiles = getAttackedTiles(player, tileMap);
+
       const calcActions: AnyAction[] = [
         actions.updateMovedPieces({ pieceId }),
         actions.determineCastleEligibility(),
+        actions.updateAttackedTiles({ player, attackedTiles }),
       ];
 
       // This needs to be run before movedPieces is updated
