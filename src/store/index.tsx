@@ -12,6 +12,7 @@ import rootEpic from "./epics";
 import {
   _clearHighlights,
   _getBoard,
+  _getPieceType,
   _getPlayer,
   _getRelativePos,
   _getTile,
@@ -127,7 +128,7 @@ const gameSlice = createSlice({
       };
 
       // See if the move was actually a castle, in which case we need to update the appropriate rook as well
-      if (pieceId[1] === "K" && !movedPieces?.[pieceId]) {
+      if (_getPieceType(pieceId) === "K" && !movedPieces?.[pieceId]) {
         if (currentTurn === "W") {
           if (targetTileId === TILES.C1) {
             state.tileMap = {
@@ -160,7 +161,7 @@ const gameSlice = createSlice({
       }
 
       // If the move was an en-passant take by a pawn then remove the taken pawn from board
-      if (pieceId[1] === "P" && targetTileId === canBeEnpassant) {
+      if (_getPieceType(pieceId) === "P" && targetTileId === canBeEnpassant) {
         // @ts-ignore
         const [epX, epY] = _getRelativePos(currentTurn, targetTileId);
         const takeTileId = _getTile(board, epX, epY - 1);
@@ -170,48 +171,43 @@ const gameSlice = createSlice({
           [takeTileId]: { pieceId: undefined, highlight: false },
         };
       }
-
-      // Check if this was a pawn's first move and if it can now be taken via en-passant
-      state.canBeEnpassant = undefined;
-      if (pieceId[1] === "P" && !movedPieces?.[pieceId]) {
-        // @ts-ignore
-        const [targetX, targetY] = _getRelativePos(currentTurn, targetTileId);
-        if (targetY === 3) {
-          state.canBeEnpassant = _getTile(board, targetX, 2);
-        }
-      }
-
-      // Update the movedPieces object to recognize the moved piece
+    },
+    runPostMoveCalcs(
+      state,
+      action: PayloadAction<{ pieceId: PieceId; targetTileId: TileId }>
+    ) {},
+    updateMovedPieces(state, action: PayloadAction<{ pieceId: PieceId }>) {
+      const { pieceId } = action.payload;
       state.movedPieces = {
-        ...movedPieces,
+        ...state.movedPieces,
         [pieceId]: true,
       };
-
-      // Switch turns
-      if (currentTurn === "W") {
+    },
+    switchTurns(state) {
+      if (state.currentTurn === "W") {
         state.currentTurn = "B";
       } else {
         state.currentTurn = "W";
       }
     },
-    // populateOccupiedTiles(state) {
-    //   const whiteOccupiedTiles: TileId[] = [];
-    //   const blackOccupiedTiles: TileId[] = [];
-    //
-    //   Object.entries(state.tileMap)
-    //     .filter(([_, { pieceId }]) => !!pieceId)
-    //     .forEach(([tileId, { pieceId }]) => {
-    //       const player = _getPlayer(pieceId!);
-    //       if (player === "W") {
-    //         whiteOccupiedTiles.push(tileId);
-    //       } else {
-    //         blackOccupiedTiles.push(tileId);
-    //       }
-    //     });
-    //   //
-    //   // state.whiteOccupiedTiles = whiteOccupiedTiles;
-    //   // state.blackOccupiedTiles = blackOccupiedTiles;
-    // },
+    determineEnpassantEligibility(
+      state,
+      action: PayloadAction<{ pieceId: PieceId; targetTileId: TileId }>
+    ) {
+      const { pieceId, targetTileId } = action.payload;
+      const { movedPieces } = state;
+      const player = _getPlayer(pieceId);
+      const board = _getBoard(player);
+
+      state.canBeEnpassant = undefined;
+      if (!movedPieces?.[pieceId]) {
+        // @ts-ignore
+        const [targetX, targetY] = _getRelativePos(player, targetTileId);
+        if (targetY === 3) {
+          state.canBeEnpassant = _getTile(board, targetX, 2);
+        }
+      }
+    },
     determineCastleEligibility(state) {
       const { movedPieces, tileMap } = state;
       const canCastle: Record<Player, TileId[]> = { W: [], B: [] };

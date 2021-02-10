@@ -1,4 +1,5 @@
 import {
+  concatMap,
   filter,
   ignoreElements,
   map,
@@ -10,7 +11,7 @@ import {
 import { actions, TileMap } from "../index";
 import { PieceId, TileId } from "../../types/constants";
 import { BLACK_BOARD, WHITE_BOARD } from "../../data/main";
-import { of } from "rxjs";
+import { from, of } from "rxjs";
 import * as stream from "stream";
 import {
   bishopMoves,
@@ -20,6 +21,8 @@ import {
   queenMoves,
   rookMoves,
 } from "src/store/moveFunctions";
+import { _getPieceType } from "../utils";
+import { AnyAction } from "@reduxjs/toolkit";
 
 const consoleLog = (x) => console.log(x);
 
@@ -104,11 +107,39 @@ const selectTileEpic = (action$, state$) =>
 const postMoveCleanupEpic = (action$, state$) =>
   action$.pipe(
     filter(actions.moveToTile.match),
-    mergeMap(() => {
-      return of(actions.deselect(), actions.determineCastleEligibility());
+    pluck("payload"),
+    mergeMap(({ targetTileId }) => {
+      const { tileMap } = state$.value;
+      const pieceId = tileMap[targetTileId].pieceId;
+
+      return of(
+        actions.deselect(),
+        actions.switchTurns(),
+        actions.runPostMoveCalcs({ pieceId, targetTileId })
+      );
     })
   );
 
-const gameEpics = [selectTileEpic, postMoveCleanupEpic];
+const postCleanupCalcsEpic = (action$, state$) =>
+  action$.pipe(
+    filter(actions.runPostMoveCalcs.match),
+    pluck("payload"),
+    mergeMap(({ pieceId, targetTileId }) => {
+      const calcActions: AnyAction[] = [
+        actions.updateMovedPieces({ pieceId }),
+        actions.determineCastleEligibility(),
+      ];
+
+      // This needs to be run before movedPieces is updated
+      _getPieceType(pieceId) === "P" &&
+        calcActions.unshift(
+          actions.determineEnpassantEligibility({ pieceId, targetTileId })
+        );
+
+      return of(...calcActions);
+    })
+  );
+
+const gameEpics = [selectTileEpic, postMoveCleanupEpic, postCleanupCalcsEpic];
 
 export default gameEpics;

@@ -19,13 +19,15 @@ export const _clearHighlights = (state: ChessGameState) => {
  *
  * @param pieceId
  */
-export const _getPlayer = (pieceId: PieceId) => {
-  if (pieceId.slice(0, 1) === "W") {
-    return "W";
-  } else {
-    return "B";
-  }
-};
+export const _getPlayer = (pieceId: PieceId) =>
+  pieceId.slice(0, 1) === "W" ? "W" : "B";
+
+/**
+ * _getPieceType - Get the type of piece a pieceId represents (P, K, B, R, etc.)
+ *
+ * @param pieceId
+ */
+export const _getPieceType = (pieceId: PieceId) => pieceId[1];
 
 /**
  * _getBoard - Get the board layout depending on player perspective
