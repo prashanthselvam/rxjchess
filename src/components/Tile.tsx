@@ -4,6 +4,7 @@ import Piece from "./Piece";
 import { TileId } from "src/types/constants";
 import { useSelector } from "react-redux";
 import { store, actions } from "src/store";
+import { _getPieceType, _getPlayer } from "../store/utils";
 
 interface TileProps {
   id: TileId;
@@ -47,10 +48,14 @@ const Highlight = ({ canTake }) => {
 const Tile = ({ id, xPos, yPos }: TileProps) => {
   const currentTurn = useSelector((state) => state.currentTurn);
   const selectedTile = useSelector((state) => state.selectedTile);
+  const isActiveCheck = useSelector((state) => state.isActiveCheck);
   const { pieceId, highlight } = useSelector((state) => state.tileMap[id]);
 
   const isSelected = selectedTile === id;
-  const isSelectable = pieceId && pieceId[0] === currentTurn;
+  const isSelectable = pieceId && _getPlayer(pieceId) === currentTurn;
+  const isKingTile = pieceId && _getPieceType(pieceId) === "K";
+
+  const checkHighlight = isActiveCheck && isSelectable && isKingTile;
 
   const onClick = () => {
     if (isSelectable && !isSelected) {
@@ -76,11 +81,6 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
       }}
       onClick={onClick}
     >
-      {/*<span style={{ fontSize: 10 }}>{`yPos: ${yPos}`}</span>*/}
-      {/*<br />*/}
-      {/*<span style={{ fontSize: 10 }}>{`xPos: ${xPos}`}</span>*/}
-      {/*<br />*/}
-      {/*<span style={{ fontSize: 10 }}>{id}</span>*/}
       {yPos === 0 && (
         <Marker xPos={xPos} yPos={yPos} variant="horizontal">
           {id[0].toLowerCase()}
@@ -92,6 +92,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
         </Marker>
       )}
       {pieceId && <Piece pieceId={pieceId} />}
+      {checkHighlight && <div>CHECK!</div>}
       {highlight && <Highlight canTake={!!pieceId} />}
     </div>
   );

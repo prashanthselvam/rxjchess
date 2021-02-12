@@ -1,12 +1,24 @@
 import { filter, mergeMap, pluck } from "rxjs/operators";
-import { actions, TileMap } from "../index";
-import { PieceId, TileId } from "../../types/constants";
+import { actions, ChessGameState, TileMap } from "../index";
+import { PieceId, TileId, TILES } from "../../types/constants";
 import { of } from "rxjs";
-import { getAttackedTiles, pieceToMoveMap } from "src/store/moveFunctions";
-import { _getPieceType, _getPlayer } from "../utils";
+import {
+  getAttackedTilesMap,
+  getCheckMoveTiles,
+  pieceToMoveMap,
+} from "src/store/moveFunctions";
+import {
+  _getBoard,
+  _getPieceType,
+  _getPlayer,
+  _getRelativePos,
+} from "../utils";
 import { AnyAction } from "@reduxjs/toolkit";
+import { Epic } from "redux-observable";
 
 const consoleLog = (x) => console.log(x);
+
+export type GameEpic = Epic<AnyAction, AnyAction, ChessGameState>;
 
 /**
  * determinePossibleMoves - Receives information about the piece that might move, where it is,
@@ -43,7 +55,7 @@ const determinePossibleMoves = (
   });
 };
 
-const selectTileEpic = (action$, state$) =>
+const selectTileEpic: GameEpic = (action$, state$) =>
   action$.pipe(
     filter(actions.selectTile.match),
     pluck("payload"),
@@ -58,9 +70,11 @@ const selectTileEpic = (action$, state$) =>
         canBeEnpassant,
       } = state$.value;
 
+      const pieceId = tileMap[tileId].pieceId!;
+
       const possibleMoves = determinePossibleMoves(
         currentTurn,
-        tileMap[tileId].pieceId,
+        pieceId,
         tileId,
         peggedTiles,
         whiteAttackedTiles,
@@ -70,17 +84,17 @@ const selectTileEpic = (action$, state$) =>
         canBeEnpassant
       );
 
-      return of(actions.highlightPossibleMoves({ possibleMoves }));
+      return of(actions.highlightPossibleMoves({ pieceId, possibleMoves }));
     })
   );
 
-const postMoveCleanupEpic = (action$, state$) =>
+const postMoveCleanupEpic: GameEpic = (action$, state$) =>
   action$.pipe(
     filter(actions.moveToTile.match),
     pluck("payload"),
     mergeMap(({ targetTileId }) => {
       const { tileMap } = state$.value;
-      const pieceId = tileMap[targetTileId].pieceId;
+      const pieceId = tileMap[targetTileId].pieceId!;
 
       return of(
         actions.deselect(),
@@ -90,7 +104,7 @@ const postMoveCleanupEpic = (action$, state$) =>
     })
   );
 
-const postCleanupCalcsEpic = (action$, state$) =>
+const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
   action$.pipe(
     filter(actions.runPostMoveCalcs.match),
     pluck("payload"),
@@ -98,12 +112,41 @@ const postCleanupCalcsEpic = (action$, state$) =>
       const { tileMap } = state$.value;
       const player = _getPlayer(pieceId);
 
-      const attackedTiles = getAttackedTiles(player, tileMap);
+      const allAttackedTiles: TileId[] = [];
+      const checkOriginTiles: TileId[] = [];
+      const checkBlockTiles: TileId[] = [];
+
+      const opponentKing = player === "W" ? "BK" : "WK";
+      const opponentKingTile = Object.entries(tileMap).find(
+        ([_, { pieceId }]) => pieceId === opponentKing
+      )?.[0]!;
+
+      const attackedTilesMap = getAttackedTilesMap(player, tileMap);
+
+      Object.entries(attackedTilesMap).forEach(
+        ([tileId, { pieceId, attackedTiles }]) => {
+          if (attackedTiles.includes(opponentKingTile)) {
+            checkOriginTiles.push(tileId);
+            checkBlockTiles.push(
+              ...getCheckMoveTiles(player, pieceId, tileId, opponentKingTile)
+            );
+          }
+          allAttackedTiles.push(...attackedTiles);
+        }
+      );
 
       const calcActions: AnyAction[] = [
         actions.updateMovedPieces({ pieceId }),
         actions.determineCastleEligibility(),
-        actions.updateAttackedTiles({ player, attackedTiles }),
+        actions.updateAttackedTiles({
+          player,
+          attackedTiles: allAttackedTiles,
+        }),
+        actions.updateCheckDetails({
+          isActiveCheck: !!checkOriginTiles.length,
+          checkOriginTiles,
+          checkBlockTiles,
+        }),
       ];
 
       // This needs to be run before movedPieces is updated

@@ -1,4 +1,4 @@
-import { TileId } from "src/types/constants";
+import { PieceId, TileId } from "src/types/constants";
 import range from "lodash/range";
 import { CanCastle, TileMap } from "./index";
 import {
@@ -11,12 +11,25 @@ import {
   _getPieceType,
 } from "./utils";
 
-export const pawnMoves = (
+interface OptionalParams {
+  canBeEnpassant?: TileId;
+  canCastle?: CanCastle;
+}
+
+type MoveFunction = (
   player: Player,
   tileId: TileId,
   tileMap: TileMap,
-  forAttackCalc: boolean = false,
-  { canBeEnpassant = undefined }: { canBeEnpassant?: TileId | undefined } = {}
+  forAttackCalc: boolean,
+  optionalParams?: OptionalParams
+) => TileId[];
+
+export const pawnMoves: MoveFunction = (
+  player,
+  tileId,
+  tileMap,
+  forAttackCalc = false,
+  { canBeEnpassant = undefined } = {}
 ) => {
   const board = _getBoard(player);
   // @ts-ignore
@@ -66,11 +79,11 @@ export const pawnMoves = (
     : [...possibleForwardMoves, ...possibleTakeMoves];
 };
 
-export const rookMoves = (
-  player: Player,
-  tileId: TileId,
-  tileMap: TileMap,
-  forAttackCalc: boolean = false
+export const rookMoves: MoveFunction = (
+  player,
+  tileId,
+  tileMap,
+  forAttackCalc = false
 ) => {
   const board = _getBoard(player);
   // @ts-ignore
@@ -89,11 +102,11 @@ export const rookMoves = (
   ];
 };
 
-export const knightMoves = (
-  player: Player,
-  tileId: TileId,
-  tileMap: TileMap,
-  forAttackCalc: boolean = false
+export const knightMoves: MoveFunction = (
+  player,
+  tileId,
+  tileMap,
+  forAttackCalc = false
 ) => {
   const board = _getBoard(player);
   // @ts-ignore
@@ -117,11 +130,11 @@ export const knightMoves = (
     });
 };
 
-export const bishopMoves = (
-  player: Player,
-  tileId: TileId,
-  tileMap: TileMap,
-  forAttackCalc: boolean = false
+export const bishopMoves: MoveFunction = (
+  player,
+  tileId,
+  tileMap,
+  forAttackCalc = false
 ) => {
   const board = _getBoard(player);
   // @ts-ignore
@@ -165,11 +178,11 @@ export const bishopMoves = (
     );
 };
 
-export const queenMoves = (
-  player: Player,
-  tileId: TileId,
-  tileMap: TileMap,
-  forAttackCalc: boolean = false
+export const queenMoves: MoveFunction = (
+  player,
+  tileId,
+  tileMap,
+  forAttackCalc = false
 ) => {
   // The queen moves essentially like a bishop plus rook so let's just use those
   return [
@@ -178,15 +191,12 @@ export const queenMoves = (
   ];
 };
 
-export const kingMoves = (
-  player: Player,
-  tileId: TileId,
-  tileMap: TileMap,
-  forAttackCalc?: boolean,
-  {
-    canCastle = { W: [], B: [] },
-    attackedTiles = [],
-  }: { canCastle?: CanCastle; attackedTiles?: TileId[] } = {}
+export const kingMoves: MoveFunction = (
+  player,
+  tileId,
+  tileMap,
+  forAttackCalc,
+  { canCastle = { W: [], B: [] } } = {}
 ) => {
   const board = _getBoard(player);
   // @ts-ignore
@@ -203,10 +213,7 @@ export const kingMoves = (
     .filter((id) => id != tileId)
     .filter((tileId) => {
       const occupant = _getTileOccupant(tileMap, tileId);
-      return (
-        !attackedTiles?.includes(tileId) &&
-        (!occupant || _getPlayer(occupant) !== player)
-      );
+      return !occupant || _getPlayer(occupant) !== player;
     });
 
   const castleMoves = canCastle[player];
@@ -214,14 +221,61 @@ export const kingMoves = (
   return [...regularMoves, ...castleMoves];
 };
 
-export const getAttackedTiles = (player: Player, tileMap: TileMap) =>
+interface AttackedTileObject {
+  pieceId: PieceId;
+  attackedTiles: TileId[];
+}
+
+type GetAttackedTilesMap = (
+  player: Player,
+  tileMap: TileMap
+) => Record<TileId, AttackedTileObject>;
+
+export const getAttackedTilesMap: GetAttackedTilesMap = (player, tileMap) =>
   Object.entries(tileMap)
-    .filter(([_, { pieceId }]) => pieceId && _getPlayer(pieceId) === player)
-    .flatMap(([tileId, { pieceId }]) => {
+    .filter(([, { pieceId }]) => pieceId && _getPlayer(pieceId) === player)
+    .reduce((acc, [tileId, { pieceId }]) => {
       const pieceType = _getPieceType(pieceId!);
       const moveFunc = pieceToMoveMap[pieceType];
-      return moveFunc(player, tileId, tileMap, true);
-    });
+      const attackedTiles = moveFunc(player, tileId, tileMap, true);
+      acc[tileId] = { pieceId, attackedTiles };
+      return acc;
+    }, {});
+
+export const getCheckMoveTiles = (
+  player: Player,
+  pieceId: PieceId,
+  origin: TileId,
+  destination: TileId
+) => {
+  const pieceType = _getPieceType(pieceId);
+  const board = _getBoard(player);
+  // @ts-ignore
+  const [originX, originY] = _getRelativePos(player, origin);
+  // @ts-ignore
+  const [destX, destY] = _getRelativePos(player, destination);
+
+  if (pieceType === "P" || pieceType === "N") {
+    return [origin];
+  } else {
+    const yOffset = destY - originY;
+    const xOffset = destX - originX;
+
+    // horizontal case
+    if (yOffset === 0) {
+      return range(originX, destX).map((n) => _getTile(board, n, originY));
+    } else if (xOffset === 0) {
+      return range(originY, destY).map((n) => _getTile(board, originX, n));
+    } else {
+      const xOffsets = range(0, xOffset);
+      const yOffsets = range(0, yOffset);
+
+      return xOffsets.map((n, i) =>
+        _getTile(board, originX + n, originY + yOffsets[i])
+      );
+    }
+  }
+};
 
 export const pieceToMoveMap = {
   P: pawnMoves,

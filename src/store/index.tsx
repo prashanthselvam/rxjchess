@@ -30,15 +30,17 @@ export type ChessGameState = {
   status: GameStatus;
   currentTurn: Player; // black or white
   tileMap: TileMap; // mapping of each tile to the piece ID that's on it
-  selectedTile: TileId | undefined;
-  isActiveCheck: boolean;
-  pov: Player;
-  whiteAttackedTiles: TileId[] | undefined;
-  blackAttackedTiles: TileId[] | undefined;
-  peggedTiles: TileId[] | undefined;
   movedPieces: Record<PieceId, boolean>;
-  canCastle: CanCastle;
-  canBeEnpassant: TileId | undefined;
+  selectedTile: TileId | undefined; // the tile selected by the user. Can only ever be their own piece occupied tile
+  isActiveCheck: boolean; // is currentTurn player in check
+  checkOriginTiles: TileId[]; // if in check, tile(s) from where the check originates
+  checkBlockTiles: TileId[]; // if in check, tile(s) which can be moved to to block the check
+  pov: Player;
+  whiteAttackedTiles: TileId[]; // tiles that white is attacking
+  blackAttackedTiles: TileId[]; // tiles that black is attacking
+  peggedTiles: TileId[]; // tiles that are pegged
+  canCastle: CanCastle; // mapping of which pieces can castle for each side
+  canBeEnpassant: TileId | undefined; // the tile that can be taken via enpassant (if any)
 };
 
 const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
@@ -51,10 +53,12 @@ const initialState: ChessGameState = {
   tileMap: tileMapInitialState,
   selectedTile: undefined,
   isActiveCheck: false,
+  checkOriginTiles: [],
+  checkBlockTiles: [],
   pov: "W",
-  whiteAttackedTiles: undefined,
-  blackAttackedTiles: undefined,
-  peggedTiles: undefined,
+  whiteAttackedTiles: [],
+  blackAttackedTiles: [],
+  peggedTiles: [],
   movedPieces: {},
   canCastle: { W: [], B: [] },
   canBeEnpassant: undefined,
@@ -64,7 +68,10 @@ const gameSlice = createSlice({
   name: "gameSlice",
   initialState: initialState,
   reducers: {
-    newGame(state, action: PayloadAction<{ gameType: GameTypes }>) {
+    newGame(
+      state: ChessGameState,
+      action: PayloadAction<{ gameType: GameTypes }>
+    ) {
       const { gameType } = action.payload;
       const whiteOccupiedTiles: TileId[] = [];
       const blackOccupiedTiles: TileId[] = [];
@@ -81,7 +88,7 @@ const gameSlice = createSlice({
       state.whiteAttackedTiles = whiteOccupiedTiles;
       state.blackAttackedTiles = blackOccupiedTiles;
     },
-    togglePov(state) {
+    togglePov(state: ChessGameState) {
       if (state.pov === "W") {
         state.pov = "B";
         state.currentTurn = "B";
@@ -90,23 +97,65 @@ const gameSlice = createSlice({
         state.currentTurn = "W";
       }
     },
-    selectTile(state, action: PayloadAction<{ tileId: TileId }>) {
+    selectTile(
+      state: ChessGameState,
+      action: PayloadAction<{ tileId: TileId }>
+    ) {
       _clearHighlights(state);
       state.selectedTile = action.payload.tileId;
     },
-    deselect(state) {
+    deselect(state: ChessGameState) {
       _clearHighlights(state);
       state.selectedTile = undefined;
     },
     highlightPossibleMoves(
-      state,
-      action: PayloadAction<{ possibleMoves: TileId[] }>
+      state: ChessGameState,
+      action: PayloadAction<{ pieceId: PieceId; possibleMoves: TileId[] }>
     ) {
-      action.payload.possibleMoves.forEach(
-        (id) => (state.tileMap[id].highlight = true)
-      );
+      const { pieceId, possibleMoves } = action.payload;
+      const {
+        currentTurn,
+        whiteAttackedTiles,
+        blackAttackedTiles,
+        isActiveCheck,
+        checkOriginTiles,
+        checkBlockTiles,
+      } = state;
+
+      // Kings have their own rules
+      if (_getPieceType(pieceId) === "K") {
+        const filterTiles =
+          currentTurn === "W" ? blackAttackedTiles : whiteAttackedTiles;
+        possibleMoves.forEach((id) => {
+          if (!filterTiles.includes(id)) {
+            state.tileMap[id].highlight = true;
+          }
+        });
+        return;
+      }
+
+      // If we're in check, the tiles which can be moved to is limited
+      if (isActiveCheck) {
+        const numCheckingPieces = checkOriginTiles.length;
+        if (numCheckingPieces > 1) {
+          return;
+        } else {
+          possibleMoves.forEach((id) => {
+            if (checkBlockTiles.includes(id)) {
+              state.tileMap[id].highlight = true;
+            }
+          });
+        }
+      } else {
+        possibleMoves.forEach((id) => {
+          state.tileMap[id].highlight = true;
+        });
+      }
     },
-    moveToTile(state, action: PayloadAction<{ targetTileId: TileId }>) {
+    moveToTile(
+      state: ChessGameState,
+      action: PayloadAction<{ targetTileId: TileId }>
+    ) {
       const {
         selectedTile,
         tileMap,
@@ -195,6 +244,23 @@ const gameSlice = createSlice({
         state.blackAttackedTiles = attackedTiles;
       }
     },
+    updateCheckDetails(
+      state,
+      action: PayloadAction<{
+        isActiveCheck: boolean;
+        checkOriginTiles: TileId[];
+        checkBlockTiles: TileId[];
+      }>
+    ) {
+      const {
+        isActiveCheck,
+        checkOriginTiles = [],
+        checkBlockTiles = [],
+      } = action.payload;
+      state.isActiveCheck = isActiveCheck;
+      state.checkOriginTiles = checkOriginTiles;
+      state.checkBlockTiles = checkBlockTiles;
+    },
     switchTurns(state) {
       if (state.currentTurn === "W") {
         state.currentTurn = "B";
@@ -263,6 +329,7 @@ const gameSlice = createSlice({
       });
     },
   },
+  extraReducers: {},
 });
 
 type MyState = ReturnType<typeof gameSlice.reducer>;
