@@ -252,11 +252,12 @@ export const _getPeggedTile = (
 };
 
 /**
- * getPeggedTiles - Takes in the tileMap and returns an arrayof the tiles that are pegged
+ * getPeggedTiles - Takes in the tileMap and returns a mapping of pegged tileIDs to the peg path (i.e. the list
+ * of tileIDs leading from the piece attacking the pegged tile to the pegged tile).
  *
  * @param tileMap
  */
-export const getPeggedTiles = (tileMap: TileMap) => {
+export const getPeggedTileMap = (tileMap: TileMap) => {
   const kingTiles = Object.entries(tileMap).reduce(
     (acc, [tileId, { pieceId }]) => {
       if (pieceId && _getPieceType(pieceId) === "K") {
@@ -320,10 +321,10 @@ export const getPeggedTiles = (tileMap: TileMap) => {
 
         const peggedTile = _getPeggedTile(path, tileMap, kingPlayer);
         if (peggedTile) {
-          return [...acc, peggedTile];
+          acc[peggedTile] = [tileId, ...path];
         }
       }
     }
     return acc;
-  }, []);
+  }, {});
 };

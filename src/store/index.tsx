@@ -35,7 +35,7 @@ interface BoardState {
   selectedTile: TileId | undefined; // the tile selected by the user. Can only ever be their own piece occupied tile
   whiteAttackedTiles: TileId[]; // tiles that white is attacking
   blackAttackedTiles: TileId[]; // tiles that black is attacking
-  peggedTiles: TileId[]; // tiles that are pegged
+  peggedTileMap: Record<TileId, TileId[]>; // Mapping of tiles that are pegged to the peg path
   canCastle: CanCastle; // mapping of which pieces can castle for each side
   canBeEnpassant: TileId | undefined; // the tile that can be taken via enpassant (if any)
 }
@@ -71,7 +71,7 @@ const initialState: ChessGameState = {
     selectedTile: undefined,
     whiteAttackedTiles: [],
     blackAttackedTiles: [],
-    peggedTiles: [],
+    peggedTileMap: {},
     canCastle: { W: [], B: [] },
     canBeEnpassant: undefined,
   },
@@ -227,8 +227,11 @@ const gameSlice = createSlice({
         state.boardState.blackAttackedTiles = attackedTiles;
       }
     },
-    updatePeggedTiles(state, action: PayloadAction<{ peggedTiles: TileId[] }>) {
-      state.boardState.peggedTiles = action.payload.peggedTiles;
+    updatePeggedTileMap(
+      state,
+      action: PayloadAction<{ peggedTileMap: Record<TileId, TileId[]> }>
+    ) {
+      state.boardState.peggedTileMap = action.payload.peggedTileMap;
     },
     updateCheckDetails(
       state,

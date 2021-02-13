@@ -10,7 +10,7 @@ import {
   _getRelativePos,
   _getAttackedTilesMap,
   _getCheckMoveTiles,
-  getPeggedTiles,
+  getPeggedTileMap,
 } from "../utils";
 import { AnyAction } from "@reduxjs/toolkit";
 import { Epic } from "redux-observable";
@@ -27,7 +27,6 @@ export type GameEpic = Epic<AnyAction, AnyAction, ChessGameState>;
  * @param player
  * @param pieceId
  * @param tileId
- * @param peggedTiles
  * @param whiteAttackedTiles
  * @param blackAttackedTiles
  * @param tileMap
@@ -38,7 +37,6 @@ const determinePossibleMoves = (
   player: Player,
   pieceId: PieceId,
   tileId: TileId,
-  peggedTiles: TileId[],
   whiteAttackedTiles: TileId[],
   blackAttackedTiles: TileId[],
   tileMap: TileMap,
@@ -66,7 +64,7 @@ const selectTileEpic: GameEpic = (action$, state$) =>
         currentTurn,
         boardState: {
           tileMap,
-          peggedTiles,
+          peggedTileMap,
           whiteAttackedTiles,
           blackAttackedTiles,
           canCastle,
@@ -76,14 +74,13 @@ const selectTileEpic: GameEpic = (action$, state$) =>
       } = state$.value;
 
       const pieceId = tileMap[tileId].pieceId!;
-      const isPegged = peggedTiles.includes(tileId);
+      const isPegged = Object.keys(peggedTileMap).includes(tileId);
       const possibleMoves: TileId[] = [];
 
       const allPossibleMoves = determinePossibleMoves(
         currentTurn,
         pieceId,
         tileId,
-        peggedTiles,
         whiteAttackedTiles,
         blackAttackedTiles,
         tileMap,
@@ -105,7 +102,12 @@ const selectTileEpic: GameEpic = (action$, state$) =>
             ...allPossibleMoves.filter((id) => checkBlockTiles.includes(id))
           );
         }
-      } else if (!isPegged) {
+      } else if (isPegged) {
+        const peggedPath = peggedTileMap[tileId];
+        possibleMoves.push(
+          ...allPossibleMoves.filter((id) => peggedPath.includes(id))
+        );
+      } else {
         possibleMoves.push(...allPossibleMoves);
       }
 
@@ -151,7 +153,7 @@ const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
       )?.[0]!;
 
       const attackedTilesMap = _getAttackedTilesMap(player, tileMap);
-      const peggedTiles = getPeggedTiles(tileMap);
+      const peggedTileMap = getPeggedTileMap(tileMap);
 
       Object.entries(attackedTilesMap).forEach(
         ([tileId, { pieceId, attackedTiles }]) => {
@@ -177,7 +179,7 @@ const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
           checkOriginTiles,
           checkBlockTiles,
         }),
-        actions.updatePeggedTiles({ peggedTiles }),
+        actions.updatePeggedTileMap({ peggedTileMap }),
       ];
 
       // This needs to be run before movedPieces is updated
