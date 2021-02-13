@@ -221,62 +221,6 @@ export const kingMoves: MoveFunction = (
   return [...regularMoves, ...castleMoves];
 };
 
-interface AttackedTileObject {
-  pieceId: PieceId;
-  attackedTiles: TileId[];
-}
-
-type GetAttackedTilesMap = (
-  player: Player,
-  tileMap: TileMap
-) => Record<TileId, AttackedTileObject>;
-
-export const getAttackedTilesMap: GetAttackedTilesMap = (player, tileMap) =>
-  Object.entries(tileMap)
-    .filter(([, { pieceId }]) => pieceId && _getPlayer(pieceId) === player)
-    .reduce((acc, [tileId, { pieceId }]) => {
-      const pieceType = _getPieceType(pieceId!);
-      const moveFunc = pieceToMoveMap[pieceType];
-      const attackedTiles = moveFunc(player, tileId, tileMap, true);
-      acc[tileId] = { pieceId, attackedTiles };
-      return acc;
-    }, {});
-
-export const getCheckMoveTiles = (
-  player: Player,
-  pieceId: PieceId,
-  origin: TileId,
-  destination: TileId
-) => {
-  const pieceType = _getPieceType(pieceId);
-  const board = _getBoard(player);
-  // @ts-ignore
-  const [originX, originY] = _getRelativePos(player, origin);
-  // @ts-ignore
-  const [destX, destY] = _getRelativePos(player, destination);
-
-  if (pieceType === "P" || pieceType === "N") {
-    return [origin];
-  } else {
-    const yOffset = destY - originY;
-    const xOffset = destX - originX;
-
-    // horizontal case
-    if (yOffset === 0) {
-      return range(originX, destX).map((n) => _getTile(board, n, originY));
-    } else if (xOffset === 0) {
-      return range(originY, destY).map((n) => _getTile(board, originX, n));
-    } else {
-      const xOffsets = range(0, xOffset);
-      const yOffsets = range(0, yOffset);
-
-      return xOffsets.map((n, i) =>
-        _getTile(board, originX + n, originY + yOffsets[i])
-      );
-    }
-  }
-};
-
 export const pieceToMoveMap = {
   P: pawnMoves,
   R: rookMoves,

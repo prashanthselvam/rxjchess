@@ -6,8 +6,12 @@ import { useSelector } from "react-redux";
 
 const Chessboard = () => {
   const pov = useSelector((state) => state.pov);
-  const whiteAttackedTiles = useSelector((state) => state.whiteAttackedTiles);
-  const blackAttackedTiles = useSelector((state) => state.blackAttackedTiles);
+  const whiteAttackedTiles = useSelector(
+    (state) => state.boardState.whiteAttackedTiles
+  );
+  const blackAttackedTiles = useSelector(
+    (state) => state.boardState.blackAttackedTiles
+  );
 
   const togglePovClick = () => store.dispatch(actions.togglePov());
   const startNewGame = () =>

@@ -47,9 +47,11 @@ const Highlight = ({ canTake }) => {
 
 const Tile = ({ id, xPos, yPos }: TileProps) => {
   const currentTurn = useSelector((state) => state.currentTurn);
-  const selectedTile = useSelector((state) => state.selectedTile);
-  const isActiveCheck = useSelector((state) => state.isActiveCheck);
-  const { pieceId, highlight } = useSelector((state) => state.tileMap[id]);
+  const selectedTile = useSelector((state) => state.boardState.selectedTile);
+  const { pieceId, highlight } = useSelector(
+    (state) => state.boardState.tileMap[id]
+  );
+  const isActiveCheck = useSelector((state) => state.checkState.isActiveCheck);
 
   const isSelected = selectedTile === id;
   const isSelectable = pieceId && _getPlayer(pieceId) === currentTurn;

@@ -2,16 +2,15 @@ import { filter, mergeMap, pluck } from "rxjs/operators";
 import { actions, ChessGameState, TileMap } from "../index";
 import { PieceId, TileId, TILES } from "../../types/constants";
 import { of } from "rxjs";
-import {
-  getAttackedTilesMap,
-  getCheckMoveTiles,
-  pieceToMoveMap,
-} from "src/store/moveFunctions";
+import { pieceToMoveMap } from "src/store/moveFunctions";
 import {
   _getBoard,
   _getPieceType,
   _getPlayer,
   _getRelativePos,
+  _getAttackedTilesMap,
+  _getCheckMoveTiles,
+  getPeggedTiles,
 } from "../utils";
 import { AnyAction } from "@reduxjs/toolkit";
 import { Epic } from "redux-observable";
@@ -28,9 +27,12 @@ export type GameEpic = Epic<AnyAction, AnyAction, ChessGameState>;
  * @param player
  * @param pieceId
  * @param tileId
- // * @param whiteOccupiedTiles
- // * @param blackOccupiedTiles
- // * @param peggedTiles
+ * @param peggedTiles
+ * @param whiteAttackedTiles
+ * @param blackAttackedTiles
+ * @param tileMap
+ * @param canCastle
+ * @param canBeEnpassant
  */
 const determinePossibleMoves = (
   player: Player,
@@ -62,17 +64,22 @@ const selectTileEpic: GameEpic = (action$, state$) =>
     mergeMap(({ tileId }) => {
       const {
         currentTurn,
-        tileMap,
-        peggedTiles,
-        whiteAttackedTiles,
-        blackAttackedTiles,
-        canCastle,
-        canBeEnpassant,
+        boardState: {
+          tileMap,
+          peggedTiles,
+          whiteAttackedTiles,
+          blackAttackedTiles,
+          canCastle,
+          canBeEnpassant,
+        },
+        checkState: { isActiveCheck, checkOriginTiles, checkBlockTiles },
       } = state$.value;
 
       const pieceId = tileMap[tileId].pieceId!;
+      const isPegged = peggedTiles.includes(tileId);
+      const possibleMoves: TileId[] = [];
 
-      const possibleMoves = determinePossibleMoves(
+      const allPossibleMoves = determinePossibleMoves(
         currentTurn,
         pieceId,
         tileId,
@@ -84,6 +91,24 @@ const selectTileEpic: GameEpic = (action$, state$) =>
         canBeEnpassant
       );
 
+      if (_getPieceType(pieceId) === "K") {
+        const filterTiles =
+          currentTurn === "W" ? blackAttackedTiles : whiteAttackedTiles;
+
+        possibleMoves.push(
+          ...allPossibleMoves.filter((id) => !filterTiles.includes(id))
+        );
+      } else if (isActiveCheck) {
+        const numCheckingPieces = checkOriginTiles.length;
+        if (numCheckingPieces === 1) {
+          possibleMoves.push(
+            ...allPossibleMoves.filter((id) => checkBlockTiles.includes(id))
+          );
+        }
+      } else if (!isPegged) {
+        possibleMoves.push(...allPossibleMoves);
+      }
+
       return of(actions.highlightPossibleMoves({ pieceId, possibleMoves }));
     })
   );
@@ -93,23 +118,27 @@ const postMoveCleanupEpic: GameEpic = (action$, state$) =>
     filter(actions.moveToTile.match),
     pluck("payload"),
     mergeMap(({ targetTileId }) => {
-      const { tileMap } = state$.value;
+      const {
+        boardState: { tileMap },
+      } = state$.value;
       const pieceId = tileMap[targetTileId].pieceId!;
 
       return of(
         actions.deselect(),
         actions.switchTurns(),
-        actions.runPostMoveCalcs({ pieceId, targetTileId })
+        actions.runPostCleanupCalcs({ pieceId, targetTileId })
       );
     })
   );
 
 const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
   action$.pipe(
-    filter(actions.runPostMoveCalcs.match),
+    filter(actions.runPostCleanupCalcs.match),
     pluck("payload"),
     mergeMap(({ pieceId, targetTileId }) => {
-      const { tileMap } = state$.value;
+      const {
+        boardState: { tileMap },
+      } = state$.value;
       const player = _getPlayer(pieceId);
 
       const allAttackedTiles: TileId[] = [];
@@ -121,14 +150,15 @@ const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
         ([_, { pieceId }]) => pieceId === opponentKing
       )?.[0]!;
 
-      const attackedTilesMap = getAttackedTilesMap(player, tileMap);
+      const attackedTilesMap = _getAttackedTilesMap(player, tileMap);
+      const peggedTiles = getPeggedTiles(tileMap);
 
       Object.entries(attackedTilesMap).forEach(
         ([tileId, { pieceId, attackedTiles }]) => {
           if (attackedTiles.includes(opponentKingTile)) {
             checkOriginTiles.push(tileId);
             checkBlockTiles.push(
-              ...getCheckMoveTiles(player, pieceId, tileId, opponentKingTile)
+              ..._getCheckMoveTiles(player, pieceId, tileId, opponentKingTile)
             );
           }
           allAttackedTiles.push(...attackedTiles);
@@ -147,6 +177,7 @@ const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
           checkOriginTiles,
           checkBlockTiles,
         }),
+        actions.updatePeggedTiles({ peggedTiles }),
       ];
 
       // This needs to be run before movedPieces is updated
