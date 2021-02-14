@@ -52,6 +52,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
   const { pieceId, highlight } = useSelector(
     (state) => state.boardState.tileMap[id]
   );
+
   const isActiveCheck = useSelector((state) => state.checkState.isActiveCheck);
 
   const isGameInProgress = gameStatus === "IN PROGRESS";
