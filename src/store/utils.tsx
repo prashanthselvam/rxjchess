@@ -142,6 +142,42 @@ export const _getPossibleMoves = (
   return allMoves;
 };
 
+/**
+ * determinePossibleMoves - Receives information about the piece that might move, where it is,
+ * and which tiles on the board are occupied by which team. It then determines which tiles the
+ * piece can move to.
+ *
+ * @param player
+ * @param pieceId
+ * @param tileId
+ * @param whiteAttackedTiles
+ * @param blackAttackedTiles
+ * @param tileMap
+ * @param canCastle
+ * @param canBeEnpassant
+ */
+export const determinePossibleMoves = (
+  player: Player,
+  pieceId: PieceId,
+  tileId: TileId,
+  whiteAttackedTiles: TileId[],
+  blackAttackedTiles: TileId[],
+  tileMap: TileMap,
+  canCastle,
+  canBeEnpassant
+) => {
+  const pieceType = _getPieceType(pieceId);
+  const movesFunc = pieceToMoveMap?.[pieceType];
+  const attackedTiles =
+    player === "W" ? blackAttackedTiles : whiteAttackedTiles;
+
+  return movesFunc(player, tileId, tileMap, false, {
+    canCastle,
+    canBeEnpassant,
+    attackedTiles,
+  });
+};
+
 interface AttackedTileObject {
   pieceId: PieceId;
   attackedTiles: TileId[];

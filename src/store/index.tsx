@@ -47,7 +47,8 @@ interface CheckState {
 }
 
 export interface ChessGameState {
-  status: GameStatus;
+  gameStatus: GameStatus;
+  winner: Player | undefined;
   currentTurn: Player;
   pov: Player;
   movesState: MovesState;
@@ -60,7 +61,8 @@ const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
 }, {});
 
 const initialState: ChessGameState = {
-  status: "NOT STARTED",
+  gameStatus: "NOT STARTED",
+  winner: undefined,
   currentTurn: "W",
   pov: "W",
   movesState: {
@@ -109,6 +111,14 @@ const gameSlice = createSlice({
       state.boardState.whiteAttackedTiles = whiteOccupiedTiles;
       state.boardState.blackAttackedTiles = blackOccupiedTiles;
     },
+    endGame(state: ChessGameState, action: PayloadAction<{ winner?: Player }>) {
+      state.gameStatus = "GAME OVER";
+      state.winner = action.payload?.winner;
+    },
+    determineCheckmate(
+      state: ChessGameState,
+      action: PayloadAction<{ player: Player }>
+    ) {},
     togglePov(state: ChessGameState) {
       if (state.pov === "W") {
         state.pov = "B";
@@ -206,10 +216,13 @@ const gameSlice = createSlice({
       }
     },
     runPostCleanupCalcs(
-      state,
+      state: ChessGameState,
       action: PayloadAction<{ pieceId: PieceId; targetTileId: TileId }>
     ) {},
-    updateMovedPieces(state, action: PayloadAction<{ pieceId: PieceId }>) {
+    updateMovedPieces(
+      state: ChessGameState,
+      action: PayloadAction<{ pieceId: PieceId }>
+    ) {
       const { pieceId } = action.payload;
       state.movesState.movedPieces = {
         ...state.movesState.movedPieces,
@@ -217,7 +230,7 @@ const gameSlice = createSlice({
       };
     },
     updateAttackedTiles(
-      state,
+      state: ChessGameState,
       action: PayloadAction<{ player: Player; attackedTiles: TileId[] }>
     ) {
       const { player, attackedTiles } = action.payload;
@@ -228,13 +241,13 @@ const gameSlice = createSlice({
       }
     },
     updatePeggedTileMap(
-      state,
+      state: ChessGameState,
       action: PayloadAction<{ peggedTileMap: Record<TileId, TileId[]> }>
     ) {
       state.boardState.peggedTileMap = action.payload.peggedTileMap;
     },
     updateCheckDetails(
-      state,
+      state: ChessGameState,
       action: PayloadAction<{
         isActiveCheck: boolean;
         checkOriginTiles: TileId[];
@@ -250,7 +263,7 @@ const gameSlice = createSlice({
       state.checkState.checkOriginTiles = checkOriginTiles;
       state.checkState.checkBlockTiles = checkBlockTiles;
     },
-    switchTurns(state) {
+    switchTurns(state: ChessGameState) {
       if (state.currentTurn === "W") {
         state.currentTurn = "B";
       } else {
@@ -258,7 +271,7 @@ const gameSlice = createSlice({
       }
     },
     determineEnpassantEligibility(
-      state,
+      state: ChessGameState,
       action: PayloadAction<{ pieceId: PieceId; targetTileId: TileId }>
     ) {
       const { pieceId, targetTileId } = action.payload;
@@ -277,7 +290,7 @@ const gameSlice = createSlice({
         }
       }
     },
-    determineCastleEligibility(state) {
+    determineCastleEligibility(state: ChessGameState) {
       const {
         movesState: { movedPieces },
         boardState: { tileMap },
@@ -323,7 +336,6 @@ const gameSlice = createSlice({
       });
     },
   },
-  extraReducers: {},
 });
 
 type MyState = ReturnType<typeof gameSlice.reducer>;

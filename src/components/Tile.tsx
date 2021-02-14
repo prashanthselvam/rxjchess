@@ -46,6 +46,7 @@ const Highlight = ({ canTake }) => {
 };
 
 const Tile = ({ id, xPos, yPos }: TileProps) => {
+  const gameStatus = useSelector((state) => state.gameStatus);
   const currentTurn = useSelector((state) => state.currentTurn);
   const selectedTile = useSelector((state) => state.boardState.selectedTile);
   const { pieceId, highlight } = useSelector(
@@ -53,8 +54,10 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
   );
   const isActiveCheck = useSelector((state) => state.checkState.isActiveCheck);
 
+  const isGameInProgress = gameStatus === "IN PROGRESS";
   const isSelected = selectedTile === id;
-  const isSelectable = pieceId && _getPlayer(pieceId) === currentTurn;
+  const isSelectable =
+    isGameInProgress && pieceId && _getPlayer(pieceId) === currentTurn;
   const isKingTile = pieceId && _getPieceType(pieceId) === "K";
 
   const checkHighlight = isActiveCheck && isSelectable && isKingTile;

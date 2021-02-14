@@ -1,16 +1,15 @@
 import { filter, mergeMap, pluck } from "rxjs/operators";
-import { actions, ChessGameState, TileMap } from "../index";
-import { PieceId, TileId, TILES } from "../../types/constants";
-import { of } from "rxjs";
-import { pieceToMoveMap } from "src/store/moveFunctions";
+import { actions, ChessGameState } from "../index";
+import { TileId } from "src/types/constants";
+import { iif, of } from "rxjs";
 import {
-  _getBoard,
   _getPieceType,
   _getPlayer,
-  _getRelativePos,
   _getAttackedTilesMap,
   _getCheckMoveTiles,
   getPeggedTileMap,
+  determinePossibleMoves,
+  _getOpponent,
 } from "../utils";
 import { AnyAction } from "@reduxjs/toolkit";
 import { Epic } from "redux-observable";
@@ -18,42 +17,6 @@ import { Epic } from "redux-observable";
 const consoleLog = (x) => console.log(x);
 
 export type GameEpic = Epic<AnyAction, AnyAction, ChessGameState>;
-
-/**
- * determinePossibleMoves - Receives information about the piece that might move, where it is,
- * and which tiles on the board are occupied by which team. It then determines which tiles the
- * piece can move to.
- *
- * @param player
- * @param pieceId
- * @param tileId
- * @param whiteAttackedTiles
- * @param blackAttackedTiles
- * @param tileMap
- * @param canCastle
- * @param canBeEnpassant
- */
-const determinePossibleMoves = (
-  player: Player,
-  pieceId: PieceId,
-  tileId: TileId,
-  whiteAttackedTiles: TileId[],
-  blackAttackedTiles: TileId[],
-  tileMap: TileMap,
-  canCastle,
-  canBeEnpassant
-) => {
-  const pieceType = _getPieceType(pieceId);
-  const movesFunc = pieceToMoveMap?.[pieceType];
-  const attackedTiles =
-    player === "W" ? blackAttackedTiles : whiteAttackedTiles;
-
-  return movesFunc(player, tileId, tileMap, false, {
-    canCastle,
-    canBeEnpassant,
-    attackedTiles,
-  });
-};
 
 const selectTileEpic: GameEpic = (action$, state$) =>
   action$.pipe(
@@ -95,6 +58,11 @@ const selectTileEpic: GameEpic = (action$, state$) =>
         possibleMoves.push(
           ...allPossibleMoves.filter((id) => !filterTiles.includes(id))
         );
+      } else if (isPegged) {
+        const peggedPath = peggedTileMap[tileId];
+        possibleMoves.push(
+          ...allPossibleMoves.filter((id) => peggedPath.includes(id))
+        );
       } else if (isActiveCheck) {
         const numCheckingPieces = checkOriginTiles.length;
         if (numCheckingPieces === 1) {
@@ -102,11 +70,6 @@ const selectTileEpic: GameEpic = (action$, state$) =>
             ...allPossibleMoves.filter((id) => checkBlockTiles.includes(id))
           );
         }
-      } else if (isPegged) {
-        const peggedPath = peggedTileMap[tileId];
-        possibleMoves.push(
-          ...allPossibleMoves.filter((id) => peggedPath.includes(id))
-        );
       } else {
         possibleMoves.push(...allPossibleMoves);
       }
@@ -167,6 +130,8 @@ const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
         }
       );
 
+      const isActiveCheck = !!checkOriginTiles.length;
+
       const calcActions: AnyAction[] = [
         actions.updateMovedPieces({ pieceId }),
         actions.determineCastleEligibility(),
@@ -174,13 +139,15 @@ const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
           player,
           attackedTiles: allAttackedTiles,
         }),
+        actions.updatePeggedTileMap({ peggedTileMap }),
         actions.updateCheckDetails({
-          isActiveCheck: !!checkOriginTiles.length,
+          isActiveCheck,
           checkOriginTiles,
           checkBlockTiles,
         }),
-        actions.updatePeggedTileMap({ peggedTileMap }),
       ];
+
+      isActiveCheck && calcActions.push(actions.determineCheckmate({ player }));
 
       // This needs to be run before movedPieces is updated
       _getPieceType(pieceId) === "P" &&
@@ -192,6 +159,76 @@ const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
     })
   );
 
-const gameEpics = [selectTileEpic, postMoveCleanupEpic, postCleanupCalcsEpic];
+const determineCheckmateEpic: GameEpic = (action$, state$) =>
+  action$.pipe(
+    filter(actions.determineCheckmate.match),
+    pluck("payload"),
+    mergeMap(({ player }) => {
+      const {
+        boardState: {
+          tileMap,
+          blackAttackedTiles,
+          whiteAttackedTiles,
+          peggedTileMap,
+          canBeEnpassant,
+          canCastle,
+        },
+        checkState: { checkBlockTiles, checkOriginTiles },
+      } = state$.value;
+
+      const checkedPlayer = player === "W" ? "B" : "W";
+
+      const checkmate = Object.entries(tileMap)
+        .filter(
+          ([, { pieceId }]) => pieceId && _getPlayer(pieceId) === checkedPlayer
+        )
+        .every(([tileId, { pieceId }]) => {
+          const isPegged = Object.keys(peggedTileMap).includes(tileId);
+          const allPossibleMoves = determinePossibleMoves(
+            checkedPlayer,
+            pieceId!,
+            tileId,
+            whiteAttackedTiles,
+            blackAttackedTiles,
+            tileMap,
+            canCastle,
+            canBeEnpassant
+          );
+
+          let numPossibleMoves = 0;
+
+          if (_getPieceType(pieceId!) === "K") {
+            const filterTiles =
+              checkedPlayer === "W" ? blackAttackedTiles : whiteAttackedTiles;
+
+            numPossibleMoves += allPossibleMoves.filter(
+              (id) => !filterTiles.includes(id)
+            ).length;
+          } else if (isPegged) {
+            const peggedPath = peggedTileMap[tileId];
+            numPossibleMoves += allPossibleMoves.filter((id) =>
+              peggedPath.includes(id)
+            ).length;
+          } else {
+            const numCheckingPieces = checkOriginTiles.length;
+            if (numCheckingPieces === 1) {
+              numPossibleMoves += allPossibleMoves.filter((id) =>
+                checkBlockTiles.includes(id)
+              ).length;
+            }
+          }
+          return numPossibleMoves === 0;
+        });
+
+      return iif(() => checkmate, of(actions.endGame({ winner: player })));
+    })
+  );
+
+const gameEpics = [
+  selectTileEpic,
+  postMoveCleanupEpic,
+  postCleanupCalcsEpic,
+  determineCheckmateEpic,
+];
 
 export default gameEpics;
