@@ -110,6 +110,7 @@ const gameSlice = createSlice({
       state.currentTurn = "W";
       state.boardState.whiteAttackedTiles = whiteOccupiedTiles;
       state.boardState.blackAttackedTiles = blackOccupiedTiles;
+      state.gameStatus = "IN PROGRESS";
     },
     endGame(state: ChessGameState, action: PayloadAction<{ winner?: Player }>) {
       state.gameStatus = "GAME OVER";
