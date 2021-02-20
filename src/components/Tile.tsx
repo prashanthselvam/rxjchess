@@ -18,7 +18,7 @@ const Highlight = ({ canTake }) => {
   if (canTake) {
     return (
       <div
-          css={{
+        css={{
           position: "absolute",
           width: 66,
           height: 66,
@@ -105,8 +105,8 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
     <div
       css={{
         position: "relative",
-        height: 70,
-        width: 70,
+        height: "100%",
+        width: "12.5%",
         backgroundColor: isSelected
           ? "#67ae68"
           : (xPos + yPos) % 2 === 0
