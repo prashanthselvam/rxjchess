@@ -1,14 +1,25 @@
 import PlayingSurface from "./PlayingSurface";
 import Drawer from "./Drawer";
 import React from "react";
+import { css } from "@emotion/react";
+import { useSelector } from "react-redux";
 
 const Chessboard = () => {
-  const length = 700;
+  const [boardWidth, setBoardWidth] = React.useState("80%");
+
+  const gameStatus = useSelector((state) => state.gameStatus);
+  const isGameInProgress = gameStatus === "IN PROGRESS";
+
+  const styles = css`
+    transition: all 0.5s;
+    width: ${isGameInProgress ? "44%" : "80%"};
+    margin-top: ${isGameInProgress ? "inherit" : "-66%"};
+  `;
 
   return (
-    <div>
-      <PlayingSurface length={length} />
-      <Drawer length={length} />
+    <div css={styles}>
+      <PlayingSurface />
+      <Drawer />
     </div>
   );
 };

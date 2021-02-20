@@ -26,10 +26,10 @@ const GameOptions = () => {
 
   return (
     <div>
-      {/*<button onClick={togglePovClick}>Toggle POV</button>*/}
-      {/*<button onClick={startNewGame}>New Game</button>*/}
-      {/*<button onClick={() => showAttackedTiles("W")}>White Attacked</button>*/}
-      {/*<button onClick={() => showAttackedTiles("B")}>Black Attacked</button>*/}
+      <button onClick={togglePovClick}>Toggle POV</button>
+      <button onClick={startNewGame}>New Game</button>
+      <button onClick={() => showAttackedTiles("W")}>White Attacked</button>
+      <button onClick={() => showAttackedTiles("B")}>Black Attacked</button>
     </div>
   );
 };

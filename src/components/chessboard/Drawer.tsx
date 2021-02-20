@@ -1,5 +1,7 @@
 import React from "react";
 import { css } from "@emotion/react";
+import { actions, store } from "src/store";
+import { useSelector } from "react-redux";
 
 const DrawerHandle = ({ onClick, handleText }) => {
   return (
@@ -20,15 +22,41 @@ const DrawerHandle = ({ onClick, handleText }) => {
   );
 };
 
-const Drawer = ({ length }) => {
+const DrawerOption = ({ text }) => {
+  const startNewGame = () =>
+    store.dispatch(actions.newGame({ gameType: "REGULAR" }));
+
+  return (
+    <div
+      onClick={startNewGame}
+      css={{
+        backgroundColor: "rgb(255,255,255, 0.4)",
+        padding: "15px",
+        height: "80%",
+        border: "1px solid black",
+      }}
+    >
+      {text}
+    </div>
+  );
+};
+
+const Drawer = () => {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
+  const gameStatus = useSelector((state) => state.gameStatus);
 
   const handleOnClick = () => {
     setIsOpen(!isOpen);
   };
 
+  React.useEffect(() => {
+    if (gameStatus === "IN PROGRESS") {
+      setIsOpen(false);
+    }
+  }, [gameStatus]);
+
   const containerStyles = css`
-    width: ${length}px;
+    width: "100%";
     height: 300px;
     position: relative;
     text-align: center;
@@ -41,21 +69,25 @@ const Drawer = ({ length }) => {
       <div
         css={{
           height: "100%",
-          backgroundColor: "rgba(215, 23, 23, 1)",
+          backgroundColor: "rgb(27,84,1)",
+          display: "flex",
+          justifyContent: "center",
           zIndex: -1,
+          // padding: 5,
         }}
       >
-        <span
+        <div
           css={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            display: "inline-block",
+            display: "flex",
+            width: "90%",
+            justifyContent: "space-between",
+            marginTop: 10,
           }}
         >
-          DRAWER
-        </span>
+          <DrawerOption text="NEW GAME" />
+          <DrawerOption text="NEW GAME" />
+          <DrawerOption text="NEW GAME" />
+        </div>
       </div>
       <DrawerHandle
         onClick={handleOnClick}

@@ -3,7 +3,7 @@ import Tile from "../Tile";
 import { useSelector } from "react-redux";
 import React from "react";
 
-const PlayingSurface = ({ length }) => {
+const PlayingSurface = () => {
   const pov = useSelector((state) => state.pov);
 
   const drawRow = (yPos) => {
@@ -28,8 +28,8 @@ const PlayingSurface = ({ length }) => {
   return (
     <div
       css={{
-        width: length,
-        height: length,
+        width: "100%",
+        paddingTop: "100%",
         backgroundColor: "rgba(0, 0, 0, 1)",
         position: "relative",
         textAlign: "center",

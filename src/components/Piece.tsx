@@ -19,11 +19,12 @@ const Piece = ({ pieceId }: PieceProps) => {
 
   return (
     <div
-      style={{
+      css={{
         position: "absolute",
         top: "50%",
         left: "50%",
-        margin: "-31.5px 0 0 -31.5px",
+        transform: "translate(-50%, -50%)",
+        width: "90%",
       }}
     >
       <Image
