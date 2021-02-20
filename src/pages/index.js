@@ -1,7 +1,5 @@
 import * as React from "react";
-import Chessboard from "src/components/Chessboard";
-import { Provider } from "react-redux";
-import { store } from "src/store";
+import App from "src/components/App";
 
 // styles
 const pageStyles = {
@@ -15,9 +13,7 @@ const IndexPage = () => {
   return (
     <main style={pageStyles}>
       <title>Crazy Chess!</title>
-      <Provider store={store}>
-        <Chessboard />
-      </Provider>
+      <App />
     </main>
   );
 };

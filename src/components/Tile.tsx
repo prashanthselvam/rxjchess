@@ -5,6 +5,8 @@ import { TileId } from "src/types/constants";
 import { useSelector } from "react-redux";
 import { store, actions } from "src/store";
 import { _getPieceType, _getPlayer } from "../store/utils";
+// import { usePubNub } from "pubnub-react";
+import { useEffect, useState } from "react";
 
 interface TileProps {
   id: TileId;
@@ -16,7 +18,7 @@ const Highlight = ({ canTake }) => {
   if (canTake) {
     return (
       <div
-        css={{
+          css={{
           position: "absolute",
           width: 66,
           height: 66,
@@ -45,6 +47,31 @@ const Highlight = ({ canTake }) => {
   }
 };
 
+// const usePubnubProcess = () => {
+//   const pubnub = usePubNub();
+//   const [channels] = useState(["awesome-channel"]);
+//   const [messageToSend, setMessageToSend] = useState<undefined | string>(
+//     undefined
+//   );
+//
+//   const handleReceivedMessage = (event) => {
+//     console.log(event);
+//   };
+//
+//   useEffect(() => {
+//     if (messageToSend) {
+//       pubnub.publish({ channel: channels[0], message: messageToSend });
+//     }
+//   }, [messageToSend]);
+//
+//   useEffect(() => {
+//     pubnub.addListener({ message: handleReceivedMessage });
+//     pubnub.subscribe({ channels });
+//   }, [pubnub, channels]);
+//
+//   return { setMessageToSend };
+// };
+
 const Tile = ({ id, xPos, yPos }: TileProps) => {
   const gameStatus = useSelector((state) => state.gameStatus);
   const currentTurn = useSelector((state) => state.currentTurn);
@@ -52,6 +79,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
   const { pieceId, highlight } = useSelector(
     (state) => state.boardState.tileMap[id]
   );
+  // const { setMessageToSend } = usePubnubProcess();
 
   const isActiveCheck = useSelector((state) => state.checkState.isActiveCheck);
 

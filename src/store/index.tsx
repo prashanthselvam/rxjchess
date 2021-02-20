@@ -150,21 +150,22 @@ const gameSlice = createSlice({
     },
     moveToTile(
       state: ChessGameState,
-      action: PayloadAction<{ targetTileId: TileId }>
+      action: PayloadAction<{ targetTileId: TileId; sourceTileId?: TileId }>
     ) {
       const {
         currentTurn,
         boardState: { selectedTile, tileMap, canBeEnpassant },
         movesState: { movedPieces },
       } = state;
-      const { targetTileId } = action.payload;
+      const { targetTileId, sourceTileId } = action.payload;
       const pieceId = tileMap[selectedTile!].pieceId!;
       const board = _getBoard(currentTurn);
+      const sourceId = sourceTileId || selectedTile;
 
       // Update tile map based on where we're moving the piece
       state.boardState.tileMap = {
         ...tileMap,
-        [selectedTile!]: { pieceId: undefined, highlight: false },
+        [sourceId!]: { pieceId: undefined, highlight: false },
         [targetTileId]: {
           pieceId,
           highlight: false,
