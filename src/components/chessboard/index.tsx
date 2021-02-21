@@ -8,12 +8,15 @@ const Chessboard = () => {
   const [boardWidth, setBoardWidth] = React.useState("80%");
 
   const gameStatus = useSelector((state) => state.gameStatus);
-  const isGameInProgress = gameStatus === "IN PROGRESS";
+  const isGameInitializingOrInProgress = [
+    "IN PROGRESS",
+    "INITIALIZING",
+  ].includes(gameStatus);
 
   const styles = css`
     transition: all 0.5s;
-    width: ${isGameInProgress ? "44%" : "80%"};
-    margin-top: ${isGameInProgress ? "inherit" : "-66%"};
+    width: ${isGameInitializingOrInProgress ? "44%" : "80%"};
+    margin-top: ${isGameInitializingOrInProgress ? "15px" : "-66%"};
   `;
 
   return (

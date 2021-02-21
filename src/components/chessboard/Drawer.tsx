@@ -40,8 +40,13 @@ const DrawerHandle = ({ onClick, handleText }) => {
 };
 
 const DrawerOption = ({ text }) => {
-  const startNewGame = () =>
-    store.dispatch(actions.newGame({ gameType: "REGULAR" }));
+  const startNewGame = () => {
+    store.dispatch(actions.initializeGame());
+    setTimeout(
+      () => store.dispatch(actions.newGame({ gameType: "REGULAR" })),
+      700
+    );
+  };
 
   return (
     <button
@@ -169,13 +174,17 @@ const DrawerBase = ({ isOpen, ...props }) => {
 const Drawer = () => {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const gameStatus = useSelector((state) => state.gameStatus);
+  const isGameInitializingOrInProgress = [
+    "IN PROGRESS",
+    "INITIALIZING",
+  ].includes(gameStatus);
 
   const handleOnClick = () => {
     setIsOpen(!isOpen);
   };
 
   React.useEffect(() => {
-    if (gameStatus === "IN PROGRESS") {
+    if (isGameInitializingOrInProgress) {
       setIsOpen(false);
     }
   }, [gameStatus]);

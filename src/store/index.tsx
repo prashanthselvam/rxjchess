@@ -88,6 +88,9 @@ const gameSlice = createSlice({
   name: "gameSlice",
   initialState: initialState,
   reducers: {
+    initializeGame(state: ChessGameState) {
+      state.gameStatus = "INITIALIZING";
+    },
     newGame(
       state: ChessGameState,
       action: PayloadAction<{ gameType: GameTypes }>
