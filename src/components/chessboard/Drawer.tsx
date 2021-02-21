@@ -8,17 +8,19 @@ import styled from "@emotion/styled";
 import Image from "../image";
 
 const DrawerHandle = ({ onClick, handleText }) => {
+  const style = css`
+    display: inline-block;
+    transition: all 0.2s;
+    position: relative;
+    font-family: "PT Sans";
+    font-size: 5rem;
+    margin-top: 9rem;
+    color: white;
+  `;
+
   return (
     <div>
-      <span
-        onClick={onClick}
-        css={{
-          display: "inline-block",
-          color: "white",
-          marginTop: "10rem",
-          fontSize: "5rem",
-        }}
-      >
+      <span onClick={onClick} className={"btn"} css={style}>
         {handleText}
       </span>
       <Image
