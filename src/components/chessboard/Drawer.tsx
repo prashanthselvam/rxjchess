@@ -30,17 +30,25 @@ const DrawerOption = ({ text }) => {
     store.dispatch(actions.newGame({ gameType: "REGULAR" }));
 
   return (
-    <div
+    <button
       onClick={startNewGame}
       css={{
-        backgroundColor: "rgb(255,255,255, 0.4)",
+        backgroundColor: "rgba(255,255,255,0.85)",
+        borderRadius: 15,
         padding: "15px",
         height: "80%",
-        border: "1px solid black",
+        width: "25%",
+        border: "none",
+        textDecoration: "none",
+        "&:hover": {
+          transform: "translateY(-.3rem)",
+          boxShadow: "0 1rem 2rem rgba(0,0,0,.2)",
+          cursor: "pointer",
+        },
       }}
     >
       {text}
-    </div>
+    </button>
   );
 };
 
@@ -48,10 +56,10 @@ const DrawerBase = ({ isOpen, ...props }) => {
   const data = useStaticQuery(
     graphql`
       query {
-        felt: file(base: { eq: "green_felt.jpg" }) {
+        felt: file(base: { eq: "cloth_1.jpeg" }) {
           childImageSharp {
-            fluid(quality: 80, maxWidth: 1920) {
-              ...GatsbyImageSharpFluid_withWebp
+            fixed(quality: 80, width: 50) {
+              ...GatsbyImageSharpFixed
             }
           }
         }
@@ -66,15 +74,8 @@ const DrawerBase = ({ isOpen, ...props }) => {
     `
   );
 
-  const feltImage = data.felt.childImageSharp.fluid;
+  const feltImage = data.felt.childImageSharp.fixed;
   const woodImage = data.wood.childImageSharp.fluid;
-
-  // const SidePiece = styled.div({
-  //   position: "absolute",
-  //   height: "100%",
-  //   width: "2%",
-  //   background: `url(${woodImagePath})`,
-  // });
 
   const LeftSidePiece = () => {
     return (
@@ -84,7 +85,7 @@ const DrawerBase = ({ isOpen, ...props }) => {
         style={{
           position: "absolute",
           height: "100%",
-          width: "2%",
+          width: "2.5%",
           top: 0,
           left: 0,
         }}
@@ -100,7 +101,7 @@ const DrawerBase = ({ isOpen, ...props }) => {
         style={{
           position: "absolute",
           height: "100%",
-          width: "2%",
+          width: "2.5%",
           top: 0,
           right: 0,
         }}
@@ -115,10 +116,10 @@ const DrawerBase = ({ isOpen, ...props }) => {
         fluid={woodImage}
         style={{
           position: "absolute",
-          height: "10%",
-          width: "96%",
+          height: "12%",
+          width: "95%",
           bottom: 0,
-          left: "2%",
+          left: "2.5%",
         }}
       />
     );
@@ -131,12 +132,22 @@ const DrawerBase = ({ isOpen, ...props }) => {
       style={{
         height: "100%",
         position: "relative",
+        backgroundSize: "auto",
+        backgroundRepeat: "repeat",
       }}
     >
-      <LeftSidePiece />
-      <BottomSidePiece />
-      <RightSidePiece />
-      {props.children}
+      <div
+        css={{
+          height: "100%",
+          position: "relative",
+          // backgroundColor: "rgba(17,43,16,0.90)",
+        }}
+      >
+        <LeftSidePiece />
+        <BottomSidePiece />
+        <RightSidePiece />
+        {props.children}
+      </div>
     </BackgroundImage>
   );
 };
@@ -169,18 +180,21 @@ const Drawer = () => {
       <DrawerBase isOpen={isOpen}>
         <div
           css={{
+            boxShadow: "inset 1px 10px 15px 0px #000000",
             position: "absolute",
-            top: 15,
             display: "flex",
-            width: "100%",
+            left: "2.5%",
+            width: "95%",
+            height: "88%",
+            paddingTop: 30,
             paddingLeft: 60,
             paddingRight: 60,
             justifyContent: "space-between",
           }}
         >
-          <DrawerOption text="NEW GAME" />
-          <DrawerOption text="NEW GAME" />
-          <DrawerOption text="NEW GAME" />
+          <DrawerOption text="PLAY A FRIEND" />
+          <DrawerOption text="PLAY THE COMPUTER" />
+          <DrawerOption text="PLAY YOURSELF" />
         </div>
       </DrawerBase>
       <DrawerHandle

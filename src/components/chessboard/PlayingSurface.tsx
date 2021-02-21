@@ -29,6 +29,7 @@ const Board = (props) => {
       Tag="div"
       fluid={imageData}
       style={{
+        boxShadow: "0.2px 1px 0px 0.2px rgba(1,1,1,0.2)",
         width: "100%",
         paddingTop: "100%",
         position: "relative",
