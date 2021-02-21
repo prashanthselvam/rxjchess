@@ -1,7 +1,57 @@
+import { graphql } from "gatsby";
 import { BLACK_BOARD, WHITE_BOARD } from "src/types/constants";
 import Tile from "../Tile";
+import BackgroundImage from "gatsby-background-image";
 import { useSelector } from "react-redux";
 import React from "react";
+import Img from "gatsby-image";
+import { useStaticQuery } from "gatsby";
+
+const Board = (props) => {
+  const data = useStaticQuery(
+    graphql`
+      query {
+        file(base: { eq: "wood_5.jpg" }) {
+          childImageSharp {
+            fluid(quality: 100, maxWidth: 1920) {
+              ...GatsbyImageSharpFluid_withWebp
+            }
+          }
+        }
+      }
+    `
+  );
+
+  const imageData = data.file.childImageSharp.fluid;
+
+  return (
+    <BackgroundImage
+      Tag="div"
+      fluid={imageData}
+      style={{
+        width: "100%",
+        paddingTop: "100%",
+        position: "relative",
+        textAlign: "center",
+        zIndex: 1,
+      }}
+    >
+      <div
+        css={{
+          position: "absolute",
+          width: "100%",
+          height: "100%",
+          top: 0,
+          left: 0,
+          backgroundColor: "rgba(245,223,70,0.2)",
+          boxShadow: "0 10px 10px rgba(0,0,0,.2)",
+        }}
+      >
+        {props.children}
+      </div>
+    </BackgroundImage>
+  );
+};
 
 const PlayingSurface = () => {
   const pov = useSelector((state) => state.pov);
@@ -26,16 +76,7 @@ const PlayingSurface = () => {
   };
 
   return (
-    <div
-      css={{
-        width: "100%",
-        paddingTop: "100%",
-        backgroundColor: "rgba(0, 0, 0, 1)",
-        position: "relative",
-        textAlign: "center",
-        zIndex: 1,
-      }}
-    >
+    <Board>
       <div
         css={{
           position: "absolute",
@@ -43,8 +84,7 @@ const PlayingSurface = () => {
           left: "50%",
           width: "95%",
           height: "95%",
-          border: "1px solid black",
-          backgroundColor: "rgb(1,19,81)",
+          border: "0.2px solid #777",
           transform: "translate(-50%, -50%)",
         }}
       >
@@ -54,7 +94,6 @@ const PlayingSurface = () => {
             flexDirection: "column",
             width: "100%",
             height: "100%",
-            backgroundColor: "red",
           }}
         >
           {[...Array(8).keys()]
@@ -62,7 +101,7 @@ const PlayingSurface = () => {
             .map((yPos) => drawRow(yPos))}
         </div>
       </div>
-    </div>
+    </Board>
   );
 };
 

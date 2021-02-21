@@ -2,6 +2,9 @@ import React from "react";
 import { css } from "@emotion/react";
 import { actions, store } from "src/store";
 import { useSelector } from "react-redux";
+import { graphql, useStaticQuery } from "gatsby";
+import BackgroundImage from "gatsby-background-image";
+import styled from "@emotion/styled";
 
 const DrawerHandle = ({ onClick, handleText }) => {
   return (
@@ -41,6 +44,103 @@ const DrawerOption = ({ text }) => {
   );
 };
 
+const DrawerBase = ({ isOpen, ...props }) => {
+  const data = useStaticQuery(
+    graphql`
+      query {
+        felt: file(base: { eq: "green_felt.jpg" }) {
+          childImageSharp {
+            fluid(quality: 80, maxWidth: 1920) {
+              ...GatsbyImageSharpFluid_withWebp
+            }
+          }
+        }
+        wood: file(base: { eq: "wood_5.jpg" }) {
+          childImageSharp {
+            fluid(quality: 80, maxWidth: 1920) {
+              ...GatsbyImageSharpFluid_withWebp
+            }
+          }
+        }
+      }
+    `
+  );
+
+  const feltImage = data.felt.childImageSharp.fluid;
+  const woodImage = data.wood.childImageSharp.fluid;
+
+  // const SidePiece = styled.div({
+  //   position: "absolute",
+  //   height: "100%",
+  //   width: "2%",
+  //   background: `url(${woodImagePath})`,
+  // });
+
+  const LeftSidePiece = () => {
+    return (
+      <BackgroundImage
+        Tag="div"
+        fluid={woodImage}
+        style={{
+          position: "absolute",
+          height: "100%",
+          width: "2%",
+          top: 0,
+          left: 0,
+        }}
+      />
+    );
+  };
+
+  const RightSidePiece = () => {
+    return (
+      <BackgroundImage
+        Tag="div"
+        fluid={woodImage}
+        style={{
+          position: "absolute",
+          height: "100%",
+          width: "2%",
+          top: 0,
+          right: 0,
+        }}
+      />
+    );
+  };
+
+  const BottomSidePiece = () => {
+    return (
+      <BackgroundImage
+        Tag="div"
+        fluid={woodImage}
+        style={{
+          position: "absolute",
+          height: "10%",
+          width: "96%",
+          bottom: 0,
+          left: "2%",
+        }}
+      />
+    );
+  };
+
+  return (
+    <BackgroundImage
+      Tag="div"
+      fluid={feltImage}
+      style={{
+        height: "100%",
+        position: "relative",
+      }}
+    >
+      <LeftSidePiece />
+      <BottomSidePiece />
+      <RightSidePiece />
+      {props.children}
+    </BackgroundImage>
+  );
+};
+
 const Drawer = () => {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const gameStatus = useSelector((state) => state.gameStatus);
@@ -66,29 +166,23 @@ const Drawer = () => {
 
   return (
     <div css={containerStyles}>
-      <div
-        css={{
-          height: "100%",
-          backgroundColor: "rgb(27,84,1)",
-          display: "flex",
-          justifyContent: "center",
-          zIndex: -1,
-          // padding: 5,
-        }}
-      >
+      <DrawerBase isOpen={isOpen}>
         <div
           css={{
+            position: "absolute",
+            top: 15,
             display: "flex",
-            width: "90%",
+            width: "100%",
+            paddingLeft: 60,
+            paddingRight: 60,
             justifyContent: "space-between",
-            marginTop: 10,
           }}
         >
           <DrawerOption text="NEW GAME" />
           <DrawerOption text="NEW GAME" />
           <DrawerOption text="NEW GAME" />
         </div>
-      </div>
+      </DrawerBase>
       <DrawerHandle
         onClick={handleOnClick}
         handleText={isOpen ? "CANCEL" : "NEW GAME"}

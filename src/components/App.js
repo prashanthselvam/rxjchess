@@ -16,16 +16,15 @@ const App = () => {
     <Provider store={store}>
       <div css={{ display: "flex", justifyContent: "center" }}>
         <Chessboard />
-        {/*<GameOptions />*/}
       </div>
-      <div>
-        <input
-          value={length}
-          onChange={(e) => setLength(parseInt(e.target.value))}
-        />
-        <button onClick={changeLength}>HIT ME</button>
-      </div>
-      <GameOptions />
+      {/*<div>*/}
+      {/*  <input*/}
+      {/*    value={length}*/}
+      {/*    onChange={(e) => setLength(parseInt(e.target.value))}*/}
+      {/*  />*/}
+      {/*  <button onClick={changeLength}>HIT ME</button>*/}
+      {/*</div>*/}
+      {/*<GameOptions />*/}
     </Provider>
   );
 };
