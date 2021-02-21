@@ -4,17 +4,15 @@ import { actions, store } from "src/store";
 import { useSelector } from "react-redux";
 import { graphql, useStaticQuery } from "gatsby";
 import BackgroundImage from "gatsby-background-image";
-import styled from "@emotion/styled";
 import Image from "../image";
 
-const DrawerHandle = ({ onClick, handleText }) => {
+const DrawerHandle = ({ onClick, handleText, hideKnob }) => {
   const style = css`
     display: inline-block;
     transition: all 0.2s;
     position: relative;
-    font-family: "PT Sans";
     font-size: 5rem;
-    margin-top: 9rem;
+    margin-top: ${hideKnob ? "4rem" : "9rem"};
     color: white;
   `;
 
@@ -23,18 +21,20 @@ const DrawerHandle = ({ onClick, handleText }) => {
       <span onClick={onClick} className={"btn"} css={style}>
         {handleText}
       </span>
-      <Image
-        alt={`Drawer Knob`}
-        filename={"drawer_handle.png"}
-        style={{
-          width: "40%",
-          position: "absolute",
-          bottom: "0%",
-          left: "50%",
-          transform: "translate(-50%, 45%) scale(0.5) rotate(180deg)",
-          zIndex: -1,
-        }}
-      />
+      {!hideKnob && (
+        <Image
+          alt={`Drawer Knob`}
+          filename={"drawer_handle.png"}
+          style={{
+            width: "40%",
+            position: "absolute",
+            bottom: "0%",
+            left: "50%",
+            transform: "translate(-50%, 45%) scale(0.5) rotate(180deg)",
+            zIndex: -1,
+          }}
+        />
+      )}
     </div>
   );
 };
@@ -77,8 +77,8 @@ const DrawerBase = ({ isOpen, ...props }) => {
       query {
         felt: file(base: { eq: "cloth_1.jpeg" }) {
           childImageSharp {
-            fixed(quality: 80, width: 50) {
-              ...GatsbyImageSharpFixed
+            fluid(quality: 80, maxWidth: 50) {
+              ...GatsbyImageSharpFluid_withWebp
             }
           }
         }
@@ -93,7 +93,7 @@ const DrawerBase = ({ isOpen, ...props }) => {
     `
   );
 
-  const feltImage = data.felt.childImageSharp.fixed;
+  const feltImage = data.felt.childImageSharp.fluid;
   const woodImage = data.wood.childImageSharp.fluid;
 
   const LeftSidePiece = () => {
@@ -180,7 +180,11 @@ const Drawer = () => {
   ].includes(gameStatus);
 
   const handleOnClick = () => {
-    setIsOpen(!isOpen);
+    if (isGameInitializingOrInProgress) {
+      store.dispatch(actions.reset());
+    } else {
+      setIsOpen(!isOpen);
+    }
   };
 
   React.useEffect(() => {
@@ -222,7 +226,14 @@ const Drawer = () => {
       </DrawerBase>
       <DrawerHandle
         onClick={handleOnClick}
-        handleText={isOpen ? "CANCEL" : "NEW GAME"}
+        handleText={
+          isGameInitializingOrInProgress
+            ? "QUIT GAME"
+            : isOpen
+            ? "CANCEL"
+            : "NEW GAME"
+        }
+        hideKnob={isGameInitializingOrInProgress}
       />
     </div>
   );

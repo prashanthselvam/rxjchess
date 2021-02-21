@@ -15,7 +15,7 @@ const Chessboard = () => {
 
   const styles = css`
     transition: all 0.5s;
-    width: ${isGameInitializingOrInProgress ? "44%" : "80%"};
+    width: ${isGameInitializingOrInProgress ? "38%" : "80%"};
     margin-top: ${isGameInitializingOrInProgress ? "15px" : "-66%"};
   `;
 

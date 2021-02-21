@@ -88,6 +88,7 @@ const gameSlice = createSlice({
   name: "gameSlice",
   initialState: initialState,
   reducers: {
+    reset: (state: ChessGameState) => initialState,
     initializeGame(state: ChessGameState) {
       state.gameStatus = "INITIALIZING";
     },
