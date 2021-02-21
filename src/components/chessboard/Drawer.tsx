@@ -5,22 +5,34 @@ import { useSelector } from "react-redux";
 import { graphql, useStaticQuery } from "gatsby";
 import BackgroundImage from "gatsby-background-image";
 import styled from "@emotion/styled";
+import Image from "../image";
 
 const DrawerHandle = ({ onClick, handleText }) => {
   return (
-    <div
-      onClick={onClick}
-      css={{
-        width: "40%",
-        height: "30px",
-        position: "absolute",
-        bottom: "0%",
-        left: "50%",
-        transform: "translate(-50%, 100%)",
-        backgroundColor: "green",
-      }}
-    >
-      {handleText}
+    <div>
+      <span
+        onClick={onClick}
+        css={{
+          display: "inline-block",
+          color: "white",
+          marginTop: "10rem",
+          fontSize: "5rem",
+        }}
+      >
+        {handleText}
+      </span>
+      <Image
+        alt={`Drawer Knob`}
+        filename={"drawer_handle.png"}
+        style={{
+          width: "40%",
+          position: "absolute",
+          bottom: "0%",
+          left: "50%",
+          transform: "translate(-50%, 45%) scale(0.5) rotate(180deg)",
+          zIndex: -1,
+        }}
+      />
     </div>
   );
 };
