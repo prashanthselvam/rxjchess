@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import * as React from "react";
 import Chessboard from "./chessboard";
 import GameOptions from "./GameOptions";
+import TestPubnub from "./TestPubnub";
 
 const App = () => {
   const [length, setLength] = React.useState(0);
@@ -16,6 +17,7 @@ const App = () => {
     <Provider store={store}>
       <div css={{ display: "flex", justifyContent: "center" }}>
         <Chessboard />
+        <TestPubnub />
       </div>
       {/*<div>*/}
       {/*  <input*/}
