@@ -32,6 +32,8 @@
     "gatsby-transformer-sharp": "^2.11.0",
     "intersection-observer": "^0.12.0",
     "lodash": "^4.17.20",
+    "pubnub": "^4.29.11",
+    "pubnub-react": "^2.1.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-redux": "^7.2.2",
