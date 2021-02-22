@@ -1,8 +1,8 @@
 import PlayingSurface from "./PlayingSurface";
-import Drawer from "./Drawer";
 import React from "react";
 import { css } from "@emotion/react";
 import { useSelector } from "react-redux";
+import Drawer from "./drawer";
 
 const Chessboard = () => {
   const [boardWidth, setBoardWidth] = React.useState("80%");

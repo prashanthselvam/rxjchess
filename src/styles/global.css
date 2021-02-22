@@ -18,7 +18,7 @@ body {
             to right bottom,
             rgba(0, 15, 88, .8),
             rgba(0, 0, 0, .8));
-    min-height: 200vh;
+    min-height: 100vh;
     font-family: "Oswald", sans-serif;
     font-weight: 400;
     font-size: 1.6rem;

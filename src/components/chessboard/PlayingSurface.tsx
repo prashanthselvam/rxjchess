@@ -11,7 +11,7 @@ const Board = (props) => {
   const data = useStaticQuery(
     graphql`
       query {
-        file(base: { eq: "wood_5.jpg" }) {
+        file(base: { eq: "wood.jpg" }) {
           childImageSharp {
             fluid(quality: 100, maxWidth: 1920) {
               ...GatsbyImageSharpFluid_withWebp
