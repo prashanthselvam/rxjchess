@@ -29,7 +29,7 @@ const Board = (props) => {
       Tag="div"
       fluid={imageData}
       style={{
-        boxShadow: "0.2px 1px 0px 0.2px rgba(1,1,1,0.2)",
+        boxShadow: "0.2px .1rem 0 0.2px rgba(1,1,1,0.2)",
         width: "100%",
         paddingTop: "100%",
         position: "relative",
@@ -45,7 +45,7 @@ const Board = (props) => {
           top: 0,
           left: 0,
           backgroundColor: "rgba(245,223,70,0.2)",
-          boxShadow: "0 10px 10px rgba(0,0,0,.2)",
+          boxShadow: "0 1rem 1rem rgba(0,0,0,.2)",
         }}
       >
         {props.children}

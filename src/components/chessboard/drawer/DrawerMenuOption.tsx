@@ -16,7 +16,7 @@ const DrawerMenuOption = ({ text }) => {
       css={{
         backgroundColor: "rgba(255,255,255,0.85)",
         borderRadius: 15,
-        padding: "15px",
+        padding: "1.5rem",
         height: "80%",
         width: "25%",
         border: "none",

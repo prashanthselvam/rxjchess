@@ -10,7 +10,7 @@ const DrawerHandle = ({ onClick, handleText, hideKnob }) => {
     font-size: 5rem;
     margin-top: ${hideKnob ? "4rem" : "9rem"};
     color: white;
-    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
+    text-shadow: 0.2rem 0.2rem 1rem rgba(0, 0, 0, 0.4);
   `;
 
   return (

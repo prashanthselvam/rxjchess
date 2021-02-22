@@ -17,14 +17,14 @@ body {
     background: linear-gradient(
             to right bottom,
             rgba(0, 15, 88, .8),
-            rgba(0, 0, 0, .8));
+            rgba(4, 26, 61, 1));
     min-height: 100vh;
     font-family: "Oswald", sans-serif;
     font-weight: 400;
     font-size: 1.6rem;
     line-height: 1.7;
     color: rgb(119, 119, 119);
-    padding-bottom: 10px;
+    padding-bottom: 1rem;
 }
 
 .btn:link,

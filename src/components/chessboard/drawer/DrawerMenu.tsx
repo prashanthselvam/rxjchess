@@ -5,15 +5,15 @@ const DrawerMenu = () => {
   return (
     <div
       css={{
-        boxShadow: "inset 1px 10px 15px 0px #000000",
+        boxShadow: "inset .1rem 1rem 1.5rem 0 #000000",
         position: "absolute",
         display: "flex",
         left: "2.5%",
         width: "95%",
         height: "88%",
-        paddingTop: 30,
-        paddingLeft: 60,
-        paddingRight: 60,
+        paddingTop: "3rem",
+        paddingLeft: "6rem",
+        paddingRight: "6rem",
         justifyContent: "space-between",
       }}
     >

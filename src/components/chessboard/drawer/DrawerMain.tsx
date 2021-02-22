@@ -85,7 +85,7 @@ const DrawerMain = ({ isOpen, ...props }) => {
         position: "relative",
         backgroundSize: "auto",
         backgroundRepeat: "repeat",
-        boxShadow: "1px 10px 10px rgba(0,0,0,.2)",
+        boxShadow: ".1rem 1rem 1rem rgba(0,0,0,.2)",
       }}
     >
       <div

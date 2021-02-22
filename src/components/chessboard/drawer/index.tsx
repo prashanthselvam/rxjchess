@@ -28,12 +28,12 @@ const Drawer = () => {
   }, [gameStatus]);
 
   const containerStyles = css`
-    width: "100%";
-    height: 300px;
+    width: 100%;
+    height: 30rem;
     position: relative;
     text-align: center;
     transition: all 0.5s;
-    transform: ${isOpen ? `none` : `translateY(-300px)`};
+    transform: ${isOpen ? `none` : `translateY(-30rem)`};
   `;
 
   return (
