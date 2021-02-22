@@ -16,7 +16,7 @@ html {
 body {
     background: linear-gradient(
             to right bottom,
-            rgba(23, 23, 23, .8),
+            rgba(0, 15, 88, .8),
             rgba(0, 0, 0, .8));
     min-height: 200vh;
     font-family: "Oswald", sans-serif;

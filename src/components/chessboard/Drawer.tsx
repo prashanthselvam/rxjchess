@@ -14,6 +14,7 @@ const DrawerHandle = ({ onClick, handleText, hideKnob }) => {
     font-size: 5rem;
     margin-top: ${hideKnob ? "4rem" : "9rem"};
     color: white;
+    text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
   `;
 
   return (
@@ -24,13 +25,13 @@ const DrawerHandle = ({ onClick, handleText, hideKnob }) => {
       {!hideKnob && (
         <Image
           alt={`Drawer Knob`}
-          filename={"drawer_handle.png"}
+          filename={"knob_1.png"}
           style={{
-            width: "40%",
+            width: "20%",
             position: "absolute",
             bottom: "0%",
             left: "50%",
-            transform: "translate(-50%, 45%) scale(0.5) rotate(180deg)",
+            transform: "translate(-50%, 42%) scale(0.5) rotate(180deg)",
             zIndex: -1,
           }}
         />
@@ -153,13 +154,13 @@ const DrawerBase = ({ isOpen, ...props }) => {
         position: "relative",
         backgroundSize: "auto",
         backgroundRepeat: "repeat",
+        boxShadow: "1px 10px 10px rgba(0,0,0,.2)",
       }}
     >
       <div
         css={{
           height: "100%",
           position: "relative",
-          // backgroundColor: "rgba(17,43,16,0.90)",
         }}
       >
         <LeftSidePiece />
