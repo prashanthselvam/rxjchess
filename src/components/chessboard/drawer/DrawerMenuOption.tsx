@@ -1,7 +1,8 @@
 import { actions, store } from "src/store";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 
-const DrawerMenuOption = ({ text }) => {
+const DrawerMenuOption = ({ text, icon }) => {
   const startNewGame = () => {
     store.dispatch(actions.initializeGame());
     setTimeout(
@@ -11,12 +12,13 @@ const DrawerMenuOption = ({ text }) => {
   };
 
   return (
-    <button
+    <div
       onClick={startNewGame}
       css={{
         backgroundColor: "rgba(255,255,255,0.85)",
-        borderRadius: 15,
+        borderRadius: "1.5rem",
         padding: "1.5rem",
+        fontSize: "2rem",
         height: "80%",
         width: "25%",
         border: "none",
@@ -28,8 +30,16 @@ const DrawerMenuOption = ({ text }) => {
         },
       }}
     >
-      {text}
-    </button>
+      <h3 css={{ fontWeight: 500 }}>{text}</h3>
+      <FontAwesomeIcon
+        css={{
+          marginTop: "3rem",
+          fontSize: "6rem",
+          color: "rgb(36,54,45)",
+        }}
+        icon={icon}
+      />
+    </div>
   );
 };
 

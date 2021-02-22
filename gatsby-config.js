@@ -21,6 +21,7 @@ module.exports = {
     {
       resolve: `gatsby-plugin-typescript`,
     },
+    `gatsby-plugin-fontawesome-css`,
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     `gatsby-plugin-emotion`,

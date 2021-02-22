@@ -1,5 +1,10 @@
 import React from "react";
 import DrawerMenuOption from "./DrawerMenuOption";
+import {
+  faUserFriends,
+  faLaptopCode,
+  faChessBoard,
+} from "@fortawesome/free-solid-svg-icons";
 
 const DrawerMenu = () => {
   return (
@@ -12,14 +17,14 @@ const DrawerMenu = () => {
         width: "95%",
         height: "88%",
         paddingTop: "3rem",
-        paddingLeft: "6rem",
-        paddingRight: "6rem",
+        paddingLeft: "7rem",
+        paddingRight: "7rem",
         justifyContent: "space-between",
       }}
     >
-      <DrawerMenuOption text="PLAY A FRIEND" />
-      <DrawerMenuOption text="PLAY THE COMPUTER" />
-      <DrawerMenuOption text="PLAY YOURSELF" />
+      <DrawerMenuOption text="PLAY A FRIEND ONLINE" icon={faUserFriends} />
+      <DrawerMenuOption text="PLAY THE COMPUTER" icon={faLaptopCode} />
+      <DrawerMenuOption text="PLAY OVER THE BOARD" icon={faChessBoard} />
     </div>
   );
 };
