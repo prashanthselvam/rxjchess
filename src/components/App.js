@@ -17,7 +17,6 @@ const App = () => {
     <Provider store={store}>
       <div css={{ display: "flex", justifyContent: "center" }}>
         <Chessboard />
-        <TestPubnub />
       </div>
       {/*<div>*/}
       {/*  <input*/}
