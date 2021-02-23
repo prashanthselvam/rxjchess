@@ -3,7 +3,7 @@ import Marker from "src/components/TileMarker";
 import Piece from "./Piece";
 import { TileId } from "src/types/constants";
 import { useSelector } from "react-redux";
-import { store, actions } from "src/store";
+import { store, actions, ChessGameState } from "src/store";
 import { _getPieceType, _getPlayer } from "../store/utils";
 // import { usePubNub } from "pubnub-react";
 import { useEffect, useState } from "react";
@@ -14,49 +14,73 @@ interface TileProps {
   yPos: YPos;
 }
 
-const CheckHighlight = () => (
-  <div
-    css={{
-      position: "absolute",
-      height: "100%",
-      width: "100%",
-      borderRadius: 50,
-      top: "50%",
-      left: "50%",
-      transform: "translate(-50%, -50%)",
-      background:
-        "radial-gradient(circle, rgba(255,15,0,1) 0%, rgba(255,255,255,0) 70%)",
-    }}
-  />
-);
+interface TileHighlightProps {
+  variant: "SELECTED" | "MOVE_HISTORY" | "CAN_TAKE" | "CAN_MOVE" | "CHECK";
+}
 
-const Highlight = ({ canTake }) => {
-  if (canTake) {
-    return (
-      <div
-        css={{
-          position: "absolute",
-          width: "100%",
-          height: "100%",
-          border: "2px #9e0016 solid",
-        }}
-      />
-    );
-  } else {
-    return (
-      <div
-        css={{
-          position: "absolute",
-          height: "15%",
-          width: "15%",
-          borderRadius: 25,
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          backgroundColor: "rgba(103,174,104,0.4)",
-        }}
-      />
-    );
+const TileHighlight = ({ variant }: TileHighlightProps) => {
+  switch (variant) {
+    case "SELECTED":
+      return (
+        <div
+          css={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(103,174,104,0.8)",
+          }}
+        />
+      );
+    case "CAN_TAKE":
+      return (
+        <div
+          css={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            border: "2px #9e0016 solid",
+          }}
+        />
+      );
+    case "CAN_MOVE":
+      return (
+        <div
+          css={{
+            position: "absolute",
+            height: "15%",
+            width: "15%",
+            borderRadius: 25,
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            backgroundColor: "rgba(103,174,104,0.4)",
+          }}
+        />
+      );
+    case "CHECK":
+      return (
+        <div
+          css={{
+            position: "absolute",
+            height: "100%",
+            width: "100%",
+            borderRadius: 50,
+            background:
+              "radial-gradient(circle, rgba(255,15,0,1) 0%, rgba(255,255,255,0) 70%)",
+          }}
+        />
+      );
+    case "MOVE_HISTORY":
+      return (
+        <div
+          css={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgb(255,211,0,0.4)",
+          }}
+        />
+      );
   }
 };
 
@@ -86,15 +110,20 @@ const Highlight = ({ canTake }) => {
 // };
 
 const Tile = ({ id, xPos, yPos }: TileProps) => {
-  const gameStatus = useSelector((state) => state.gameStatus);
-  const currentTurn = useSelector((state) => state.currentTurn);
-  const selectedTile = useSelector((state) => state.boardState.selectedTile);
+  const gameStatus = useSelector((state: ChessGameState) => state.gameStatus);
+  const currentTurn = useSelector((state: ChessGameState) => state.currentTurn);
+  const selectedTile = useSelector(
+    (state: ChessGameState) => state.boardState.selectedTile
+  );
   const { pieceId, highlight } = useSelector(
     (state) => state.boardState.tileMap[id]
   );
-  // const { setMessageToSend } = usePubnubProcess();
-
+  const { highlight: historyHighlight } = useSelector(
+    (state) => state.movesState.historyTileMap[id]
+  );
   const isActiveCheck = useSelector((state) => state.checkState.isActiveCheck);
+
+  // const { setMessageToSend } = usePubnubProcess();
 
   const isGameInProgress = gameStatus === "IN PROGRESS";
   const isSelected = selectedTile === id;
@@ -120,11 +149,10 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
         position: "relative",
         height: "100%",
         width: "12.5%",
-        backgroundColor: isSelected
-          ? "rgba(103,174,104,0.8)"
-          : (xPos + yPos) % 2 === 0
-          ? "rgba(50,32,15,0.55)"
-          : "rgba(255,255,255,0.55)",
+        backgroundColor:
+          (xPos + yPos) % 2 === 0
+            ? "rgba(50,32,15,0.55)"
+            : "rgba(255,255,255,0.55)",
       }}
       onClick={onClick}
     >
@@ -138,8 +166,11 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
           {id[1]}
         </Marker>
       )}
-      {checkHighlight && <CheckHighlight />}
-      {highlight && <Highlight canTake={!!pieceId} />}
+      {historyHighlight && <TileHighlight variant={"MOVE_HISTORY"} />}
+      {checkHighlight && <TileHighlight variant={"CHECK"} />}
+      {highlight && !pieceId && <TileHighlight variant={"CAN_MOVE"} />}
+      {highlight && !!pieceId && <TileHighlight variant={"CAN_TAKE"} />}
+      {isSelected && <TileHighlight variant={"SELECTED"} />}
       {pieceId && <Piece pieceId={pieceId} />}
     </div>
   );

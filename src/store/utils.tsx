@@ -7,15 +7,23 @@ import { pieceToMoveMap } from "./moveFunctions";
  * _clearHighlights - Clears highlights from all the tiles in tileMap in state. Only can be used within our epics
  *
  * @param state
+ * @param historyTileMap (if we're clearing for the historyTileMap instead of regular)
  */
-export const _clearHighlights = (state: ChessGameState) => {
-  Object.entries(state.boardState.tileMap).forEach(
-    ([tileId, { highlight }]) => {
-      if (highlight) {
+export const _clearHighlights = (
+  state: ChessGameState,
+  historyTileMap = false
+) => {
+  Object.entries(
+    historyTileMap ? state.movesState.historyTileMap : state.boardState.tileMap
+  ).forEach(([tileId, { highlight }]) => {
+    if (highlight) {
+      if (historyTileMap) {
+        state.movesState.historyTileMap[tileId].highlight = false;
+      } else {
         state.boardState.tileMap[tileId].highlight = false;
       }
     }
-  );
+  });
 };
 
 /**

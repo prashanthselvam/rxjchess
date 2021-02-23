@@ -23,11 +23,24 @@ interface TileMapData {
   highlight: boolean;
 }
 
+interface Move {
+  player: Player;
+  pieceId: PieceId;
+  sourceTileId: TileId;
+  targetTileId: TileId;
+  takenPieceId: PieceId | undefined;
+  isMoveCheck?: boolean;
+  castledRook: PieceId | undefined;
+  promotedPiece?: PieceId;
+}
+
 export type TileMap = Record<TileId, TileMapData>;
 export type CanCastle = Record<Player, TileId[]>;
 
 interface MovesState {
-  movedPieces: Record<PieceId, boolean>;
+  movedPieces: Record<PieceId, boolean>; // Easy reference to know which pieces have been moved
+  moveHistory: Move[]; // Array of moves
+  historyTileMap: TileMap; // identical to tileMap but used for rendering historic state (previous moves, last moved, etc.)
 }
 
 interface BoardState {
@@ -67,6 +80,8 @@ const initialState: ChessGameState = {
   pov: "W",
   movesState: {
     movedPieces: {},
+    moveHistory: [],
+    historyTileMap: tileMapInitialState,
   },
   boardState: {
     tileMap: tileMapInitialState,
@@ -159,12 +174,14 @@ const gameSlice = createSlice({
       const {
         currentTurn,
         boardState: { selectedTile, tileMap, canBeEnpassant },
-        movesState: { movedPieces },
+        movesState: { movedPieces, historyTileMap },
       } = state;
       const { targetTileId, sourceTileId } = action.payload;
       const pieceId = tileMap[selectedTile!].pieceId!;
       const board = _getBoard(currentTurn);
       const sourceId = sourceTileId || selectedTile;
+      let takenPieceId = tileMap[targetTileId].pieceId;
+      let castledRook: PieceId | undefined = undefined;
 
       // Update tile map based on where we're moving the piece
       state.boardState.tileMap = {
@@ -185,12 +202,14 @@ const gameSlice = createSlice({
               [TILES.A1]: { pieceId: undefined, highlight: false },
               [TILES.D1]: { pieceId: PIECES.WR1, highlight: false },
             };
+            castledRook = PIECES.WR1;
           } else if (targetTileId === TILES.G1) {
             state.boardState.tileMap = {
               ...state.boardState.tileMap,
               [TILES.H1]: { pieceId: undefined, highlight: false },
               [TILES.F1]: { pieceId: PIECES.WR2, highlight: false },
             };
+            castledRook = PIECES.WR2;
           }
         } else if (currentTurn === "B") {
           if (targetTileId === TILES.C8) {
@@ -199,12 +218,14 @@ const gameSlice = createSlice({
               [TILES.A8]: { pieceId: undefined, highlight: false },
               [TILES.D8]: { pieceId: PIECES.BR1, highlight: false },
             };
+            castledRook = PIECES.BR1;
           } else if (targetTileId === TILES.G8) {
             state.boardState.tileMap = {
               ...state.boardState.tileMap,
               [TILES.H8]: { pieceId: undefined, highlight: false },
-              [TILES.F8]: { pieceId: PIECES.WR2, highlight: false },
+              [TILES.F8]: { pieceId: PIECES.BR2, highlight: false },
             };
+            castledRook = PIECES.BR2;
           }
         }
       }
@@ -214,12 +235,28 @@ const gameSlice = createSlice({
         // @ts-ignore
         const [epX, epY] = _getRelativePos(currentTurn, targetTileId);
         const takeTileId = _getTile(board, epX, epY - 1);
+        takenPieceId = tileMap[takeTileId].pieceId;
 
         state.boardState.tileMap = {
           ...state.boardState.tileMap,
           [takeTileId]: { pieceId: undefined, highlight: false },
         };
       }
+
+      const move: Move = {
+        player: currentTurn,
+        pieceId,
+        sourceTileId: sourceId!,
+        targetTileId,
+        takenPieceId: takenPieceId,
+        castledRook,
+      };
+
+      // Finally update move history
+      state.movesState.moveHistory.push(move);
+      _clearHighlights(state, true);
+      state.movesState.historyTileMap[sourceId!].highlight = true;
+      state.movesState.historyTileMap[targetTileId!].highlight = true;
     },
     runPostCleanupCalcs(
       state: ChessGameState,
@@ -268,6 +305,13 @@ const gameSlice = createSlice({
       state.checkState.isActiveCheck = isActiveCheck;
       state.checkState.checkOriginTiles = checkOriginTiles;
       state.checkState.checkBlockTiles = checkBlockTiles;
+
+      // @ts-ignore
+      const lastMoveWithCheck: Move = {
+        ...state.movesState.moveHistory.pop(),
+        isMoveCheck: isActiveCheck,
+      };
+      state.movesState.moveHistory.push(lastMoveWithCheck);
     },
     switchTurns(state: ChessGameState) {
       if (state.currentTurn === "W") {
