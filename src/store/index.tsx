@@ -299,37 +299,48 @@ const gameSlice = createSlice({
     },
     determineCastleEligibility(state: ChessGameState) {
       const {
+        currentTurn,
         movesState: { movedPieces },
-        boardState: { tileMap },
+        boardState: { tileMap, whiteAttackedTiles, blackAttackedTiles },
+        checkState: { isActiveCheck },
       } = state;
       const canCastle: Record<Player, TileId[]> = { W: [], B: [] };
+      const blackInCheck = isActiveCheck && currentTurn === "B";
+      const whiteInCheck = isActiveCheck && currentTurn === "W";
 
-      if (!movedPieces?.[PIECES.WK]) {
+      if (!movedPieces?.[PIECES.WK] && !whiteInCheck) {
         if (
           !movedPieces?.[PIECES.WR1] &&
-          !(tileMap.B1.pieceId || tileMap.C1.pieceId || tileMap.D1.pieceId)
+          !(tileMap.B1.pieceId || tileMap.C1.pieceId || tileMap.D1.pieceId) &&
+          !blackAttackedTiles.includes(TILES.B1) &&
+          !blackAttackedTiles.includes(TILES.C1)
         ) {
           canCastle.W.push(TILES.C1);
         }
         if (
           !movedPieces?.[PIECES.WR2] &&
-          !(tileMap.F1.pieceId || tileMap.G1.pieceId)
+          !(tileMap.F1.pieceId || tileMap.G1.pieceId) &&
+          !blackAttackedTiles.includes(TILES.F1) &&
+          !blackAttackedTiles.includes(TILES.G1)
         ) {
           canCastle.W.push(TILES.G1);
         }
       }
 
-      if (movedPieces?.[PIECES.BK]) {
-      } else {
+      if (!movedPieces?.[PIECES.BK] && !blackInCheck) {
         if (
           !movedPieces?.[PIECES.BR1] &&
-          !(tileMap.B8.pieceId || tileMap.C8.pieceId || tileMap.D8.pieceId)
+          !(tileMap.B8.pieceId || tileMap.C8.pieceId || tileMap.D8.pieceId) &&
+          !whiteAttackedTiles.includes(TILES.B8) &&
+          !whiteAttackedTiles.includes(TILES.C8)
         ) {
           canCastle.B.push(TILES.C8);
         }
         if (
           !movedPieces?.[PIECES.BR2] &&
-          !(tileMap.F8.pieceId || tileMap.G8.pieceId)
+          !(tileMap.F8.pieceId || tileMap.G8.pieceId) &&
+          !whiteAttackedTiles.includes(TILES.F8) &&
+          !whiteAttackedTiles.includes(TILES.G8)
         ) {
           canCastle.B.push(TILES.G8);
         }

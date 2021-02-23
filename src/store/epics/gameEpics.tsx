@@ -135,17 +135,17 @@ const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
       const calcActions: AnyAction[] = [
         actions.determineEnpassantEligibility({ pieceId, targetTileId }),
         actions.updateMovedPieces({ pieceId }),
-        actions.determineCastleEligibility(),
         actions.updateAttackedTiles({
           player,
           attackedTiles: allAttackedTiles,
         }),
-        actions.updatePeggedTileMap({ peggedTileMap }),
         actions.updateCheckDetails({
           isActiveCheck,
           checkOriginTiles,
           checkBlockTiles,
         }),
+        actions.determineCastleEligibility(),
+        actions.updatePeggedTileMap({ peggedTileMap }),
       ];
 
       isActiveCheck && calcActions.push(actions.determineCheckmate({ player }));
