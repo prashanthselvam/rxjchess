@@ -14,18 +14,31 @@ interface TileProps {
   yPos: YPos;
 }
 
+const CheckHighlight = () => (
+  <div
+    css={{
+      position: "absolute",
+      height: "100%",
+      width: "100%",
+      borderRadius: 50,
+      top: "50%",
+      left: "50%",
+      transform: "translate(-50%, -50%)",
+      background:
+        "radial-gradient(circle, rgba(255,15,0,1) 0%, rgba(255,255,255,0) 70%)",
+    }}
+  />
+);
+
 const Highlight = ({ canTake }) => {
   if (canTake) {
     return (
       <div
         css={{
           position: "absolute",
-          width: 66,
-          height: 66,
+          width: "100%",
+          height: "100%",
           border: "2px #9e0016 solid",
-          top: "50%",
-          left: "50%",
-          margin: "-35px 0 0 -35px",
         }}
       />
     );
@@ -34,13 +47,13 @@ const Highlight = ({ canTake }) => {
       <div
         css={{
           position: "absolute",
-          height: 14,
-          width: 14,
+          height: "15%",
+          width: "15%",
           borderRadius: 25,
           top: "50%",
           left: "50%",
-          margin: "-7px 0 0 -7px",
-          backgroundColor: "rgb(131,138,25,0.3)",
+          transform: "translate(-50%, -50%)",
+          backgroundColor: "rgba(103,174,104,0.4)",
         }}
       />
     );
@@ -125,9 +138,9 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
           {id[1]}
         </Marker>
       )}
-      {pieceId && <Piece pieceId={pieceId} />}
-      {checkHighlight && <div>CHECK!</div>}
+      {checkHighlight && <CheckHighlight />}
       {highlight && <Highlight canTake={!!pieceId} />}
+      {pieceId && <Piece pieceId={pieceId} />}
     </div>
   );
 };
