@@ -36,6 +36,7 @@
     "pubnub-react": "^2.1.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-modal": "^3.12.1",
     "react-redux": "^7.2.2",
     "redux-devtools-extension": "^2.13.8",
     "redux-observable": "^1.2.0",

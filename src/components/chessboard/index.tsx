@@ -1,4 +1,4 @@
-import PlayingSurface from "./PlayingSurface";
+import Surface from "./surface";
 import React from "react";
 import { css } from "@emotion/react";
 import { useSelector } from "react-redux";
@@ -29,7 +29,7 @@ const Chessboard = () => {
 
   return (
     <div css={styles}>
-      <PlayingSurface />
+      <Surface />
       <Drawer />
     </div>
   );
