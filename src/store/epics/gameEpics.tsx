@@ -133,6 +133,7 @@ const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
       const isActiveCheck = !!checkOriginTiles.length;
 
       const calcActions: AnyAction[] = [
+        actions.determineEnpassantEligibility({ pieceId, targetTileId }),
         actions.updateMovedPieces({ pieceId }),
         actions.determineCastleEligibility(),
         actions.updateAttackedTiles({
@@ -148,12 +149,6 @@ const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
       ];
 
       isActiveCheck && calcActions.push(actions.determineCheckmate({ player }));
-
-      // This needs to be run before movedPieces is updated
-      _getPieceType(pieceId) === "P" &&
-        calcActions.unshift(
-          actions.determineEnpassantEligibility({ pieceId, targetTileId })
-        );
 
       return of(...calcActions);
     })

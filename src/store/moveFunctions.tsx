@@ -63,7 +63,7 @@ export const pawnMoves: MoveFunction = (
 
   const possibleTakeMoves = allTakeMoves.filter((tileId) => {
     const occupant = _getTileOccupant(tileMap, tileId);
-    return occupant && _getPlayer(occupant) !== player;
+    return !!(occupant && _getPlayer(occupant) !== player);
   });
 
   // Check if there's a piece we can en-passant and if so, add the appropriate tile

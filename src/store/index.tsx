@@ -281,6 +281,7 @@ const gameSlice = createSlice({
       action: PayloadAction<{ pieceId: PieceId; targetTileId: TileId }>
     ) {
       const { pieceId, targetTileId } = action.payload;
+      const isPiecePawn = _getPieceType(pieceId) === "P";
       const {
         movesState: { movedPieces },
       } = state;
@@ -288,7 +289,7 @@ const gameSlice = createSlice({
       const board = _getBoard(player);
 
       state.boardState.canBeEnpassant = undefined;
-      if (!movedPieces?.[pieceId]) {
+      if (isPiecePawn && !movedPieces?.[pieceId]) {
         // @ts-ignore
         const [targetX, targetY] = _getRelativePos(player, targetTileId);
         if (targetY === 3) {
