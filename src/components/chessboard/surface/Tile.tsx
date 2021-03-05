@@ -1,6 +1,6 @@
 import * as React from "react";
 import Marker from "src/components/chessboard/surface/TileMarker";
-import Piece from "../../Piece";
+import Piece from "src/components/Piece";
 import { TileId } from "src/types/constants";
 import { useSelector } from "react-redux";
 import { store, actions, ChessGameState } from "src/store";
@@ -19,6 +19,9 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
   const selectedTile = useSelector(
     (state: ChessGameState) => state.boardState.selectedTile
   );
+  const selectedPiece = useSelector(
+    (state: ChessGameState) => state.boardState.selectedPiece
+  );
   const { pieceId, highlight } = useSelector(
     (state) => state.boardState.tileMap[id]
   );
@@ -26,8 +29,6 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
     (state) => state.movesState.historyTileMap[id]
   );
   const isActiveCheck = useSelector((state) => state.checkState.isActiveCheck);
-
-  // const { setMessageToSend } = usePubnubProcess();
 
   const isGameInProgress = gameStatus === "IN PROGRESS";
   const isSelected = selectedTile === id;
@@ -41,7 +42,11 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
     if (isSelectable && !isSelected) {
       store.dispatch(actions.selectTile({ tileId: id }));
     } else if (highlight) {
-      store.dispatch(actions.moveToTile({ targetTileId: id }));
+      if ((yPos === 0 || yPos === 7) && _getPieceType(selectedPiece!) === "P") {
+        store.dispatch(actions.showModal({ type: "PAWN_PROMOTE" }));
+      } else {
+        store.dispatch(actions.moveToTile({ targetTileId: id }));
+      }
     } else {
       store.dispatch(actions.deselect());
     }

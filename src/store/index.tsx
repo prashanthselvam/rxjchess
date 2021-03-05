@@ -46,6 +46,7 @@ interface MovesState {
 interface BoardState {
   tileMap: TileMap; // mapping of each tile to the piece ID that's on it
   selectedTile: TileId | undefined; // the tile selected by the user. Can only ever be their own piece occupied tile
+  selectedPiece: PieceId | undefined; // the pieceID on the selected tile
   whiteAttackedTiles: TileId[]; // tiles that white is attacking
   blackAttackedTiles: TileId[]; // tiles that black is attacking
   peggedTileMap: Record<TileId, TileId[]>; // Mapping of tiles that are pegged to the peg path
@@ -67,6 +68,7 @@ export interface ChessGameState {
   movesState: MovesState;
   boardState: BoardState;
   checkState: CheckState;
+  modalState: undefined | "PAWN_PROMOTE" | "GAME_OVER" | "SHARE_GAME_URL";
 }
 
 const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
@@ -86,6 +88,7 @@ const initialState: ChessGameState = {
   boardState: {
     tileMap: tileMapInitialState,
     selectedTile: undefined,
+    selectedPiece: undefined,
     whiteAttackedTiles: [],
     blackAttackedTiles: [],
     peggedTileMap: {},
@@ -97,6 +100,7 @@ const initialState: ChessGameState = {
     checkOriginTiles: [],
     checkBlockTiles: [],
   },
+  modalState: undefined,
 };
 
 const gameSlice = createSlice({
@@ -153,11 +157,14 @@ const gameSlice = createSlice({
       action: PayloadAction<{ tileId: TileId }>
     ) {
       _clearHighlights(state);
-      state.boardState.selectedTile = action.payload.tileId;
+      const { tileId } = action.payload;
+      state.boardState.selectedTile = tileId;
+      state.boardState.selectedPiece = state.boardState.tileMap[tileId].pieceId;
     },
     deselect(state: ChessGameState) {
       _clearHighlights(state);
       state.boardState.selectedTile = undefined;
+      state.boardState.selectedPiece = undefined;
     },
     highlightPossibleMoves(
       state: ChessGameState,
@@ -173,11 +180,20 @@ const gameSlice = createSlice({
     ) {
       const {
         currentTurn,
-        boardState: { selectedTile, tileMap, canBeEnpassant },
-        movesState: { movedPieces, historyTileMap },
+        boardState: {
+          selectedTile,
+          selectedPiece: pieceId,
+          tileMap,
+          canBeEnpassant,
+        },
+        movesState: { movedPieces },
       } = state;
+
+      if (!pieceId) {
+        throw Error;
+      }
+
       const { targetTileId, sourceTileId } = action.payload;
-      const pieceId = tileMap[selectedTile!].pieceId!;
       const board = _getBoard(currentTurn);
       const sourceId = sourceTileId || selectedTile;
       let takenPieceId = tileMap[targetTileId].pieceId;
@@ -396,6 +412,12 @@ const gameSlice = createSlice({
       tiles.forEach((id) => {
         state.boardState.tileMap[id].highlight = true;
       });
+    },
+    showModal(
+      state,
+      action: PayloadAction<{ type: ChessGameState["modalState"] }>
+    ) {
+      state.modalState = action.payload.type;
     },
   },
 });

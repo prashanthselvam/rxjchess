@@ -4,20 +4,15 @@ import * as React from "react";
 import Chessboard from "./chessboard";
 import GameOptions from "./GameOptions";
 import TestPubnub from "./TestPubnub";
+import { Modal, useModal } from "./Modal";
 
 const App = () => {
-  const [length, setLength] = React.useState(0);
-  const [passedLength, setPassedLength] = React.useState(700);
-
-  const changeLength = () => {
-    setPassedLength(length);
-  };
-
   return (
     <Provider store={store}>
       <div css={{ display: "flex", justifyContent: "center" }}>
         <Chessboard />
       </div>
+      <Modal />
       {/*<div>*/}
       {/*  <input*/}
       {/*    value={length}*/}
@@ -25,7 +20,7 @@ const App = () => {
       {/*  />*/}
       {/*  <button onClick={changeLength}>HIT ME</button>*/}
       {/*</div>*/}
-      {/*<GameOptions />*/}
+      <GameOptions />
     </Provider>
   );
 };
