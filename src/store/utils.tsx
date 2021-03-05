@@ -58,6 +58,13 @@ export const _getBoard = (player: Player) =>
   player === "W" ? WHITE_BOARD : BLACK_BOARD;
 
 /**
+ * _isPiecePromoted - Is the piece promoted
+ *
+ * @param pieceId
+ */
+export const _isPiecePromoted = (pieceId: PieceId) => pieceId[2] === "_";
+
+/**
  * _getTile - Given a board map and a x & y position, returns the tileId at that position
  *
  * @param board

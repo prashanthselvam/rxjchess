@@ -5,7 +5,10 @@ import { store, actions } from "src/store";
 import { useSelector } from "react-redux";
 
 const GameOptions = () => {
-  const open = () => store.dispatch(actions.showModal({ type: "GAME_OVER" }));
+  const open = () =>
+    store.dispatch(
+      actions.setModalState({ modalState: { type: "GAME_OVER" } })
+    );
 
   const whiteAttackedTiles = useSelector(
     (state) => state.boardState.whiteAttackedTiles

@@ -4,7 +4,7 @@ import Piece from "src/components/Piece";
 import { TileId } from "src/types/constants";
 import { useSelector } from "react-redux";
 import { store, actions, ChessGameState } from "src/store";
-import { _getPieceType, _getPlayer } from "../../../store/utils";
+import { _getPieceType, _getPlayer } from "src/store/utils";
 import TileHighlight from "./TileHighlight";
 
 interface TileProps {
@@ -43,7 +43,14 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
       store.dispatch(actions.selectTile({ tileId: id }));
     } else if (highlight) {
       if ((yPos === 0 || yPos === 7) && _getPieceType(selectedPiece!) === "P") {
-        store.dispatch(actions.showModal({ type: "PAWN_PROMOTE" }));
+        store.dispatch(
+          actions.setModalState({
+            modalState: {
+              type: "PAWN_PROMOTE",
+              modalProps: { targetTileId: id },
+            },
+          })
+        );
       } else {
         store.dispatch(actions.moveToTile({ targetTileId: id }));
       }
@@ -77,8 +84,9 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
       )}
       {historyHighlight && <TileHighlight variant={"MOVE_HISTORY"} />}
       {checkHighlight && <TileHighlight variant={"CHECK"} />}
-      {highlight && !pieceId && <TileHighlight variant={"CAN_MOVE"} />}
-      {highlight && !!pieceId && <TileHighlight variant={"CAN_TAKE"} />}
+      {highlight && (
+        <TileHighlight variant={!!pieceId ? "CAN_TAKE" : "CAN_MOVE"} />
+      )}
       {isSelected && <TileHighlight variant={"SELECTED"} />}
       {pieceId && <Piece pieceId={pieceId} />}
     </div>

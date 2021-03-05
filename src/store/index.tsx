@@ -16,6 +16,7 @@ import {
   _getPlayer,
   _getRelativePos,
   _getTile,
+  _isPiecePromoted,
 } from "./utils";
 
 interface TileMapData {
@@ -60,6 +61,15 @@ interface CheckState {
   checkBlockTiles: TileId[]; // if in check, tile(s) which can be moved to to block the check
 }
 
+export interface ModalProps {
+  targetTileId?: TileId;
+}
+
+export interface ModalState {
+  type: undefined | "PAWN_PROMOTE" | "GAME_OVER" | "SHARE_GAME_URL";
+  modalProps?: ModalProps;
+}
+
 export interface ChessGameState {
   gameStatus: GameStatus;
   winner: Player | undefined;
@@ -68,7 +78,7 @@ export interface ChessGameState {
   movesState: MovesState;
   boardState: BoardState;
   checkState: CheckState;
-  modalState: undefined | "PAWN_PROMOTE" | "GAME_OVER" | "SHARE_GAME_URL";
+  modalState: ModalState;
 }
 
 const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
@@ -100,7 +110,9 @@ const initialState: ChessGameState = {
     checkOriginTiles: [],
     checkBlockTiles: [],
   },
-  modalState: undefined,
+  modalState: {
+    type: undefined,
+  },
 };
 
 const gameSlice = createSlice({
@@ -176,7 +188,11 @@ const gameSlice = createSlice({
     },
     moveToTile(
       state: ChessGameState,
-      action: PayloadAction<{ targetTileId: TileId; sourceTileId?: TileId }>
+      action: PayloadAction<{
+        targetTileId: TileId;
+        sourceTileId?: TileId;
+        promotePieceType?: "Q" | "B" | "R" | "N";
+      }>
     ) {
       const {
         currentTurn,
@@ -193,18 +209,30 @@ const gameSlice = createSlice({
         throw Error;
       }
 
-      const { targetTileId, sourceTileId } = action.payload;
+      const { targetTileId, sourceTileId, promotePieceType } = action.payload;
       const board = _getBoard(currentTurn);
       const sourceId = sourceTileId || selectedTile;
       let takenPieceId = tileMap[targetTileId].pieceId;
       let castledRook: PieceId | undefined = undefined;
+      let targetPieceId = pieceId;
+
+      // If we're promoting a pawn, figure out new piece to add to board
+      if (promotePieceType) {
+        const newPieceCount = Object.values(tileMap).filter(
+          ({ pieceId }) =>
+            pieceId &&
+            _isPiecePromoted(pieceId) &&
+            _getPieceType(pieceId) === promotePieceType
+        ).length;
+        targetPieceId = `${currentTurn}${promotePieceType}_P_${newPieceCount}`;
+      }
 
       // Update tile map based on where we're moving the piece
       state.boardState.tileMap = {
         ...tileMap,
         [sourceId!]: { pieceId: undefined, highlight: false },
         [targetTileId]: {
-          pieceId,
+          pieceId: targetPieceId,
           highlight: false,
         },
       };
@@ -266,6 +294,7 @@ const gameSlice = createSlice({
         targetTileId,
         takenPieceId: takenPieceId,
         castledRook,
+        promotedPiece: promotePieceType && targetPieceId,
       };
 
       // Finally update move history
@@ -413,11 +442,11 @@ const gameSlice = createSlice({
         state.boardState.tileMap[id].highlight = true;
       });
     },
-    showModal(
+    setModalState(
       state,
-      action: PayloadAction<{ type: ChessGameState["modalState"] }>
+      action: PayloadAction<{ modalState: ChessGameState["modalState"] }>
     ) {
-      state.modalState = action.payload.type;
+      state.modalState = action.payload.modalState;
     },
   },
 });

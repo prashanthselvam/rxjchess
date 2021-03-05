@@ -1,3 +1,38 @@
+const PROMO_PIECES = {
+  BQ_P_1: "BQ_P_1",
+  BQ_P_2: "BQ_P_2",
+  BQ_P_3: "BQ_P_3",
+  BQ_P_4: "BQ_P_4",
+  BB_P_1: "BB_P_1",
+  BB_P_2: "BB_P_2",
+  BB_P_3: "BB_P_3",
+  BB_P_4: "BB_P_4",
+  BN_P_1: "BN_P_1",
+  BN_P_2: "BN_P_2",
+  BN_P_3: "BN_P_3",
+  BN_P_4: "BN_P_4",
+  BR_P_1: "BR_P_1",
+  BR_P_2: "BR_P_2",
+  BR_P_3: "BR_P_3",
+  BR_P_4: "BR_P_4",
+  WQ_P_1: "WQ_P_1",
+  WQ_P_2: "WQ_P_2",
+  WQ_P_3: "WQ_P_3",
+  WQ_P_4: "WQ_P_4",
+  WB_P_1: "WB_P_1",
+  WB_P_2: "WB_P_2",
+  WB_P_3: "WB_P_3",
+  WB_P_4: "WB_P_4",
+  WN_P_1: "WN_P_1",
+  WN_P_2: "WN_P_2",
+  WN_P_3: "WN_P_3",
+  WN_P_4: "WN_P_4",
+  WR_P_1: "WR_P_1",
+  WR_P_2: "WR_P_2",
+  WR_P_3: "WR_P_3",
+  WR_P_4: "WR_P_4",
+};
+
 export const PIECES = {
   BP1: "BP1",
   BP2: "BP2",
@@ -31,6 +66,7 @@ export const PIECES = {
   WB2: "WB2",
   WK: "WK",
   WQ: "WQ",
+  ...PROMO_PIECES,
 };
 
 export const TILES = {

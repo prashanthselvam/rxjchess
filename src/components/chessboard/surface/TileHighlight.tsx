@@ -1,31 +1,34 @@
 import * as React from "react";
+import { css } from "@emotion/react";
 
 interface TileHighlightProps {
   variant: "SELECTED" | "MOVE_HISTORY" | "CAN_TAKE" | "CAN_MOVE" | "CHECK";
 }
 
 const TileHighlight = ({ variant }: TileHighlightProps) => {
+  const defaultStyles = css`
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  `;
+
   switch (variant) {
     case "SELECTED":
       return (
         <div
-          css={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgba(103,174,104,0.8)",
-          }}
+          css={css`
+            ${defaultStyles};
+            background-color: rgba(103, 174, 104, 0.8);
+          `}
         />
       );
     case "CAN_TAKE":
       return (
         <div
-          css={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            border: "2px #9e0016 solid",
-          }}
+          css={css`
+            ${defaultStyles};
+            border: 2px #9e0016 solid;
+          `}
         />
       );
     case "CAN_MOVE":
@@ -46,25 +49,24 @@ const TileHighlight = ({ variant }: TileHighlightProps) => {
     case "CHECK":
       return (
         <div
-          css={{
-            position: "absolute",
-            height: "100%",
-            width: "100%",
-            borderRadius: 50,
-            background:
-              "radial-gradient(circle, rgba(255,15,0,1) 0%, rgba(255,255,255,0) 70%)",
-          }}
+          css={css`
+            ${defaultStyles};
+            border-radius: 50px;
+            background: radial-gradient(
+              circle,
+              rgba(255, 15, 0, 1) 0%,
+              rgba(255, 255, 255, 0) 70%
+            );
+          `}
         />
       );
     case "MOVE_HISTORY":
       return (
         <div
-          css={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            backgroundColor: "rgb(255,211,0,0.4)",
-          }}
+          css={css`
+            ${defaultStyles};
+            background-color: rgb(255, 211, 0, 0.4);
+          `}
         />
       );
   }
