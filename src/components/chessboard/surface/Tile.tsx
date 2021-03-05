@@ -30,7 +30,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
   );
   const isActiveCheck = useSelector((state) => state.checkState.isActiveCheck);
 
-  const isGameInProgress = gameStatus === "IN PROGRESS";
+  const isGameInProgress = ["IN PROGRESS", "READY"].includes(gameStatus);
   const isSelected = selectedTile === id;
   const isSelectable =
     isGameInProgress && pieceId && _getPlayer(pieceId) === currentTurn;

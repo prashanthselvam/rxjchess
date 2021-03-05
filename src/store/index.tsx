@@ -145,7 +145,7 @@ const gameSlice = createSlice({
       state.currentTurn = "W";
       state.boardState.whiteAttackedTiles = whiteOccupiedTiles;
       state.boardState.blackAttackedTiles = blackOccupiedTiles;
-      state.gameStatus = "IN PROGRESS";
+      state.gameStatus = "READY";
     },
     endGame(state: ChessGameState, action: PayloadAction<{ winner?: Player }>) {
       state.gameStatus = "GAME OVER";
@@ -359,6 +359,10 @@ const gameSlice = createSlice({
       state.movesState.moveHistory.push(lastMoveWithCheck);
     },
     switchTurns(state: ChessGameState) {
+      if (state.gameStatus === "READY") {
+        state.gameStatus = "IN PROGRESS";
+      }
+
       if (state.currentTurn === "W") {
         state.currentTurn = "B";
       } else {

@@ -8,13 +8,12 @@ import DrawerHandle from "./DrawerHandle";
 const Drawer = () => {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
   const gameStatus = useSelector((state) => state.gameStatus);
-  const isGameInitializingOrInProgress = [
-    "IN PROGRESS",
-    "INITIALIZING",
-  ].includes(gameStatus);
+  const isGameActive = ["IN PROGRESS", "INITIALIZING", "READY"].includes(
+    gameStatus
+  );
 
   const handleOnClick = () => {
-    if (isGameInitializingOrInProgress) {
+    if (isGameActive) {
       store.dispatch(actions.reset());
     } else {
       setIsOpen(!isOpen);
@@ -22,7 +21,7 @@ const Drawer = () => {
   };
 
   React.useEffect(() => {
-    if (isGameInitializingOrInProgress) {
+    if (isGameActive) {
       setIsOpen(false);
     }
   }, [gameStatus]);
@@ -41,14 +40,8 @@ const Drawer = () => {
       <DrawerMain isOpen={isOpen} />
       <DrawerHandle
         onClick={handleOnClick}
-        handleText={
-          isGameInitializingOrInProgress
-            ? "QUIT GAME"
-            : isOpen
-            ? "CANCEL"
-            : "NEW GAME"
-        }
-        hideKnob={isGameInitializingOrInProgress}
+        handleText={isGameActive ? "QUIT GAME" : isOpen ? "CANCEL" : "NEW GAME"}
+        hideKnob={isGameActive}
       />
     </div>
   );

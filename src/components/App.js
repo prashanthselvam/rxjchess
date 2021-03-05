@@ -5,12 +5,21 @@ import Chessboard from "./chessboard";
 import GameOptions from "./GameOptions";
 import TestPubnub from "./TestPubnub";
 import { Modal, useModal } from "./Modal";
+import Timer from "./Timer";
 
 const App = () => {
   return (
     <Provider store={store}>
       <div css={{ display: "flex", justifyContent: "center" }}>
         <Chessboard />
+        <div>
+          BLACK TIMER
+          <Timer maxTimeInSeconds={5} incrementInSeconds={5} player={"W"} />
+        </div>
+        <div>
+          WHITE TIMER
+          <Timer maxTimeInSeconds={5} incrementInSeconds={5} player={"B"} />
+        </div>
       </div>
       <Modal />
       {/*<div>*/}
