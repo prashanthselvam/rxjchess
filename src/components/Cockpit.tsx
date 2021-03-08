@@ -1,10 +1,11 @@
 import * as React from "react";
 import { useSelector } from "react-redux";
 import Timer from "./Timer";
-import { ChessGameState } from "../store";
+import { ChessGameState, Move } from "../store";
+import { _getPieceType } from "../store/utils";
 
 const MoveHistory = () => {
-  const moves = useSelector(
+  const moves: Move[] = useSelector(
     (state: ChessGameState) => state.movesState.moveHistory
   );
 
@@ -18,11 +19,18 @@ const MoveHistory = () => {
         flexGrow: 3,
       }}
     >
-      {moves.map(({ pieceId }) => (
-        <div css={{ textAlign: "center", width: "100%", padding: 5 }}>
-          {pieceId}
-        </div>
-      ))}
+      {moves.map(({ pieceId, takenPieceId, targetTileId }) => {
+        const pieceType = _getPieceType(pieceId);
+        const label = `${pieceType !== "P" ? pieceType : ""}${
+          !!takenPieceId ? "x" : ""
+        }${targetTileId}`.toLowerCase();
+
+        return (
+          <div css={{ textAlign: "center", width: "100%", padding: 5 }}>
+            {label}
+          </div>
+        );
+      })}
     </div>
   );
 };

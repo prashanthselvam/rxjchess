@@ -24,7 +24,7 @@ interface TileMapData {
   highlight: boolean;
 }
 
-interface Move {
+export interface Move {
   player: Player;
   pieceId: PieceId;
   sourceTileId: TileId;
