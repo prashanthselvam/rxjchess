@@ -36,7 +36,7 @@ const Cockpit = () => {
               backgroundColor: "rgba(0,0,0,0.3)",
             }}
           >
-            <Timer maxTimeInSeconds={5} player={"B"} />
+            <Timer maxTimeInSeconds={300} player={"B"} />
           </div>
           <MoveHistory />
           <div
@@ -47,7 +47,7 @@ const Cockpit = () => {
               backgroundColor: "rgba(0,0,0,0.3)",
             }}
           >
-            <Timer maxTimeInSeconds={5} player={"W"} />
+            <Timer maxTimeInSeconds={300} player={"W"} />
           </div>
         </>
       )}

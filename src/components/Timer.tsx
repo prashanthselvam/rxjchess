@@ -47,7 +47,7 @@ const Timer = ({
     maxTimeInSeconds * 1000
   );
 
-  const interval$ = interval(200).pipe(mapTo(-200));
+  const interval$ = interval(1000).pipe(mapTo(-1000));
   const pause$ = React.useMemo(() => new BehaviorSubject(true), []);
 
   React.useEffect(() => {
