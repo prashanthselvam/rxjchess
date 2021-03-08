@@ -1,9 +1,30 @@
 import * as React from "react";
 import { useSelector } from "react-redux";
 import Timer from "./Timer";
+import { ChessGameState } from "../store";
 
 const MoveHistory = () => {
-  return <div></div>;
+  const moves = useSelector(
+    (state: ChessGameState) => state.movesState.moveHistory
+  );
+
+  return (
+    <div
+      css={{
+        display: "grid",
+        overflow: "scroll",
+        gridTemplateColumns: "1fr 1fr",
+        gridAutoRows: 40,
+        flexGrow: 3,
+      }}
+    >
+      {moves.map(({ pieceId }) => (
+        <div css={{ textAlign: "center", width: "100%", padding: 5 }}>
+          {pieceId}
+        </div>
+      ))}
+    </div>
+  );
 };
 
 const Cockpit = () => {
@@ -15,6 +36,7 @@ const Cockpit = () => {
   return (
     <div
       css={{
+        maxHeight: "80vh",
         position: "relative",
         width: isGameActive ? "300px" : "0px",
         opacity: isGameActive ? 1 : 0,
