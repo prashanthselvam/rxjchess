@@ -1,5 +1,5 @@
 import * as React from "react";
-import Marker from "src/components/chessboard/surface/TileMarker";
+import Marker from "src/components/chessboard/tile/TileMarker";
 import Piece from "src/components/Piece";
 import { TileId } from "src/types/constants";
 import { useSelector } from "react-redux";
@@ -13,7 +13,7 @@ interface TileProps {
   yPos: YPos;
 }
 
-const Tile = ({ id, xPos, yPos }: TileProps) => {
+const Index = ({ id, xPos, yPos }: TileProps) => {
   const gameStatus = useSelector((state: ChessGameState) => state.gameStatus);
   const currentTurn = useSelector((state: ChessGameState) => state.currentTurn);
   const selectedTile = useSelector(
@@ -93,4 +93,4 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
   );
 };
 
-export default Tile;
+export default Index;

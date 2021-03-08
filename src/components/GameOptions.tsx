@@ -1,5 +1,5 @@
 import * as React from "react";
-import Tile from "src/components/chessboard/surface/Tile";
+import Index from "src/components/chessboard/tile";
 import { WHITE_BOARD, BLACK_BOARD } from "src/types/constants";
 import { store, actions } from "src/store";
 import { useSelector } from "react-redux";

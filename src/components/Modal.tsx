@@ -75,7 +75,7 @@ export const Modal = () => {
           boxShadow: "0px 10px 50px hsla(0, 0%, 0%, 0.33)",
           backgroundColor: "rgb(9,40,117)",
         }}
-        aria-label={type}
+        aria-label={type ? type : "MINIMIZED MODAL"}
       >
         {type === "PAWN_PROMOTE" && <PawnPromoteModal {...modalProps} />}
       </DialogContent>
