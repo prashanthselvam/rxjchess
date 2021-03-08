@@ -87,7 +87,7 @@ const Timer = ({
   return (
     <div
       css={{
-        fontSize: "3rem",
+        fontSize: "4rem",
         color: "white",
         width: "100%",
         textAlign: "center",

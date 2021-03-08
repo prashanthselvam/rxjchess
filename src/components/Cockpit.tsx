@@ -17,6 +17,7 @@ const MoveHistory = () => {
         gridTemplateColumns: "1fr 1fr",
         gridAutoRows: 40,
         flexGrow: 3,
+        fontSize: "2rem",
       }}
     >
       {moves.map(({ pieceId, takenPieceId, targetTileId }) => {
