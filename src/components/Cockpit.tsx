@@ -1,40 +1,7 @@
 import * as React from "react";
 import { useSelector } from "react-redux";
 import Timer from "./Timer";
-import { ChessGameState, Move } from "../store";
-import { _getPieceType } from "../store/utils";
-
-const MoveHistory = () => {
-  const moves: Move[] = useSelector(
-    (state: ChessGameState) => state.movesState.moveHistory
-  );
-
-  return (
-    <div
-      css={{
-        display: "grid",
-        overflow: "scroll",
-        gridTemplateColumns: "1fr 1fr",
-        gridAutoRows: 40,
-        flexGrow: 3,
-        fontSize: "2rem",
-      }}
-    >
-      {moves.map(({ pieceId, takenPieceId, targetTileId }) => {
-        const pieceType = _getPieceType(pieceId);
-        const label = `${pieceType !== "P" ? pieceType : ""}${
-          !!takenPieceId ? "x" : ""
-        }${targetTileId}`.toLowerCase();
-
-        return (
-          <div css={{ textAlign: "center", width: "100%", padding: 5 }}>
-            {label}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
+import MoveHistory from "./MoveHistory";
 
 const Cockpit = () => {
   const gameStatus = useSelector((state) => state.gameStatus);

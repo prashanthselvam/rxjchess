@@ -25,8 +25,11 @@ const Index = ({ id, xPos, yPos }: TileProps) => {
   const { pieceId, highlight } = useSelector(
     (state) => state.boardState.tileMap[id]
   );
-  const { highlight: historyHighlight } = useSelector(
+  const { pieceId: historyPieceId, highlight: historyHighlight } = useSelector(
     (state) => state.movesState.historyTileMap[id]
+  );
+  const isShowingHistory = useSelector(
+    (state) => state.movesState.isShowingHistory
   );
   const isActiveCheck = useSelector((state) => state.checkState.isActiveCheck);
 
@@ -39,6 +42,10 @@ const Index = ({ id, xPos, yPos }: TileProps) => {
   const checkHighlight = isActiveCheck && isSelectable && isKingTile;
 
   const onClick = () => {
+    if (isShowingHistory) {
+      return;
+    }
+
     if (isSelectable && !isSelected) {
       store.dispatch(actions.selectTile({ tileId: id }));
     } else if (highlight) {
@@ -83,12 +90,19 @@ const Index = ({ id, xPos, yPos }: TileProps) => {
         </Marker>
       )}
       {historyHighlight && <TileHighlight variant={"MOVE_HISTORY"} />}
-      {checkHighlight && <TileHighlight variant={"CHECK"} />}
-      {highlight && (
+      {!isShowingHistory && checkHighlight && (
+        <TileHighlight variant={"CHECK"} />
+      )}
+      {!isShowingHistory && highlight && (
         <TileHighlight variant={!!pieceId ? "CAN_TAKE" : "CAN_MOVE"} />
       )}
-      {isSelected && <TileHighlight variant={"SELECTED"} />}
-      {pieceId && <Piece pieceId={pieceId} />}
+      {!isShowingHistory && isSelected && (
+        <TileHighlight variant={"SELECTED"} />
+      )}
+      {((!isShowingHistory && pieceId) ||
+        (isShowingHistory && historyPieceId)) && (
+        <Piece pieceId={isShowingHistory ? historyPieceId : pieceId} />
+      )}
     </div>
   );
 };

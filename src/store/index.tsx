@@ -5,8 +5,13 @@ import {
   AnyAction,
   getDefaultMiddleware,
 } from "@reduxjs/toolkit";
-import { PieceId, PIECES, TileId, TILES } from "src/types/constants";
-import { GAME_TYPES } from "src/types/constants";
+import {
+  getInitialTileMap,
+  PieceId,
+  PIECES,
+  TileId,
+  TILES,
+} from "src/types/constants";
 import { createEpicMiddleware } from "redux-observable";
 import rootEpic from "./epics";
 import {
@@ -42,6 +47,7 @@ interface MovesState {
   movedPieces: Record<PieceId, boolean>; // Easy reference to know which pieces have been moved
   moveHistory: Move[]; // Array of moves
   historyTileMap: TileMap; // identical to tileMap but used for rendering historic state (previous moves, last moved, etc.)
+  isShowingHistory: boolean; // When we want to render historic moves, we switch this to true
 }
 
 interface BoardState {
@@ -72,6 +78,7 @@ export interface ModalState {
 
 export interface ChessGameState {
   gameStatus: GameStatus;
+  gameType: GameTypes | undefined;
   winner: Player | undefined;
   currentTurn: Player;
   pov: Player;
@@ -81,12 +88,13 @@ export interface ChessGameState {
   modalState: ModalState;
 }
 
-const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
+export const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
   return { ...acc, [curr]: { pieceId: undefined, highlight: false } };
 }, {});
 
 const initialState: ChessGameState = {
   gameStatus: "NOT STARTED",
+  gameType: undefined,
   winner: undefined,
   currentTurn: "W",
   pov: "W",
@@ -94,6 +102,7 @@ const initialState: ChessGameState = {
     movedPieces: {},
     moveHistory: [],
     historyTileMap: tileMapInitialState,
+    isShowingHistory: false,
   },
   boardState: {
     tileMap: tileMapInitialState,
@@ -130,21 +139,14 @@ const gameSlice = createSlice({
       const { gameType } = action.payload;
       const whiteOccupiedTiles: TileId[] = [];
       const blackOccupiedTiles: TileId[] = [];
-      const initialPositions = GAME_TYPES[gameType].initialPositions;
 
-      // Clear the board
-      state.boardState.tileMap = tileMapInitialState;
-
-      Object.entries(initialPositions).forEach(([tileId, pieceId]) => {
-        state.boardState.tileMap[tileId] = {
-          pieceId: pieceId,
-          highlight: false,
-        };
-      });
+      // Set up the board
+      state.boardState.tileMap = getInitialTileMap(gameType);
 
       state.currentTurn = "W";
       state.boardState.whiteAttackedTiles = whiteOccupiedTiles;
       state.boardState.blackAttackedTiles = blackOccupiedTiles;
+      state.gameType = gameType;
       state.gameStatus = "READY";
     },
     endGame(state: ChessGameState, action: PayloadAction<{ winner?: Player }>) {
@@ -445,6 +447,46 @@ const gameSlice = createSlice({
       tiles.forEach((id) => {
         state.boardState.tileMap[id].highlight = true;
       });
+    },
+    restoreBoardAtMove(state, action: PayloadAction<{ index: number }>) {
+      const { moveHistory } = state.movesState;
+      const initialTileMapClone = Object.assign(
+        {},
+        getInitialTileMap(state.gameType)
+      );
+      const index = action.payload.index;
+
+      // Restore to latest move
+      if (index === moveHistory.length - 1) {
+        const { sourceTileId, targetTileId } = moveHistory.slice(-1)[0];
+        initialTileMapClone[sourceTileId] = {
+          pieceId: undefined,
+          highlight: true,
+        };
+        initialTileMapClone[targetTileId] = {
+          pieceId: undefined,
+          highlight: true,
+        };
+        state.movesState.historyTileMap = initialTileMapClone;
+        state.movesState.isShowingHistory = false;
+        return;
+      }
+
+      moveHistory
+        .slice(0, index + 1)
+        .forEach(({ pieceId, sourceTileId, targetTileId }, i) => {
+          initialTileMapClone[sourceTileId] = {
+            pieceId: undefined,
+            highlight: i === index,
+          };
+          initialTileMapClone[targetTileId] = {
+            pieceId,
+            highlight: i === index,
+          };
+        });
+
+      state.movesState.historyTileMap = initialTileMapClone;
+      state.movesState.isShowingHistory = true;
     },
     setModalState(
       state,

@@ -1,3 +1,5 @@
+import { store, tileMapInitialState } from "../store";
+
 const PROMO_PIECES = {
   BQ_P_1: "BQ_P_1",
   BQ_P_2: "BQ_P_2",
@@ -267,4 +269,17 @@ export const GAME_TYPES = {
       [TILES.H7]: PIECES.BP8,
     },
   },
+};
+
+export const getInitialTileMap = (gameType) => {
+  const initialMap = Object.assign({}, tileMapInitialState);
+  Object.entries(GAME_TYPES[gameType].initialPositions).forEach(
+    ([tileId, pieceId]) => {
+      initialMap[tileId] = {
+        pieceId: pieceId,
+        highlight: false,
+      };
+    }
+  );
+  return initialMap;
 };
