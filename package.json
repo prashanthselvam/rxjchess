@@ -32,6 +32,7 @@
     "gatsby-source-filesystem": "^2.10.0",
     "gatsby-transformer-sharp": "^2.11.0",
     "intersection-observer": "^0.12.0",
+    "js-chess-engine": "^0.9.0",
     "lodash": "^4.17.20",
     "pubnub": "^4.29.11",
     "pubnub-react": "^2.1.0",
