@@ -29,6 +29,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <Game />
+      <GameOptions />
     </Provider>
   );
 };

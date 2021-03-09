@@ -171,7 +171,7 @@ const determineCheckmateEpic: GameEpic = (action$, state$) =>
         checkState: { checkBlockTiles, checkOriginTiles },
       } = state$.value;
 
-      const checkedPlayer = player === "W" ? "B" : "W";
+      const checkedPlayer = _getOpponent(player);
 
       const checkmate = Object.entries(tileMap)
         .filter(

@@ -35,12 +35,12 @@ export const _getPlayer = (pieceId: PieceId) =>
   pieceId.slice(0, 1) === "W" ? "W" : "B";
 
 /**
- * _getOpponent - Given a pieceId, returns the opponent player ("W" or "B")
+ * _getOpponent - Given a pieceId or a player, returns the opponent player ("W" or "B")
  *
- * @param pieceId
+ * @param text
  */
-export const _getOpponent = (pieceId: PieceId) =>
-  pieceId.slice(0, 1) === "W" ? "B" : "W";
+export const _getOpponent = (text: PieceId | Player) =>
+  text.slice(0, 1) === "W" ? "B" : "W";
 
 /**
  * _getPieceType - Get the type of piece a pieceId represents (P, K, B, R, etc.)

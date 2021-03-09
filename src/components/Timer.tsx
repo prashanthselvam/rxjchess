@@ -1,33 +1,9 @@
 import * as React from "react";
 import { useSelector } from "react-redux";
-import { actions, ChessGameState, store } from "../store";
+import { actions, ChessGameState, store } from "src/store";
+import { interval, BehaviorSubject, of } from "rxjs";
+import { mapTo, scan, switchMap, takeWhile, tap } from "rxjs/operators";
 import { _getOpponent } from "../store/utils";
-import isEqual from "lodash/isEqual";
-import {
-  timer,
-  interval,
-  BehaviorSubject,
-  Subject,
-  iif,
-  empty,
-  of,
-  NEVER,
-} from "rxjs";
-import {
-  concatMap,
-  distinctUntilChanged,
-  filter,
-  map,
-  mapTo,
-  mergeMap,
-  scan,
-  skip,
-  switchMap,
-  switchMapTo,
-  takeUntil,
-  takeWhile,
-  tap,
-} from "rxjs/operators";
 
 interface TimerProps {
   maxTimeInSeconds: number;
@@ -52,7 +28,7 @@ const Timer = ({
 
   React.useEffect(() => {
     pause$.next(currentTurn !== player);
-  }, [player, currentTurn]);
+  }, [player, currentTurn, gameStatus]);
 
   React.useEffect(() => {
     if (gameStatus !== "IN PROGRESS") {
@@ -71,10 +47,7 @@ const Timer = ({
       .subscribe(
         (val) => null,
         (err) => console.log(err),
-        () =>
-          store.dispatch(
-            actions.endGame({ winner: player === "W" ? "B" : "W" })
-          )
+        () => store.dispatch(actions.endGame({ winner: _getOpponent(player) }))
       );
   }, [gameStatus]);
 

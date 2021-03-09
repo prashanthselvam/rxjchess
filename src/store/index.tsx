@@ -17,6 +17,7 @@ import rootEpic from "./epics";
 import {
   _clearHighlights,
   _getBoard,
+  _getOpponent,
   _getPieceType,
   _getPlayer,
   _getRelativePos,
@@ -158,13 +159,7 @@ const gameSlice = createSlice({
       action: PayloadAction<{ player: Player }>
     ) {},
     togglePov(state: ChessGameState) {
-      if (state.pov === "W") {
-        state.pov = "B";
-        state.currentTurn = "B";
-      } else {
-        state.pov = "W";
-        state.currentTurn = "W";
-      }
+      state.pov = _getOpponent(state.pov);
     },
     selectTile(
       state: ChessGameState,

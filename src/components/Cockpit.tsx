@@ -2,9 +2,11 @@ import * as React from "react";
 import { useSelector } from "react-redux";
 import Timer from "./Timer";
 import MoveHistory from "./MoveHistory";
+import { _getOpponent } from "../store/utils";
 
 const Cockpit = () => {
   const gameStatus = useSelector((state) => state.gameStatus);
+  const pov = useSelector((state) => state.pov);
   const isGameActive = ["INITIALIZING", "IN PROGRESS", "READY"].includes(
     gameStatus
   );
@@ -34,7 +36,7 @@ const Cockpit = () => {
               backgroundColor: "rgba(0,0,0,0.3)",
             }}
           >
-            <Timer maxTimeInSeconds={300} player={"B"} />
+            <Timer maxTimeInSeconds={300} player={_getOpponent(pov)} />
           </div>
           <MoveHistory />
           <div
@@ -45,7 +47,7 @@ const Cockpit = () => {
               backgroundColor: "rgba(0,0,0,0.3)",
             }}
           >
-            <Timer maxTimeInSeconds={300} player={"W"} />
+            <Timer maxTimeInSeconds={300} player={pov} />
           </div>
         </>
       )}
