@@ -7,7 +7,8 @@ const DrawerHandle = ({ onClick, handleText, hideKnob }) => {
     display: inline-block;
     transition: all 0.2s;
     position: relative;
-    font-size: 5rem;
+    font-size: 7rem;
+    letter-spacing: 0.4rem;
     margin-top: ${hideKnob ? "4rem" : "9rem"};
     color: white;
     text-shadow: 0.2rem 0.2rem 1rem rgba(0, 0, 0, 0.4);

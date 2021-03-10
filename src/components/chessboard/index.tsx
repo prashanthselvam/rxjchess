@@ -76,9 +76,9 @@ const Chessboard = () => {
         Tag="div"
         fluid={imageData}
         style={{
-          boxShadow: "0.2px .1rem 0 0.2px rgba(1,1,1,0.2)",
+          boxShadow: "0.2px .2rem 0 rgba(1,1,1,0.6)",
           zIndex: 1,
-          padding: 15,
+          padding: "2%",
           width: "100%",
           height: "100%",
           display: "flex",

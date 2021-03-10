@@ -25,16 +25,20 @@ const DrawerMenuOption = ({ text, icon }) => {
         textDecoration: "none",
         "&:hover": {
           transform: "translateY(-.3rem)",
-          boxShadow: "0 1rem 2rem rgba(0,0,0,.2)",
+          boxShadow: "0 4rem 4rem rgba(0,0,0,.2)",
           cursor: "pointer",
+          "&>.icon": {
+            color: "rgb(33,33,33)",
+          },
         },
       }}
     >
       <h3 css={{ fontWeight: 500 }}>{text}</h3>
       <FontAwesomeIcon
+        className={"icon"}
         css={{
           marginTop: "3rem",
-          fontSize: "6rem",
+          fontSize: "5rem",
           color: "rgb(36,54,45)",
         }}
         icon={icon}
