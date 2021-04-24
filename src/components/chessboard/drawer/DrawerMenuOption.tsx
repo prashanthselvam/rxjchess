@@ -33,7 +33,7 @@ const DrawerMenuOption = ({
         onClick={onClick}
         css={{
           transition: "all .2s",
-          backgroundColor: "rgba(255,255,255,0.85)",
+          backgroundColor: "rgba(250,245,245,1)",
           borderRadius: "1.5rem",
           padding: "1.5rem",
           fontSize: "2rem",

@@ -67,7 +67,7 @@ const DrawerMain = ({ isOpen, ...props }) => {
         fluid={woodImage}
         style={{
           position: "absolute",
-          height: "12%",
+          height: "8%",
           width: "95%",
           bottom: 0,
           left: "2.5%",

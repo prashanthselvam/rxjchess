@@ -38,7 +38,7 @@ const Chessboard = () => {
     transition: all 0.5s;
     width: ${isGameActive ? "80vh" : "80vw"};
     height: ${isGameActive ? "80vh" : "80vw"};
-    margin-top: ${isGameActive ? "0px" : "-66%"};
+    margin-top: ${isGameActive ? "0px" : "-72%"};
     @media (max-width: 1024px) {
       width: ${isGameActive ? "70vw" : "90vw"};
       height: ${isGameActive ? "70vw" : "90vw"};
