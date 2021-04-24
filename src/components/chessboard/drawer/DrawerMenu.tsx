@@ -9,8 +9,10 @@ import { actions, store } from "src/store";
 import { Formik, Form, Field, useFormikContext } from "formik";
 import styled from "@emotion/styled";
 import Select from "react-select";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-const FormComponent = () => {
+const FormComponent = ({ onClose }) => {
   const { values, setFieldValue } = useFormikContext<GameOptions>();
   const incrementFormikValue = values.time.increment;
 
@@ -54,6 +56,7 @@ const FormComponent = () => {
     <Form>
       <div
         css={{
+          position: "relative",
           borderRadius: "1.5rem",
           backgroundColor: "rgba(250,245,245,1)",
           minWidth: 400,
@@ -65,6 +68,19 @@ const FormComponent = () => {
           textAlign: "initial",
         }}
       >
+        <FontAwesomeIcon
+          css={{
+            position: "absolute",
+            fontSize: "1.5rem",
+            right: 20,
+            top: 15,
+            "&:hover": {
+              cursor: "pointer",
+            },
+          }}
+          icon={faTimes}
+          onClick={onClose}
+        />
         <h3 css={{ textAlign: "center", marginBottom: 8 }}>Settings</h3>
         <StyledSelect
           options={gameTypeOptions}
@@ -109,6 +125,7 @@ const FormComponent = () => {
 
 interface GameOptionsFormProps {
   gameMode: GameModes;
+  onClose: () => void;
 }
 
 interface GameOptions {
@@ -120,7 +137,7 @@ interface GameOptions {
   };
 }
 
-const GameOptionsForm = ({ gameMode }: GameOptionsFormProps) => {
+const GameOptionsForm = ({ gameMode, onClose }: GameOptionsFormProps) => {
   const initialValues: GameOptions = {
     gameType: "REGULAR",
     player: "W",
@@ -141,7 +158,7 @@ const GameOptionsForm = ({ gameMode }: GameOptionsFormProps) => {
         initialValues={initialValues}
         onSubmit={(values) => console.log(values)}
       >
-        <FormComponent />
+        <FormComponent onClose={onClose} />
       </Formik>
     </div>
   );
@@ -178,7 +195,12 @@ const DrawerMenu = () => {
           zIndex: gameMode && 3,
         }}
       >
-        {gameMode && <GameOptionsForm gameMode={gameMode} />}
+        {gameMode && (
+          <GameOptionsForm
+            gameMode={gameMode}
+            onClose={() => setGameMode(undefined)}
+          />
+        )}
       </div>
       <div
         css={{
