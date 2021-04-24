@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DrawerMenuOption from "./DrawerMenuOption";
 import {
   faUserFriends,
@@ -13,8 +13,14 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 const FormComponent = ({ onClose }) => {
-  const { values, setFieldValue } = useFormikContext<GameOptions>();
-  const incrementFormikValue = values.time.increment;
+  const [formValues, setFormValues] = useState({
+    gameType: undefined,
+    player: undefined,
+    maxTime: undefined,
+    increment: undefined,
+  });
+
+  const [gameType, setGameType] = useState(undefined);
 
   const gameTypeOptions = [{ value: "REGULAR", label: "regular" }];
   const playerOptions = [
@@ -34,16 +40,13 @@ const FormComponent = ({ onClose }) => {
     label: t,
   }));
 
-  const handleMaxTimeChange = (e) => {
-    const value = e.target.value;
-    if (value === "unlimited") {
-      setFieldValue("time", { maxTime: value, increment: undefined });
-      return;
-    } else if (!incrementFormikValue) {
-      setFieldValue("time", { maxTime: value, increment: 0 });
+  const handleOnChange = (option, field) => {
+    if (field === "maxTime" && option.value === "unlimited") {
+      setFormValues({ ...formValues, maxTime: option, increment: undefined });
       return;
     }
-    setFieldValue("time.maxTime", value);
+
+    setFormValues({ ...formValues, [field]: option });
   };
 
   const StyledSelect = styled(Select)`
@@ -52,74 +55,81 @@ const FormComponent = ({ onClose }) => {
     margin-top: 12px;
   `;
 
+  useEffect(() => {
+    console.log(formValues);
+  }, [formValues]);
+
   return (
-    <Form>
-      <div
+    <div
+      css={{
+        position: "relative",
+        borderRadius: "1.5rem",
+        backgroundColor: "rgba(250,245,245,1)",
+        minWidth: 400,
+        maxWidth: "fit-content",
+        margin: "auto",
+        minHeight: "100%",
+        fontSize: "2rem",
+        padding: 16,
+        textAlign: "initial",
+      }}
+    >
+      <FontAwesomeIcon
         css={{
-          position: "relative",
-          borderRadius: "1.5rem",
-          backgroundColor: "rgba(250,245,245,1)",
-          minWidth: 400,
-          maxWidth: "fit-content",
-          margin: "auto",
-          minHeight: "100%",
-          fontSize: "2rem",
-          padding: 16,
-          textAlign: "initial",
+          position: "absolute",
+          fontSize: "1.5rem",
+          right: 20,
+          top: 15,
+          "&:hover": {
+            cursor: "pointer",
+          },
         }}
-      >
-        <FontAwesomeIcon
-          css={{
-            position: "absolute",
-            fontSize: "1.5rem",
-            right: 20,
-            top: 15,
-            "&:hover": {
-              cursor: "pointer",
-            },
-          }}
-          icon={faTimes}
-          onClick={onClose}
-        />
-        <h3 css={{ textAlign: "center", marginBottom: 8 }}>Settings</h3>
+        icon={faTimes}
+        onClick={onClose}
+      />
+      <h3 css={{ textAlign: "center", marginBottom: 8 }}>Settings</h3>
+      <StyledSelect
+        options={gameTypeOptions}
+        placeholder={"Game Type"}
+        value={formValues.gameType}
+        onChange={(option) => handleOnChange(option, "gameType")}
+      />
+      <StyledSelect
+        options={playerOptions}
+        placeholder={"Side"}
+        value={formValues.player}
+        onChange={(option) => handleOnChange(option, "player")}
+      />
+      <div css={{ display: "flex", justifyContent: "space-between" }}>
         <StyledSelect
-          options={gameTypeOptions}
-          placeholder={"Game Type"}
-          onChange={(e) => console.log(e)}
+          options={maxTimeOptions}
+          placeholder={"Max time (min)"}
+          value={formValues.maxTime}
+          onChange={(option) => handleOnChange(option, "maxTime")}
+          css={{ width: "48%" }}
         />
         <StyledSelect
-          options={playerOptions}
-          placeholder={"Side"}
-          onChange={(e) => console.log(e)}
+          options={incrementOptions}
+          placeholder={"Increment"}
+          onChange={(option) => handleOnChange(option, "increment")}
+          value={formValues.increment}
+          isDisabled={formValues.maxTime?.value === "unlimited"}
+          css={{ width: "48%" }}
         />
-        <div css={{ display: "flex", justifyContent: "space-between" }}>
-          <StyledSelect
-            options={maxTimeOptions}
-            placeholder={"Max time (min)"}
-            onChange={(e) => console.log(e)}
-            css={{ width: "48%" }}
-          />
-          <StyledSelect
-            options={incrementOptions}
-            placeholder={"Increment"}
-            onChange={(e) => console.log(e)}
-            disabled={true}
-            css={{ width: "48%" }}
-          />
-        </div>
-        <div>
-          <button
-            css={{
-              width: "100%",
-              padding: "12px 0",
-              marginTop: 12,
-            }}
-          >
-            CREATE GAME
-          </button>
-        </div>
       </div>
-    </Form>
+      <div>
+        <button
+          css={{
+            width: "100%",
+            padding: "12px 0",
+            marginTop: 12,
+            fontSize: "1.7rem",
+          }}
+        >
+          CREATE GAME
+        </button>
+      </div>
+    </div>
   );
 };
 
@@ -154,12 +164,7 @@ const GameOptionsForm = ({ gameMode, onClose }: GameOptionsFormProps) => {
 
   return (
     <div>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={(values) => console.log(values)}
-      >
-        <FormComponent onClose={onClose} />
-      </Formik>
+      <FormComponent onClose={onClose} />
     </div>
   );
 };
