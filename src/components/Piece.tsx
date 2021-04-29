@@ -10,7 +10,7 @@ interface PieceProps {
 }
 
 const Piece = ({ pieceId }: PieceProps) => {
-  const pov = useSelector((state) => state.pov);
+  const pov = useSelector((state) => state.player);
   const piecePlayer = pieceId.slice(0, 1);
 
   const player = _getPlayer(pieceId);

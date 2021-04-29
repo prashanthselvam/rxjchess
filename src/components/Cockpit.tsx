@@ -6,7 +6,7 @@ import { _getOpponent } from "../store/utils";
 
 const Cockpit = () => {
   const gameStatus = useSelector((state) => state.gameStatus);
-  const pov = useSelector((state) => state.pov);
+  const player = useSelector((state) => state.player);
   const isGameActive = ["INITIALIZING", "IN PROGRESS", "READY"].includes(
     gameStatus
   );
@@ -36,7 +36,7 @@ const Cockpit = () => {
               backgroundColor: "rgba(0,0,0,0.3)",
             }}
           >
-            <Timer maxTimeInSeconds={300} player={_getOpponent(pov)} />
+            <Timer maxTimeInSeconds={300} player={_getOpponent(player)} />
           </div>
           <MoveHistory />
           <div
@@ -47,7 +47,7 @@ const Cockpit = () => {
               backgroundColor: "rgba(0,0,0,0.3)",
             }}
           >
-            <Timer maxTimeInSeconds={300} player={pov} />
+            <Timer maxTimeInSeconds={300} player={player} />
           </div>
         </>
       )}

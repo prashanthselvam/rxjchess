@@ -80,9 +80,12 @@ export interface ModalState {
 export interface ChessGameState {
   gameStatus: GameStatus;
   gameType: GameTypes | undefined;
+  gameMode: GameModes | undefined;
   winner: Player | undefined;
-  currentTurn: Player;
-  pov: Player;
+  currentTurn: Player | undefined;
+  player: Player | undefined;
+  maxTime: number;
+  increment: number;
   movesState: MovesState;
   boardState: BoardState;
   checkState: CheckState;
@@ -95,10 +98,13 @@ export const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
 
 const initialState: ChessGameState = {
   gameStatus: "NOT STARTED",
+  gameMode: undefined,
   gameType: undefined,
   winner: undefined,
   currentTurn: "W",
-  pov: "W",
+  player: "W",
+  maxTime: 5,
+  increment: 0,
   movesState: {
     movedPieces: {},
     moveHistory: [],
@@ -135,11 +141,31 @@ const gameSlice = createSlice({
     },
     newGame(
       state: ChessGameState,
-      action: PayloadAction<{ gameType: GameTypes }>
+      action: PayloadAction<{
+        gameMode: GameModes;
+        gameType: GameTypes;
+        player: Player | "R";
+        maxTime: number;
+        increment: number;
+      }>
     ) {
-      const { gameType } = action.payload;
+      const { gameMode, gameType, player, maxTime, increment } = action.payload;
       const whiteOccupiedTiles: TileId[] = [];
       const blackOccupiedTiles: TileId[] = [];
+
+      // Set the game state
+      state.gameMode = gameMode;
+      state.gameType = gameType;
+
+      if (player === "R") {
+        const playerArr: Player[] = ["W", "B"];
+        state.player = playerArr[Math.round(Math.random())];
+      } else {
+        state.player = player;
+      }
+
+      state.maxTime = maxTime;
+      state.increment = increment;
 
       // Set up the board
       state.boardState.tileMap = getInitialTileMap(gameType);
@@ -147,7 +173,6 @@ const gameSlice = createSlice({
       state.currentTurn = "W";
       state.boardState.whiteAttackedTiles = whiteOccupiedTiles;
       state.boardState.blackAttackedTiles = blackOccupiedTiles;
-      state.gameType = gameType;
       state.gameStatus = "READY";
     },
     endGame(state: ChessGameState, action: PayloadAction<{ winner?: Player }>) {
@@ -159,7 +184,9 @@ const gameSlice = createSlice({
       action: PayloadAction<{ player: Player }>
     ) {},
     togglePov(state: ChessGameState) {
-      state.pov = _getOpponent(state.pov);
+      if (state.player) {
+        state.player = _getOpponent(state.player);
+      }
     },
     selectTile(
       state: ChessGameState,

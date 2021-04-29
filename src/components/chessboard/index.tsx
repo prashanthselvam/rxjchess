@@ -24,7 +24,7 @@ const Chessboard = () => {
 
   const imageData = data.file.childImageSharp.fluid;
 
-  const pov = useSelector((state) => state.pov);
+  const player = useSelector((state) => state.player);
 
   const gameStatus = useSelector((state) => state.gameStatus);
 
@@ -63,7 +63,7 @@ const Chessboard = () => {
       >
         {[...Array(8).keys()].map((xPos) => {
           const key =
-            pov === "W" ? WHITE_BOARD[yPos][xPos] : BLACK_BOARD[yPos][xPos];
+            player === "W" ? WHITE_BOARD[yPos][xPos] : BLACK_BOARD[yPos][xPos];
           return <Index key={key} id={key} xPos={xPos} yPos={yPos} />;
         })}
       </div>
