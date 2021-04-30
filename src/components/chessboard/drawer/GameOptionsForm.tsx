@@ -79,9 +79,9 @@ const GameOptionsForm = ({ gameMode, onClose }: GameOptionsFormProps) => {
       gameMode,
     };
 
-    store.dispatch(actions.initializeGame());
+    // store.dispatch(actions.initializeGame());
 
-    setTimeout(() => store.dispatch(actions.newGame(options)), 700);
+    store.dispatch(actions.newGame(options));
   };
 
   useEffect(() => {
