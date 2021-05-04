@@ -8,9 +8,9 @@ import {
 import GameOptionsForm from "./GameOptionsForm";
 
 const DrawerMenu = () => {
-  const [gameMode, setGameMode] = useState<GameModes | undefined>(undefined);
+  const [gameMode, setGameMode] = useState<PlayModes | undefined>(undefined);
 
-  const handleOnClick = (option: GameModes) => {
+  const handleOnClick = (option: PlayModes) => {
     setGameMode(option);
   };
 

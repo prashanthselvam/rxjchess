@@ -6,6 +6,7 @@ import { BLACK_BOARD, WHITE_BOARD } from "../../types/constants";
 import Index from "./tile";
 import { useSelector } from "react-redux";
 import { css } from "@emotion/react";
+import { ChessGameState } from "../../store";
 
 const Chessboard = () => {
   const data = useStaticQuery(
@@ -24,9 +25,13 @@ const Chessboard = () => {
 
   const imageData = data.file.childImageSharp.fluid;
 
-  const player = useSelector((state) => state.player);
+  const player = useSelector(
+    (state: ChessGameState) => state.currentGameState.player
+  );
 
-  const gameStatus = useSelector((state) => state.gameStatus);
+  const gameStatus = useSelector(
+    (state: ChessGameState) => state.currentGameState.status
+  );
 
   const isGameActive = ["IN PROGRESS", "INITIALIZING", "READY"].includes(
     gameStatus

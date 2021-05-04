@@ -44,6 +44,21 @@ export interface Move {
 export type TileMap = Record<TileId, TileMapData>;
 export type CanCastle = Record<Player, TileId[]>;
 
+/**
+ * STATE INTERFACES
+ */
+
+interface CurrentGameState {
+  status: GameStatus;
+  gameType: GameTypes | undefined;
+  playMode: PlayModes | undefined;
+  maxTime: number | "unlimited";
+  increment: number;
+  currentTurn: Player | undefined;
+  winner: Player | undefined;
+  player: Player | undefined;
+}
+
 interface MovesState {
   movedPieces: Record<PieceId, boolean>; // Easy reference to know which pieces have been moved
   moveHistory: Move[]; // Array of moves
@@ -78,14 +93,7 @@ export interface ModalState {
 }
 
 export interface ChessGameState {
-  gameStatus: GameStatus;
-  gameType: GameTypes | undefined;
-  gameMode: GameModes | undefined;
-  winner: Player | undefined;
-  currentTurn: Player | undefined;
-  player: Player | undefined;
-  maxTime: number;
-  increment: number;
+  currentGameState: CurrentGameState;
   movesState: MovesState;
   boardState: BoardState;
   checkState: CheckState;
@@ -97,14 +105,16 @@ export const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
 }, {});
 
 const initialState: ChessGameState = {
-  gameStatus: "NOT STARTED",
-  gameMode: undefined,
-  gameType: undefined,
-  winner: undefined,
-  currentTurn: "W",
-  player: "W",
-  maxTime: 5,
-  increment: 0,
+  currentGameState: {
+    status: "NOT STARTED",
+    playMode: undefined,
+    gameType: undefined,
+    winner: undefined,
+    currentTurn: "W",
+    player: "W",
+    maxTime: 5,
+    increment: 0,
+  },
   movesState: {
     movedPieces: {},
     moveHistory: [],
@@ -137,55 +147,57 @@ const gameSlice = createSlice({
   reducers: {
     reset: (state: ChessGameState) => initialState,
     initializeGame(state: ChessGameState) {
-      state.gameStatus = "INITIALIZING";
+      state.currentGameState.status = "INITIALIZING";
     },
     newGame(
       state: ChessGameState,
       action: PayloadAction<{
-        gameMode: GameModes;
+        playMode: PlayModes;
         gameType: GameTypes;
         player: Player | "R";
-        maxTime: number;
+        maxTime: number | "unlimited";
         increment: number;
       }>
     ) {
-      const { gameMode, gameType, player, maxTime, increment } = action.payload;
+      const { playMode, gameType, player, maxTime, increment } = action.payload;
       const whiteOccupiedTiles: TileId[] = [];
       const blackOccupiedTiles: TileId[] = [];
 
       // Set the game state
-      state.gameMode = gameMode;
-      state.gameType = gameType;
+      state.currentGameState.playMode = playMode;
+      state.currentGameState.gameType = gameType;
 
       if (player === "R") {
         const playerArr: Player[] = ["W", "B"];
-        state.player = playerArr[Math.round(Math.random())];
+        state.currentGameState.player = playerArr[Math.round(Math.random())];
       } else {
-        state.player = player;
+        state.currentGameState.player = player;
       }
 
-      state.maxTime = maxTime;
-      state.increment = increment;
+      state.currentGameState.maxTime = maxTime;
+      state.currentGameState.increment = increment;
 
       // Set up the board
       state.boardState.tileMap = getInitialTileMap(gameType);
 
-      state.currentTurn = "W";
+      state.currentGameState.currentTurn = "W";
       state.boardState.whiteAttackedTiles = whiteOccupiedTiles;
       state.boardState.blackAttackedTiles = blackOccupiedTiles;
-      state.gameStatus = "READY";
+      state.currentGameState.status = "READY";
     },
     endGame(state: ChessGameState, action: PayloadAction<{ winner?: Player }>) {
-      state.gameStatus = "GAME OVER";
-      state.winner = action.payload?.winner;
+      state.currentGameState.status = "GAME OVER";
+      state.currentGameState.winner = action.payload?.winner;
     },
     determineCheckmate(
       state: ChessGameState,
       action: PayloadAction<{ player: Player }>
     ) {},
     togglePov(state: ChessGameState) {
-      if (state.player) {
-        state.player = _getOpponent(state.player);
+      if (state.currentGameState.player) {
+        state.currentGameState.player = _getOpponent(
+          state.currentGameState.player
+        );
       }
     },
     selectTile(
@@ -219,7 +231,7 @@ const gameSlice = createSlice({
       }>
     ) {
       const {
-        currentTurn,
+        currentGameState: { currentTurn },
         boardState: {
           selectedTile,
           selectedPiece: pieceId,
@@ -234,7 +246,7 @@ const gameSlice = createSlice({
       }
 
       const { targetTileId, sourceTileId, promotePieceType } = action.payload;
-      const board = _getBoard(currentTurn);
+      const board = _getBoard(currentTurn!);
       const sourceId = sourceTileId || selectedTile;
       let takenPieceId = tileMap[targetTileId].pieceId;
       let castledRook: PieceId | undefined = undefined;
@@ -383,14 +395,14 @@ const gameSlice = createSlice({
       state.movesState.moveHistory.push(lastMoveWithCheck);
     },
     switchTurns(state: ChessGameState) {
-      if (state.gameStatus === "READY") {
-        state.gameStatus = "IN PROGRESS";
+      if (state.currentGameState.status === "READY") {
+        state.currentGameState.status = "IN PROGRESS";
       }
 
-      if (state.currentTurn === "W") {
-        state.currentTurn = "B";
+      if (state.currentGameState.currentTurn === "W") {
+        state.currentGameState.currentTurn = "B";
       } else {
-        state.currentTurn = "W";
+        state.currentGameState.currentTurn = "W";
       }
     },
     determineEnpassantEligibility(
@@ -416,7 +428,7 @@ const gameSlice = createSlice({
     },
     determineCastleEligibility(state: ChessGameState) {
       const {
-        currentTurn,
+        currentGameState: { currentTurn },
         movesState: { movedPieces },
         boardState: { tileMap, whiteAttackedTiles, blackAttackedTiles },
         checkState: { isActiveCheck },
@@ -474,7 +486,7 @@ const gameSlice = createSlice({
       const { moveHistory } = state.movesState;
       const initialTileMapClone = Object.assign(
         {},
-        getInitialTileMap(state.gameType)
+        getInitialTileMap(state.currentGameState.gameType)
       );
       const index = action.payload.index;
 

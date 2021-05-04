@@ -14,8 +14,12 @@ interface TileProps {
 }
 
 const Index = ({ id, xPos, yPos }: TileProps) => {
-  const gameStatus = useSelector((state: ChessGameState) => state.gameStatus);
-  const currentTurn = useSelector((state: ChessGameState) => state.currentTurn);
+  const gameStatus = useSelector(
+    (state: ChessGameState) => state.currentGameState.status
+  );
+  const currentTurn = useSelector(
+    (state: ChessGameState) => state.currentGameState.currentTurn
+  );
   const selectedTile = useSelector(
     (state: ChessGameState) => state.boardState.selectedTile
   );
@@ -23,15 +27,17 @@ const Index = ({ id, xPos, yPos }: TileProps) => {
     (state: ChessGameState) => state.boardState.selectedPiece
   );
   const { pieceId, highlight } = useSelector(
-    (state) => state.boardState.tileMap[id]
+    (state: ChessGameState) => state.boardState.tileMap[id]
   );
   const { pieceId: historyPieceId, highlight: historyHighlight } = useSelector(
-    (state) => state.movesState.historyTileMap[id]
+    (state: ChessGameState) => state.movesState.historyTileMap[id]
   );
   const isShowingHistory = useSelector(
-    (state) => state.movesState.isShowingHistory
+    (state: ChessGameState) => state.movesState.isShowingHistory
   );
-  const isActiveCheck = useSelector((state) => state.checkState.isActiveCheck);
+  const isActiveCheck = useSelector(
+    (state: ChessGameState) => state.checkState.isActiveCheck
+  );
 
   const isGameInProgress = ["IN PROGRESS", "READY"].includes(gameStatus);
   const isSelected = selectedTile === id;

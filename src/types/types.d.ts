@@ -12,4 +12,4 @@ type GameStatus =
 
 type GameTypes = "REGULAR";
 
-type GameModes = "PLAY FRIEND" | "PLAY COMPUTER" | "PLAY OVER THE BOARD";
+type PlayModes = "PLAY FRIEND" | "PLAY COMPUTER" | "PLAY OVER THE BOARD";

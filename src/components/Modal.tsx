@@ -12,7 +12,9 @@ import { useSelector } from "react-redux";
 import Image from "./image";
 
 const PawnPromoteModal = ({ targetTileId }: ModalProps) => {
-  const currentTurn = useSelector((state: ChessGameState) => state.currentTurn);
+  const currentTurn = useSelector(
+    (state: ChessGameState) => state.currentGameState.currentTurn
+  );
   const pieceTypes = ["Q", "B", "N", "R"];
 
   const onClick = (type) => {
@@ -58,7 +60,9 @@ const PawnPromoteModal = ({ targetTileId }: ModalProps) => {
 };
 
 export const Modal = () => {
-  const { type, modalProps } = useSelector((state) => state.modalState);
+  const { type, modalProps } = useSelector(
+    (state: ChessGameState) => state.modalState
+  );
   const showModal = !!type;
 
   const close = () =>

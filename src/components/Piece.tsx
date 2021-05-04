@@ -1,7 +1,6 @@
 import Image from "./image";
 import * as React from "react";
 import { PieceId } from "src/types/constants";
-import { useSelector } from "react-redux";
 import { _getPieceType, _getPlayer } from "../store/utils";
 
 interface PieceProps {
@@ -10,9 +9,6 @@ interface PieceProps {
 }
 
 const Piece = ({ pieceId }: PieceProps) => {
-  const pov = useSelector((state) => state.player);
-  const piecePlayer = pieceId.slice(0, 1);
-
   const player = _getPlayer(pieceId);
   const pieceType = _getPieceType(pieceId);
   const filename = `${player}${pieceType}.png`;

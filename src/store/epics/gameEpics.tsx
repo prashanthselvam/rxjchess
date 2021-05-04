@@ -24,7 +24,7 @@ const selectTileEpic: GameEpic = (action$, state$) =>
     pluck("payload"),
     mergeMap(({ tileId }) => {
       const {
-        currentTurn,
+        currentGameState: { currentTurn },
         boardState: {
           tileMap,
           peggedTileMap,
@@ -41,7 +41,7 @@ const selectTileEpic: GameEpic = (action$, state$) =>
       const possibleMoves: TileId[] = [];
 
       const allPossibleMoves = determinePossibleMoves(
-        currentTurn,
+        currentTurn!,
         pieceId,
         tileId,
         whiteAttackedTiles,

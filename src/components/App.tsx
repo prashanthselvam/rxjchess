@@ -1,4 +1,4 @@
-import { actions, Move, store } from "src/store";
+import { actions, ChessGameState, Move, store } from "src/store";
 import { Provider } from "react-redux";
 import * as React from "react";
 import GameOptions from "./GameOptions";
@@ -11,8 +11,12 @@ import { useSelector } from "react-redux";
 const jsChess = require("js-chess-engine");
 
 const Game = () => {
-  const gameStatus = useSelector((state) => state.gameStatus);
-  const moveHistory = useSelector((state) => state.movesState.moveHistory);
+  const gameStatus = useSelector(
+    (state: ChessGameState) => state.currentGameState.status
+  );
+  const moveHistory = useSelector(
+    (state: ChessGameState) => state.movesState.moveHistory
+  );
   const isGameActive = ["IN PROGRESS", "READY"].includes(gameStatus);
   const game = React.useMemo(() => new jsChess.Game(), []);
 
@@ -35,7 +39,7 @@ const Game = () => {
             targetTileId: aiMove.to,
           })
         );
-      }, 1000);
+      }, 3000);
     }
   }, [moveHistory]);
 

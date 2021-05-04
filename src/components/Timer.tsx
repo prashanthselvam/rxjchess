@@ -16,8 +16,9 @@ const Timer = ({
   incrementInSeconds = 3,
   player,
 }: TimerProps) => {
-  const gameStatus = useSelector((state: ChessGameState) => state.gameStatus);
-  const currentTurn = useSelector((state: ChessGameState) => state.currentTurn);
+  const { status, currentTurn } = useSelector(
+    (state: ChessGameState) => state.currentGameState
+  );
 
   const [timeRemaining, setTimeRemaining] = React.useState(
     maxTimeInSeconds * 1000
@@ -28,10 +29,10 @@ const Timer = ({
 
   React.useEffect(() => {
     pause$.next(currentTurn !== player);
-  }, [player, currentTurn, gameStatus]);
+  }, [player, currentTurn, status]);
 
   React.useEffect(() => {
-    if (gameStatus !== "IN PROGRESS") {
+    if (status !== "IN PROGRESS") {
       return;
     }
 
@@ -49,7 +50,7 @@ const Timer = ({
         (err) => console.log(err),
         () => store.dispatch(actions.endGame({ winner: _getOpponent(player) }))
       );
-  }, [gameStatus]);
+  }, [status]);
 
   const displayTime = Math.ceil(timeRemaining / 1000);
   const displayMin = Math.floor(displayTime / 60);

@@ -6,7 +6,7 @@ import { actions, store } from "src/store";
 import Select from "react-select";
 
 interface GameOptionsFormProps {
-  gameMode: GameModes;
+  gameMode: PlayModes;
   onClose: () => void;
 }
 
@@ -18,7 +18,7 @@ type Option<T> = {
 interface FormValues {
   gameType: Option<GameTypes> | undefined;
   player: Option<Player | "R"> | undefined;
-  maxTime: Option<number> | undefined;
+  maxTime: Option<number | "unlimited"> | undefined;
   increment: Option<number> | undefined;
 }
 
@@ -39,7 +39,7 @@ const GameOptionsForm = ({ gameMode, onClose }: GameOptionsFormProps) => {
     { value: "B", label: "black" },
     { value: "R", label: "random" },
   ];
-  const maxTimeOptions: Option<number>[] = [
+  const maxTimeOptions: Option<number | "unlimited">[] = [
     { value: "unlimited", label: "unlimited" },
     ...[1, 2, 3, 5, 10, 15, 20, 30, 45, 60].map((t) => ({
       value: t,
@@ -78,8 +78,6 @@ const GameOptionsForm = ({ gameMode, onClose }: GameOptionsFormProps) => {
       maxTime: maxTime!.value,
       gameMode,
     };
-
-    // store.dispatch(actions.initializeGame());
 
     store.dispatch(actions.newGame(options));
   };

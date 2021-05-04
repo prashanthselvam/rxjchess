@@ -1,5 +1,5 @@
 import React from "react";
-import { actions, store } from "src/store";
+import { actions, ChessGameState, store } from "src/store";
 import { css } from "@emotion/react";
 import { useSelector } from "react-redux";
 import DrawerMain from "./DrawerMain";
@@ -7,7 +7,9 @@ import DrawerHandle from "./DrawerHandle";
 
 const Drawer = () => {
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
-  const gameStatus = useSelector((state) => state.gameStatus);
+  const gameStatus = useSelector(
+    (state: ChessGameState) => state.currentGameState.status
+  );
   const isGameActive = ["IN PROGRESS", "INITIALIZING", "READY"].includes(
     gameStatus
   );

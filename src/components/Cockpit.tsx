@@ -3,12 +3,15 @@ import { useSelector } from "react-redux";
 import Timer from "./Timer";
 import MoveHistory from "./MoveHistory";
 import { _getOpponent } from "../store/utils";
+import { ChessGameState } from "../store";
 
 const Cockpit = () => {
-  const gameStatus = useSelector((state) => state.gameStatus);
-  const player = useSelector((state) => state.player);
-  const maxTimeInMinutes = useSelector((state) => state.maxTime);
-  const incrementInSeconds = useSelector((state) => state.increment);
+  const {
+    player,
+    status: gameStatus,
+    maxTime: maxTimeInMinutes,
+    increment: incrementInSeconds,
+  } = useSelector((state: ChessGameState) => state.currentGameState);
 
   const isGameActive = ["INITIALIZING", "IN PROGRESS", "READY"].includes(
     gameStatus

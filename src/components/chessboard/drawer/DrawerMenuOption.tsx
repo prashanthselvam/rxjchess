@@ -6,7 +6,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 interface DrawerMenuOptionProps {
   text: string;
   icon: IconProp;
-  onClick: (o: GameModes) => void;
+  onClick: (o: PlayModes) => void;
   position: number;
   selected: boolean | undefined;
 }
