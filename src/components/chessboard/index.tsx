@@ -3,7 +3,7 @@ import BackgroundImage from "gatsby-background-image";
 import React from "react";
 import Drawer from "./drawer";
 import { BLACK_BOARD, WHITE_BOARD } from "../../types/constants";
-import Index from "./tile";
+import Tile from "./tile";
 import { useSelector } from "react-redux";
 import { css } from "@emotion/react";
 import { ChessGameState } from "../../store";
@@ -69,7 +69,7 @@ const Chessboard = () => {
         {[...Array(8).keys()].map((xPos) => {
           const key =
             player === "W" ? WHITE_BOARD[yPos][xPos] : BLACK_BOARD[yPos][xPos];
-          return <Index key={key} id={key} xPos={xPos} yPos={yPos} />;
+          return <Tile key={key} id={key} xPos={xPos} yPos={yPos} />;
         })}
       </div>
     );

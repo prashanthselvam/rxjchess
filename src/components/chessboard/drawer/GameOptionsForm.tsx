@@ -6,7 +6,7 @@ import { actions, store } from "src/store";
 import Select from "react-select";
 
 interface GameOptionsFormProps {
-  gameMode: PlayModes;
+  playMode: PlayModes;
   onClose: () => void;
 }
 
@@ -22,7 +22,7 @@ interface FormValues {
   increment: Option<number> | undefined;
 }
 
-const GameOptionsForm = ({ gameMode, onClose }: GameOptionsFormProps) => {
+const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
   const [formValues, setFormValues] = useState<FormValues>({
     gameType: undefined,
     player: undefined,
@@ -76,7 +76,7 @@ const GameOptionsForm = ({ gameMode, onClose }: GameOptionsFormProps) => {
       player: player!.value,
       increment: increment!.value,
       maxTime: maxTime!.value,
-      gameMode,
+      playMode: playMode,
     };
 
     store.dispatch(actions.newGame(options));

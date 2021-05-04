@@ -11,37 +11,37 @@ import { useSelector } from "react-redux";
 const jsChess = require("js-chess-engine");
 
 const Game = () => {
-  const gameStatus = useSelector(
-    (state: ChessGameState) => state.currentGameState.status
-  );
-  const moveHistory = useSelector(
-    (state: ChessGameState) => state.movesState.moveHistory
-  );
-  const isGameActive = ["IN PROGRESS", "READY"].includes(gameStatus);
-  const game = React.useMemo(() => new jsChess.Game(), []);
+  // const gameStatus = useSelector(
+  //   (state: ChessGameState) => state.currentGameState.status
+  // );
+  // const moveHistory = useSelector(
+  //   (state: ChessGameState) => state.movesState.moveHistory
+  // );
+  // const isGameActive = ["IN PROGRESS", "READY"].includes(gameStatus);
+  // const game = React.useMemo(() => new jsChess.Game(), []);
 
-  React.useEffect(() => {
-    if (gameStatus !== "IN PROGRESS") {
-      return;
-    }
-
-    const lastMove: Move = moveHistory.slice(-1)[0];
-
-    if (lastMove.player === "W") {
-      setTimeout(() => {
-        game.move(lastMove.sourceTileId, lastMove.targetTileId);
-        game.aiMove(2);
-        const aiMove = game.getHistory(true)[0];
-        store.dispatch(actions.selectTile({ tileId: aiMove.from }));
-        store.dispatch(
-          actions.moveToTile({
-            sourceTileId: aiMove.from,
-            targetTileId: aiMove.to,
-          })
-        );
-      }, 3000);
-    }
-  }, [moveHistory]);
+  // React.useEffect(() => {
+  //   if (gameStatus !== "IN PROGRESS") {
+  //     return;
+  //   }
+  //
+  //   const lastMove: Move = moveHistory.slice(-1)[0];
+  //
+  //   if (lastMove.player === "W") {
+  //     setTimeout(() => {
+  //       game.move(lastMove.sourceTileId, lastMove.targetTileId);
+  //       game.aiMove(2);
+  //       const aiMove = game.getHistory(true)[0];
+  //       store.dispatch(actions.selectTile({ tileId: aiMove.from }));
+  //       store.dispatch(
+  //         actions.moveToTile({
+  //           sourceTileId: aiMove.from,
+  //           targetTileId: aiMove.to,
+  //         })
+  //       );
+  //     }, 3000);
+  //   }
+  // }, [moveHistory]);
 
   return (
     <>

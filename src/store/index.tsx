@@ -180,10 +180,10 @@ const gameSlice = createSlice({
       // Set up the board
       state.boardState.tileMap = getInitialTileMap(gameType);
 
-      state.currentGameState.currentTurn = "W";
       state.boardState.whiteAttackedTiles = whiteOccupiedTiles;
       state.boardState.blackAttackedTiles = blackOccupiedTiles;
       state.currentGameState.status = "READY";
+      state.currentGameState.currentTurn = "W";
     },
     endGame(state: ChessGameState, action: PayloadAction<{ winner?: Player }>) {
       state.currentGameState.status = "GAME OVER";
@@ -339,7 +339,7 @@ const gameSlice = createSlice({
       state.movesState.historyTileMap[sourceId!].highlight = true;
       state.movesState.historyTileMap[targetTileId!].highlight = true;
     },
-    runPostCleanupCalcs(
+    runPostMoveCalcs(
       state: ChessGameState,
       action: PayloadAction<{ pieceId: PieceId; targetTileId: TileId }>
     ) {},

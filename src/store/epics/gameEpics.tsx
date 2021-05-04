@@ -18,6 +18,12 @@ const consoleLog = (x) => console.log(x);
 
 export type GameEpic = Epic<AnyAction, AnyAction, ChessGameState>;
 
+/**
+ * selectTileEpic: Listens for the `selectTile` action which is fired when a player selects an occupied tile with the
+ * intention of maybe moving the piece on that tile. The epic calculates the possible moves that can be made by the
+ * occupying piece and fires a `highlightPossibleMoves` action to highlight those tiles.
+ *
+ */
 const selectTileEpic: GameEpic = (action$, state$) =>
   action$.pipe(
     filter(actions.selectTile.match),
@@ -78,6 +84,14 @@ const selectTileEpic: GameEpic = (action$, state$) =>
     })
   );
 
+/**
+ * postMoveCleanupEpic: The `moveToTile` action is dispatched when a player wants to move a piece from a sourceTile to a
+ * targetTile. The action handles all the state updates to reflect that move. This Epic then covers a few key follow up
+ * tasks by firing the following actions:
+ *  1. `deselect`: Removes any highlights from possibleMoveTiles and from the moved tile/piece
+ *  2. `switchTurns`: As the name implies, updates state.currentGameState.currentTurn
+ *  3. `runPostMoveCalcs`: An action that's listened to by the postMoveCalcsEpic
+ */
 const postMoveCleanupEpic: GameEpic = (action$, state$) =>
   action$.pipe(
     filter(actions.moveToTile.match),
@@ -91,14 +105,24 @@ const postMoveCleanupEpic: GameEpic = (action$, state$) =>
       return of(
         actions.deselect(),
         actions.switchTurns(),
-        actions.runPostCleanupCalcs({ pieceId, targetTileId })
+        actions.runPostMoveCalcs({ pieceId, targetTileId })
       );
     })
   );
 
-const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
+/**
+ * postMoveCalcsEpic: This epic listens to the `runPostMoveCalcs` action and its role is to calculate all the stuff
+ * that could have changed game state after the last move OR stuff that might affect the scope of possible moves for
+ * the next player. It also triggers all the state updates that aren't immediately needed after a turn is made (like
+ * updating move history). The full list of its responsibilities includes:
+ *  1. Figure out check details, including whether to check for checkMate or not
+ *  2. Determine enPassant and castle eligibility
+ *  3. Update move history and attacked tiles
+ *  4. Update pegged tiles
+ */
+const postMoveCalcsEpic: GameEpic = (action$, state$) =>
   action$.pipe(
-    filter(actions.runPostCleanupCalcs.match),
+    filter(actions.runPostMoveCalcs.match),
     pluck("payload"),
     mergeMap(({ pieceId, targetTileId }) => {
       const {
@@ -154,6 +178,10 @@ const postCleanupCalcsEpic: GameEpic = (action$, state$) =>
     })
   );
 
+/**
+ * determineCheckmateEpic: As the name suggests, this determines if we have a checkmate and if yes, it triggers the
+ * `endGame` action with the appropriate payload.
+ */
 const determineCheckmateEpic: GameEpic = (action$, state$) =>
   action$.pipe(
     filter(actions.determineCheckmate.match),
@@ -222,7 +250,7 @@ const determineCheckmateEpic: GameEpic = (action$, state$) =>
 const gameEpics = [
   selectTileEpic,
   postMoveCleanupEpic,
-  postCleanupCalcsEpic,
+  postMoveCalcsEpic,
   determineCheckmateEpic,
 ];
 

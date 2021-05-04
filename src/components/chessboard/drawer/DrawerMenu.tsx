@@ -31,7 +31,7 @@ const DrawerMenu = () => {
       >
         {gameMode && (
           <GameOptionsForm
-            gameMode={gameMode}
+            playMode={gameMode}
             onClose={() => setGameMode(undefined)}
           />
         )}

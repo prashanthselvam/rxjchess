@@ -13,7 +13,7 @@ interface TileProps {
   yPos: YPos;
 }
 
-const Index = ({ id, xPos, yPos }: TileProps) => {
+const Tile = ({ id, xPos, yPos }: TileProps) => {
   const gameStatus = useSelector(
     (state: ChessGameState) => state.currentGameState.status
   );
@@ -113,4 +113,4 @@ const Index = ({ id, xPos, yPos }: TileProps) => {
   );
 };
 
-export default Index;
+export default Tile;
