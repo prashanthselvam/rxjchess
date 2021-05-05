@@ -4,8 +4,6 @@ const game = new jsChess.Game();
 export async function makeAiMove(lastMove) {
   // This will always be true unless human is playing with Black
   // and it's the first move
-  console.log("THIS GOT CALLED");
-
   if (lastMove) {
     game.move(lastMove.sourceTileId, lastMove.targetTileId);
   }

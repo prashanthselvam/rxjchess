@@ -8,8 +8,9 @@ import Cockpit from "./Cockpit";
 import Chessboard from "./chessboard";
 import { useSelector } from "react-redux";
 
-import AiGame from "src/webWorker/aiGame.worker.js";
+import AiGame from "src/webWorker/aiGame.worker";
 import { useRef } from "react";
+import { last } from "rxjs/operators";
 
 const Game = () => {
   const { status, playMode, currentTurn, player } = useSelector(
@@ -41,6 +42,10 @@ const Game = () => {
 
     const lastMove: Move = moveHistory.slice(-1)[0];
 
+    if (lastMove?.player !== player) {
+      return;
+    }
+
     // @ts-ignore
     aiGame
       .makeAiMove(lastMove)
@@ -53,7 +58,7 @@ const Game = () => {
         );
       })
       .catch((error) => console.log(error));
-  }, [moveHistory, status]);
+  }, [moveHistory, status, isPlayersTurn]);
 
   return (
     <>
