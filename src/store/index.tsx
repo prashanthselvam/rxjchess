@@ -232,20 +232,23 @@ const gameSlice = createSlice({
     ) {
       const {
         currentGameState: { currentTurn },
-        boardState: {
-          selectedTile,
-          selectedPiece: pieceId,
-          tileMap,
-          canBeEnpassant,
-        },
+        boardState: { selectedTile, selectedPiece, tileMap, canBeEnpassant },
         movesState: { movedPieces },
       } = state;
+
+      const { targetTileId, sourceTileId, promotePieceType } = action.payload;
+      let pieceId;
+
+      if (sourceTileId && !selectedTile) {
+        pieceId = tileMap[sourceTileId].pieceId;
+      } else {
+        pieceId = selectedPiece;
+      }
 
       if (!pieceId) {
         throw Error;
       }
 
-      const { targetTileId, sourceTileId, promotePieceType } = action.payload;
       const board = _getBoard(currentTurn!);
       const sourceId = sourceTileId || selectedTile;
       let takenPieceId = tileMap[targetTileId].pieceId;

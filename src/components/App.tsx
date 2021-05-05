@@ -8,40 +8,52 @@ import Cockpit from "./Cockpit";
 import Chessboard from "./chessboard";
 import { useSelector } from "react-redux";
 
-const jsChess = require("js-chess-engine");
+import AiGame from "src/webWorker/aiGame.worker.js";
+import { useRef } from "react";
 
 const Game = () => {
-  // const gameStatus = useSelector(
-  //   (state: ChessGameState) => state.currentGameState.status
-  // );
-  // const moveHistory = useSelector(
-  //   (state: ChessGameState) => state.movesState.moveHistory
-  // );
-  // const isGameActive = ["IN PROGRESS", "READY"].includes(gameStatus);
-  // const game = React.useMemo(() => new jsChess.Game(), []);
+  const { status, playMode, currentTurn, player } = useSelector(
+    (state: ChessGameState) => state.currentGameState
+  );
+  const moveHistory = useSelector(
+    (state: ChessGameState) => state.movesState.moveHistory
+  );
 
-  // React.useEffect(() => {
-  //   if (gameStatus !== "IN PROGRESS") {
-  //     return;
-  //   }
-  //
-  //   const lastMove: Move = moveHistory.slice(-1)[0];
-  //
-  //   if (lastMove.player === "W") {
-  //     setTimeout(() => {
-  //       game.move(lastMove.sourceTileId, lastMove.targetTileId);
-  //       game.aiMove(2);
-  //       const aiMove = game.getHistory(true)[0];
-  //       store.dispatch(actions.selectTile({ tileId: aiMove.from }));
-  //       store.dispatch(
-  //         actions.moveToTile({
-  //           sourceTileId: aiMove.from,
-  //           targetTileId: aiMove.to,
-  //         })
-  //       );
-  //     }, 3000);
-  //   }
-  // }, [moveHistory]);
+  const isGameActive = ["IN PROGRESS", "READY"].includes(status);
+  const isAiPlaying = playMode === "PLAY COMPUTER";
+  const isPlayersTurn = player === currentTurn;
+
+  const aiGameRef = useRef(null);
+
+  const getAiGame = () => {
+    if (!aiGameRef.current && typeof window === "object") {
+      aiGameRef.current = new AiGame();
+    }
+    return aiGameRef.current;
+  };
+
+  const aiGame = getAiGame();
+
+  React.useEffect(() => {
+    if (!isGameActive || !isAiPlaying || isPlayersTurn) {
+      return;
+    }
+
+    const lastMove: Move = moveHistory.slice(-1)[0];
+
+    // @ts-ignore
+    aiGame
+      .makeAiMove(lastMove)
+      .then(({ from, to }) => {
+        store.dispatch(
+          actions.moveToTile({
+            sourceTileId: from,
+            targetTileId: to,
+          })
+        );
+      })
+      .catch((error) => console.log(error));
+  }, [moveHistory, status]);
 
   return (
     <>
