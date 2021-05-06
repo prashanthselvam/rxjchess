@@ -14,11 +14,8 @@ interface TileProps {
 }
 
 const Tile = ({ id, xPos, yPos }: TileProps) => {
-  const gameStatus = useSelector(
-    (state: ChessGameState) => state.currentGameState.status
-  );
-  const currentTurn = useSelector(
-    (state: ChessGameState) => state.currentGameState.currentTurn
+  const { status, currentTurn, playMode, player } = useSelector(
+    (state: ChessGameState) => state.currentGameState
   );
   const selectedTile = useSelector(
     (state: ChessGameState) => state.boardState.selectedTile
@@ -39,10 +36,18 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
     (state: ChessGameState) => state.checkState.isActiveCheck
   );
 
-  const isGameInProgress = ["IN PROGRESS", "READY"].includes(gameStatus);
+  const isGameInProgress = ["IN PROGRESS", "READY"].includes(status);
   const isSelected = selectedTile === id;
+
+  const canSelectBothSides = playMode === "PLAY OVER THE BOARD";
+  const isPlayersTurn = currentTurn === player;
+  const isCurrentTurnPieceOnTile =
+    pieceId && _getPlayer(pieceId) === currentTurn;
+
   const isSelectable =
-    isGameInProgress && pieceId && _getPlayer(pieceId) === currentTurn;
+    isGameInProgress &&
+    isCurrentTurnPieceOnTile &&
+    (canSelectBothSides || isPlayersTurn);
   const isKingTile = pieceId && _getPieceType(pieceId) === "K";
 
   const checkHighlight = isActiveCheck && isSelectable && isKingTile;
