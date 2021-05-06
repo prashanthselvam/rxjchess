@@ -6,65 +6,15 @@ import TestPubnub from "./TestPubnub";
 import { Modal } from "./Modal";
 import Cockpit from "./Cockpit";
 import Chessboard from "./chessboard";
-import { useSelector } from "react-redux";
-
-import AiGame from "src/webWorker/aiGame.worker";
-import { useRef } from "react";
-import { last } from "rxjs/operators";
+import AiPlayer from "./AiPlayer";
 
 const Game = () => {
-  const { status, playMode, currentTurn, player } = useSelector(
-    (state: ChessGameState) => state.currentGameState
-  );
-  const moveHistory = useSelector(
-    (state: ChessGameState) => state.movesState.moveHistory
-  );
-
-  const isGameActive = ["IN PROGRESS", "READY"].includes(status);
-  const isAiPlaying = playMode === "PLAY COMPUTER";
-  const isPlayersTurn = player === currentTurn;
-
-  const aiGameRef = useRef(null);
-
-  const getAiGame = () => {
-    if (!aiGameRef.current && typeof window === "object") {
-      aiGameRef.current = new AiGame();
-    }
-    return aiGameRef.current;
-  };
-
-  const aiGame = getAiGame();
-
-  React.useEffect(() => {
-    if (!isGameActive || !isAiPlaying || isPlayersTurn) {
-      return;
-    }
-
-    const lastMove: Move = moveHistory.slice(-1)[0];
-
-    if (lastMove?.player !== player) {
-      return;
-    }
-
-    // @ts-ignore
-    aiGame
-      .makeAiMove(lastMove)
-      .then(({ from, to }) => {
-        store.dispatch(
-          actions.moveToTile({
-            sourceTileId: from,
-            targetTileId: to,
-          })
-        );
-      })
-      .catch((error) => console.log(error));
-  }, [moveHistory, status, isPlayersTurn]);
-
   return (
     <>
       <div
         css={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}
       >
+        <AiPlayer />
         <Chessboard />
         <Cockpit />
       </div>
