@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { actions, store } from "src/store";
 import Select from "react-select";
+import { usePubNub } from "pubnub-react";
 
 interface GameOptionsFormProps {
   playMode: PlayModes;
@@ -23,6 +24,10 @@ interface FormValues {
 }
 
 const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
+  const pubNub = usePubNub();
+
+  const gameIdRef = useRef<string>("");
+
   const [formValues, setFormValues] = useState<FormValues>({
     gameType: undefined,
     player: undefined,
@@ -63,23 +68,57 @@ const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
     setFormValues({ ...formValues, [field]: option });
   };
 
+  const getGameOptions = () => {
+    const { gameType, player, increment, maxTime } = formValues;
+    return {
+      gameType: gameType!.value,
+      player: player!.value,
+      increment: increment!.value,
+      maxTime: maxTime!.value,
+      playMode: playMode,
+      gameId: gameIdRef?.current,
+    };
+  };
+
   const StyledSelect = styled(Select)`
     width: 100%;
     font-size: 1.7rem;
     margin-top: 12px;
   `;
 
-  const handleCreateGame = () => {
-    const { gameType, player, increment, maxTime } = formValues;
-    const options = {
-      gameType: gameType!.value,
-      player: player!.value,
-      increment: increment!.value,
-      maxTime: maxTime!.value,
-      playMode: playMode,
-    };
+  const handleMessage = (event) => {
+    const message = event.message;
+    const options = getGameOptions();
+    // console.log("OPTIONS FORM", message, gameIdRef.current);
 
-    store.dispatch(actions.newGame(options));
+    switch (message.type) {
+      case "PLAYER_ARRIVED":
+        pubNub.publish({
+          channel: gameIdRef.current,
+          message: { type: "SEND_GAME_OPTIONS", gameOptions: options },
+        });
+        break;
+      case "GAME_OPTIONS_RECEIVED":
+        store.dispatch(actions.newGame(options));
+        break;
+      default:
+        console.log(`Did not recognize ${message.type} in options form`);
+    }
+  };
+
+  const handleCreateGame = () => {
+    const options = getGameOptions();
+
+    if (playMode === "PLAY FRIEND") {
+      gameIdRef.current = "some_game_id";
+
+      pubNub.addListener({ message: handleMessage });
+      pubNub.subscribe({ channels: [gameIdRef.current] });
+
+      // create the game UUID url and display it to be copied and sent
+    } else {
+      store.dispatch(actions.newGame(options));
+    }
   };
 
   useEffect(() => {

@@ -49,6 +49,7 @@ export type CanCastle = Record<Player, TileId[]>;
  */
 
 interface CurrentGameState {
+  gameId: any;
   status: GameStatus;
   gameType: GameTypes | undefined;
   playMode: PlayModes | undefined;
@@ -106,6 +107,7 @@ export const tileMapInitialState = Object.keys(TILES).reduce((acc, curr) => {
 
 const initialState: ChessGameState = {
   currentGameState: {
+    gameId: undefined,
     status: "NOT STARTED",
     playMode: undefined,
     gameType: undefined,
@@ -157,9 +159,17 @@ const gameSlice = createSlice({
         player: Player | "R";
         maxTime: number | "unlimited";
         increment: number;
+        gameId?: any;
       }>
     ) {
-      const { playMode, gameType, player, maxTime, increment } = action.payload;
+      const {
+        playMode,
+        gameType,
+        player,
+        maxTime,
+        increment,
+        gameId,
+      } = action.payload;
       const whiteOccupiedTiles: TileId[] = [];
       const blackOccupiedTiles: TileId[] = [];
 
@@ -184,6 +194,7 @@ const gameSlice = createSlice({
       state.boardState.blackAttackedTiles = blackOccupiedTiles;
       state.currentGameState.status = "READY";
       state.currentGameState.currentTurn = "W";
+      state.currentGameState.gameId = gameId;
     },
     endGame(state: ChessGameState, action: PayloadAction<{ winner?: Player }>) {
       state.currentGameState.status = "GAME OVER";
