@@ -1,54 +1,16 @@
-import { actions, ChessGameState, Move, store } from "src/store";
+import { store } from "src/store";
 import { Provider } from "react-redux";
 import * as React from "react";
-import GameOptions from "./GameOptions";
-import TestPubnub from "./TestPubnub";
 import { Modal } from "./Modal";
 import Cockpit from "./Cockpit";
 import Chessboard from "./chessboard";
 import AiPlayer from "./AiPlayer";
 import PubNub from "pubnub";
-import { PubNubProvider, usePubNub } from "pubnub-react";
-import { useEffect } from "react";
-import { _getOpponent } from "../store/utils";
-import useOpponentNextMove from "../hooks/useOpponentNextMove";
+import { PubNubProvider } from "pubnub-react";
+import useOnlineMultiplayer from "../hooks/useOnlineMultiplayer";
 
-const Game = ({ gameParam }) => {
-  const pubNub = usePubNub();
-  const _ = useOpponentNextMove();
-
-  const handleMessage = (event) => {
-    // If we receive gameOptions, then we create a new game with those options
-    const message = event.message;
-    // console.log("GAME COMPONENT", message);
-
-    if (message.type === "SEND_GAME_OPTIONS") {
-      const options = message.gameOptions;
-      pubNub.publish({
-        channel: gameParam,
-        message: { type: "GAME_OPTIONS_RECEIVED" },
-      });
-      store.dispatch(
-        actions.newGame({ ...options, player: _getOpponent(options.player) })
-      );
-    } else {
-      console.log(`Did not recognize ${message.type} in app component`);
-    }
-  };
-
-  useEffect(() => {
-    if (gameParam) {
-      // Subscribe to the game's channel
-      // Let the channel know we've arrived and are ready to receive the gameOptions
-      pubNub.addListener({ message: handleMessage });
-      pubNub.subscribe({ channels: [gameParam] });
-
-      pubNub.publish({
-        channel: gameParam,
-        message: { type: "PLAYER_ARRIVED" },
-      });
-    }
-  }, []);
+const Game = ({ urlGameId }) => {
+  const _ = useOnlineMultiplayer(urlGameId);
 
   return (
     <>
@@ -64,7 +26,7 @@ const Game = ({ gameParam }) => {
   );
 };
 
-const App = ({ gameParam }) => {
+const App = ({ urlGameId }) => {
   const pubnub = new PubNub({
     publishKey: "pub-c-d4a424e5-efde-498e-af55-ead4fe257bed",
     subscribeKey: "sub-c-9437e116-6e8b-11eb-889a-ee4206f2a398",
@@ -74,7 +36,7 @@ const App = ({ gameParam }) => {
   return (
     <Provider store={store}>
       <PubNubProvider client={pubnub}>
-        <Game gameParam={gameParam} />
+        <Game urlGameId={urlGameId} />
       </PubNubProvider>
     </Provider>
   );

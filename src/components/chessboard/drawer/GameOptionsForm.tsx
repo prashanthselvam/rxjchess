@@ -5,6 +5,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { actions, store } from "src/store";
 import Select from "react-select";
 import { usePubNub } from "pubnub-react";
+import { v4 as uuidv4 } from "uuid";
 
 interface GameOptionsFormProps {
   playMode: PlayModes;
@@ -86,23 +87,20 @@ const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
     margin-top: 12px;
   `;
 
-  const handleMessage = (event) => {
+  const handleOnlineGameCreate = (event) => {
     const message = event.message;
     const options = getGameOptions();
-    // console.log("OPTIONS FORM", message, gameIdRef.current);
 
-    switch (message.type) {
-      case "PLAYER_ARRIVED":
-        pubNub.publish({
+    if (message.type === "PLAYER_ARRIVED") {
+      pubNub
+        .publish({
           channel: gameIdRef.current,
-          message: { type: "SEND_GAME_OPTIONS", gameOptions: options },
+          message: { type: "GAME_OPTIONS", gameOptions: options },
+        })
+        .then(() => {
+          console.log({ options });
+          store.dispatch(actions.newGame(options));
         });
-        break;
-      case "GAME_OPTIONS_RECEIVED":
-        store.dispatch(actions.newGame(options));
-        break;
-      default:
-        console.log(`Did not recognize ${message.type} in options form`);
     }
   };
 
@@ -110,12 +108,11 @@ const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
     const options = getGameOptions();
 
     if (playMode === "PLAY FRIEND") {
-      gameIdRef.current = "some_game_id";
-
-      pubNub.addListener({ message: handleMessage });
+      // const gameId = uuidv4();
+      const gameId = "some_game_id";
+      gameIdRef.current = gameId;
+      pubNub.addListener({ message: handleOnlineGameCreate });
       pubNub.subscribe({ channels: [gameIdRef.current] });
-
-      // create the game UUID url and display it to be copied and sent
     } else {
       store.dispatch(actions.newGame(options));
     }
@@ -197,6 +194,7 @@ const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
           >
             CREATE GAME
           </button>
+          <p>{gameIdRef.current}</p>
         </div>
       </div>
     </div>

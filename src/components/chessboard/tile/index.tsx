@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { store, actions, ChessGameState } from "src/store";
 import { _getPieceType, _getPlayer } from "src/store/utils";
 import TileHighlight from "./TileHighlight";
-import { usePubNub } from "pubnub-react";
+import useMakeMove from "src/hooks/useMakeMove";
 
 interface TileProps {
   id: TileId;
@@ -15,7 +15,7 @@ interface TileProps {
 }
 
 const Tile = ({ id, xPos, yPos }: TileProps) => {
-  const { status, currentTurn, playMode, player, gameId } = useSelector(
+  const { status, currentTurn, playMode, player } = useSelector(
     (state: ChessGameState) => state.currentGameState
   );
   const selectedTile = useSelector(
@@ -36,13 +36,12 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
   const isActiveCheck = useSelector(
     (state: ChessGameState) => state.checkState.isActiveCheck
   );
-  const pubNub = usePubNub();
+  const makeMove = useMakeMove();
 
   const isGameInProgress = ["IN PROGRESS", "READY"].includes(status);
   const isSelected = selectedTile === id;
 
   const canSelectBothSides = playMode === "PLAY OVER THE BOARD";
-  const isPlayingOnline = gameId && playMode === "PLAY FRIEND";
   const isPlayersTurn = currentTurn === player;
   const isCurrentTurnPieceOnTile =
     pieceId && _getPlayer(pieceId) === currentTurn;
@@ -73,17 +72,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
           })
         );
       } else {
-        store.dispatch(actions.moveToTile({ targetTileId: id }));
-        if (isPlayingOnline) {
-          pubNub.publish({
-            channel: gameId,
-            message: {
-              type: "MOVE",
-              player: player,
-              moveParams: { sourceTileId: selectedTile, targetTileId: id },
-            },
-          });
-        }
+        makeMove({ targetTileId: id });
       }
     } else {
       store.dispatch(actions.deselect());

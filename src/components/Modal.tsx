@@ -10,20 +10,20 @@ import "@reach/dialog/styles.css";
 import * as React from "react";
 import { useSelector } from "react-redux";
 import Image from "./image";
+import useMakeMove from "../hooks/useMakeMove";
 
 const PawnPromoteModal = ({ targetTileId }: ModalProps) => {
   const currentTurn = useSelector(
     (state: ChessGameState) => state.currentGameState.currentTurn
   );
+  const makeMove = useMakeMove();
   const pieceTypes = ["Q", "B", "N", "R"];
 
   const onClick = (type) => {
-    store.dispatch(
-      actions.moveToTile({
-        targetTileId: targetTileId!,
-        promotePieceType: type,
-      })
-    );
+    makeMove({
+      targetTileId: targetTileId!,
+      promotePieceType: type,
+    });
     store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
   };
 

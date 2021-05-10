@@ -2,12 +2,12 @@ import * as React from "react";
 import App from "src/components/App";
 
 const IndexPage = ({ location }) => {
-  const gameParam = location.search.slice(1);
+  const urlGameId = location.search.slice(1);
 
   return (
     <main>
       <title>Crazy Chess!</title>
-      <App gameParam={gameParam} />
+      <App urlGameId={urlGameId} />
     </main>
   );
 };
