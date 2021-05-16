@@ -331,7 +331,7 @@ const gameSlice = createSlice({
       }
 
       const move: Move = {
-        player: currentTurn,
+        player: currentTurn!,
         pieceId,
         sourceTileId: sourceId!,
         targetTileId,

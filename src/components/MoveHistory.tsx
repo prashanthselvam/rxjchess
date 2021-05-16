@@ -26,7 +26,14 @@ const MoveHistory = () => {
     >
       {moves.map(
         (
-          { pieceId, takenPieceId, targetTileId, castledRook, isMoveCheck },
+          {
+            pieceId,
+            takenPieceId,
+            targetTileId,
+            castledRook,
+            isMoveCheck,
+            promotedPiece,
+          },
           index
         ) => {
           let label = "";
@@ -37,8 +44,10 @@ const MoveHistory = () => {
             label = isQueenSideCastle ? "O-O-O" : "O-O";
           } else {
             label = `${pieceType !== "P" ? pieceType : ""}${
-              !!takenPieceId ? "x" : ""
-            }${targetTileId.toLowerCase()}${isMoveCheck ? "+" : ""}`;
+              !!takenPieceId && !promotedPiece ? "x" : ""
+            }${targetTileId.toLowerCase()}${
+              !!promotedPiece ? _getPieceType(promotedPiece) : ""
+            }${isMoveCheck ? "+" : ""}`;
           }
 
           const onClick = () => {

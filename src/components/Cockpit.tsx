@@ -17,6 +17,8 @@ const Cockpit = () => {
     gameStatus
   );
 
+  const noTimeLimit = maxTimeInMinutes === "unlimited";
+
   return (
     <div
       css={{
@@ -36,32 +38,44 @@ const Cockpit = () => {
         <>
           <div
             css={{
-              width: "100%",
+              fontSize: "4rem",
+              color: "white",
               textAlign: "center",
+              width: "100%",
               padding: 20,
               backgroundColor: "rgba(0,0,0,0.3)",
             }}
           >
-            <Timer
-              maxTimeInSeconds={maxTimeInMinutes * 60}
-              incrementInSeconds={incrementInSeconds}
-              player={_getOpponent(player)}
-            />
+            {noTimeLimit ? (
+              "∞"
+            ) : (
+              <Timer
+                maxTimeInSeconds={maxTimeInMinutes * 60}
+                incrementInSeconds={incrementInSeconds}
+                player={_getOpponent(player)}
+              />
+            )}
           </div>
           <MoveHistory />
           <div
             css={{
-              width: "100%",
+              fontSize: "4rem",
+              color: "white",
               textAlign: "center",
+              width: "100%",
               padding: 20,
               backgroundColor: "rgba(0,0,0,0.3)",
             }}
           >
-            <Timer
-              maxTimeInSeconds={maxTimeInMinutes * 60}
-              incrementInSeconds={incrementInSeconds}
-              player={player}
-            />
+            {noTimeLimit ? (
+              "∞"
+            ) : (
+              <Timer
+                maxTimeInSeconds={maxTimeInMinutes * 60}
+                incrementInSeconds={incrementInSeconds}
+                player={player}
+              />
+            )}
           </div>
         </>
       )}
