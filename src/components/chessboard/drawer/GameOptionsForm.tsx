@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { actions, store } from "src/store";
 import Select from "react-select";
 import { usePubNub } from "pubnub-react";
-import { v4 as uuidv4 } from "uuid";
 
 interface GameOptionsFormProps {
   playMode: PlayModes;
@@ -28,6 +27,8 @@ const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
   const pubNub = usePubNub();
 
   const gameIdRef = useRef<string>("");
+  const [gameId, setGameId] = useState<string | undefined>(undefined);
+  const [urlCopySuccess, setUrlCopySuccess] = useState<boolean>(false);
 
   const [formValues, setFormValues] = useState<FormValues>({
     gameType: undefined,
@@ -70,14 +71,21 @@ const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
   };
 
   const getGameOptions = () => {
-    const { gameType, player, increment, maxTime } = formValues;
+    const { player, increment, maxTime } = formValues;
+    const playerArr: Player[] = ["W", "B"];
+
+    const playerVal =
+      player!.value === "R"
+        ? playerArr[Math.round(Math.random())]
+        : player!.value;
+
     return {
-      gameType: gameType!.value,
-      player: player!.value,
+      gameType: gameTypeOptions[0].value,
+      player: playerVal,
       increment: increment!.value,
       maxTime: maxTime!.value,
       playMode: playMode,
-      gameId: gameIdRef?.current,
+      gameId: gameIdRef.current,
     };
   };
 
@@ -98,9 +106,9 @@ const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
           message: { type: "GAME_OPTIONS", gameOptions: options },
         })
         .then(() => {
-          console.log({ options });
           store.dispatch(actions.newGame(options));
-        });
+        })
+        .catch((e) => console.log(e));
     }
   };
 
@@ -108,19 +116,25 @@ const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
     const options = getGameOptions();
 
     if (playMode === "PLAY FRIEND") {
-      // const gameId = uuidv4();
-      const gameId = "some_game_id";
-      gameIdRef.current = gameId;
+      const myGameId = (function () {
+        return Math.random().toString(36).substr(2, 9);
+      })();
+      gameIdRef.current = myGameId;
+      setGameId(myGameId);
+      pubNub.subscribe({ channels: [myGameId] });
       pubNub.addListener({ message: handleOnlineGameCreate });
-      pubNub.subscribe({ channels: [gameIdRef.current] });
+      setIsFormComplete(false);
     } else {
       store.dispatch(actions.newGame(options));
     }
   };
 
   useEffect(() => {
-    setIsFormComplete(Object.values(formValues).every((option) => !!option));
+    const { gameType, ...rest } = formValues;
+    setIsFormComplete(Object.values(rest).every((option) => !!option));
   }, [formValues]);
+
+  const url = `${window.location.origin}?${gameId}`;
 
   return (
     <div>
@@ -151,51 +165,120 @@ const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
           icon={faTimes}
           onClick={onClose}
         />
-        <h3 css={{ textAlign: "center", marginBottom: 8 }}>Settings</h3>
-        <StyledSelect
-          options={gameTypeOptions}
-          placeholder={"Game Type"}
-          value={formValues.gameType}
-          onChange={(option) => handleOnChange(option, "gameType")}
-        />
-        <StyledSelect
-          options={playerOptions}
-          placeholder={"Side"}
-          value={formValues.player}
-          onChange={(option) => handleOnChange(option, "player")}
-        />
-        <div css={{ display: "flex", justifyContent: "space-between" }}>
-          <StyledSelect
-            options={maxTimeOptions}
-            placeholder={"Max time (min)"}
-            value={formValues.maxTime}
-            onChange={(option) => handleOnChange(option, "maxTime")}
-            css={{ width: "48%" }}
-          />
-          <StyledSelect
-            options={incrementOptions}
-            placeholder={"Increment"}
-            onChange={(option) => handleOnChange(option, "increment")}
-            value={formValues.increment}
-            isDisabled={formValues.maxTime?.value === "unlimited"}
-            css={{ width: "48%" }}
-          />
-        </div>
-        <div>
-          <button
-            disabled={!isFormComplete}
+        {/*<StyledSelect*/}
+        {/*  options={gameTypeOptions}*/}
+        {/*  placeholder={"Game Type"}*/}
+        {/*  value={formValues.gameType}*/}
+        {/*  onChange={(option) => handleOnChange(option, "gameType")}*/}
+        {/*/>*/}
+        {!gameId && (
+          <>
+            <h3 css={{ textAlign: "center", marginBottom: 8 }}>Settings</h3>
+            <StyledSelect
+              options={playerOptions}
+              placeholder={"Your Side"}
+              value={formValues.player}
+              onChange={(option) => handleOnChange(option, "player")}
+            />
+            <div css={{ display: "flex", justifyContent: "space-between" }}>
+              <StyledSelect
+                options={maxTimeOptions}
+                placeholder={"Max time (min)"}
+                value={formValues.maxTime}
+                onChange={(option) => handleOnChange(option, "maxTime")}
+                css={{ width: "48%" }}
+              />
+              <StyledSelect
+                options={incrementOptions}
+                placeholder={"Increment"}
+                onChange={(option) => handleOnChange(option, "increment")}
+                value={formValues.increment}
+                isDisabled={formValues.maxTime?.value === "unlimited"}
+                css={{ width: "48%" }}
+              />
+            </div>
+            <div>
+              <button
+                disabled={!isFormComplete}
+                css={{
+                  width: "100%",
+                  padding: "12px 0",
+                  marginTop: 12,
+                  fontSize: "1.7rem",
+                }}
+                onClick={handleCreateGame}
+              >
+                CREATE GAME
+              </button>
+            </div>
+          </>
+        )}
+        {gameId && (
+          <>
+            <div css={{ textAlign: "center", fontSize: "1.5rem" }}>
+              Invite your friend using the link below
+            </div>
+            <div
+              css={{
+                textAlign: "center",
+                fontSize: "1.2rem",
+                marginTop: 8,
+                padding: "4px 0px",
+                background: "white",
+                borderRadius: 4,
+                border: "1px solid",
+                borderColor: urlCopySuccess ? "green" : "black",
+                position: "relative",
+              }}
+            >
+              {url}
+              <div
+                css={{
+                  position: "absolute",
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  margin: "auto",
+                  width: 30,
+                  textAlign: "center",
+                  paddingTop: 3,
+                  height: "100%",
+                  borderLeft: "1px solid grey",
+                }}
+              >
+                <FontAwesomeIcon
+                  css={{
+                    position: "absolute",
+                    top: "50%",
+                    left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    fontSize: "1.7rem",
+                    "&:hover": {
+                      cursor: "pointer",
+                      color: "grey",
+                    },
+                  }}
+                  icon={faCopy}
+                  onClick={() => {
+                    navigator.clipboard.writeText(url);
+                    setUrlCopySuccess(true);
+                  }}
+                />
+              </div>
+            </div>
+          </>
+        )}
+        {urlCopySuccess && (
+          <div
             css={{
-              width: "100%",
-              padding: "12px 0",
-              marginTop: 12,
-              fontSize: "1.7rem",
+              textAlign: "center",
+              color: "green",
+              fontSize: "1.2rem",
             }}
-            onClick={handleCreateGame}
           >
-            CREATE GAME
-          </button>
-          <p>{gameIdRef.current}</p>
-        </div>
+            Copied successfully!
+          </div>
+        )}
       </div>
     </div>
   );

@@ -155,8 +155,8 @@ const gameSlice = createSlice({
       state: ChessGameState,
       action: PayloadAction<{
         playMode: PlayModes;
-        gameType: GameTypes;
-        player: Player | "R";
+        gameType: "REGULAR";
+        player: Player;
         maxTime: number | "unlimited";
         increment: number;
         gameId?: any;
@@ -176,14 +176,7 @@ const gameSlice = createSlice({
       // Set the game state
       state.currentGameState.playMode = playMode;
       state.currentGameState.gameType = gameType;
-
-      if (player === "R") {
-        const playerArr: Player[] = ["W", "B"];
-        state.currentGameState.player = playerArr[Math.round(Math.random())];
-      } else {
-        state.currentGameState.player = player;
-      }
-
+      state.currentGameState.player = player;
       state.currentGameState.maxTime = maxTime;
       state.currentGameState.increment = increment;
 

@@ -27,9 +27,10 @@ const useOnlineMultiplayer = (urlGameId) => {
   const moveListener = ({ message }) => {
     if (message.type === "MOVE" && message.player === opponent) {
       store.dispatch(actions.moveToTile(message.moveParams));
-      console.log("FIRED MOVE STUFF");
-      // } else {
-      //   console.log(`Did not recognize ${message.type} in app component`);
+    } else {
+      console.log(
+        `Did not recognize ${message.type} in useOnlineMultiplayer hook`
+      );
     }
   };
 
@@ -39,7 +40,6 @@ const useOnlineMultiplayer = (urlGameId) => {
       store.dispatch(
         actions.newGame({ ...options, player: _getOpponent(options.player) })
       );
-      console.log("FIRED NEW GAME STUFF");
     }
   };
 
