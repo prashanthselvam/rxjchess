@@ -343,34 +343,33 @@ export const getPeggedTileMap = (tileMap: TileMap) => {
           return acc;
         }
 
+        console.log({ peggerX, kingX });
+
         const board = _getBoard(kingPlayer);
         const path: TileId[] = [];
 
         if (yOffset === 0) {
           path.push(
-            ...range(peggerX, kingX)
-              .map((n) => _getTile(board, n, peggerY))
-              .slice(1)
+            ...range(peggerX, kingX).map((n) => _getTile(board, n, peggerY))
           );
         } else if (xOffset === 0) {
           path.push(
-            ...range(peggerX, kingY)
-              .map((n) => _getTile(board, peggerX, n))
-              .slice(1)
+            ...range(peggerY, kingY).map((n) => _getTile(board, peggerX, n))
           );
         } else {
           const xOffsets = range(0, xOffset);
           const yOffsets = range(0, yOffset);
           path.push(
-            ...xOffsets
-              .map((n, i) =>
-                _getTile(board, peggerX + n, peggerY + yOffsets[i])
-              )
-              .slice(1)
+            ...xOffsets.map((n, i) =>
+              _getTile(board, peggerX + n, peggerY + yOffsets[i])
+            )
           );
         }
 
         const peggedTile = _getPeggedTile(path, tileMap, kingPlayer);
+
+        console.log({ path, kingPlayer, pieceId, peggedTile });
+
         if (peggedTile) {
           acc[peggedTile] = [tileId, ...path];
         }
