@@ -13,9 +13,12 @@ const Cockpit = () => {
     increment: incrementInSeconds,
   } = useSelector((state: ChessGameState) => state.currentGameState);
 
-  const isGameActive = ["INITIALIZING", "IN PROGRESS", "READY"].includes(
-    gameStatus
-  );
+  const isGameActive = [
+    "INITIALIZING",
+    "IN PROGRESS",
+    "READY",
+    "GAME OVER",
+  ].includes(gameStatus);
 
   const noTimeLimit = maxTimeInMinutes === "unlimited";
 

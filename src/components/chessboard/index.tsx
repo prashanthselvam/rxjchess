@@ -33,9 +33,12 @@ const Chessboard = () => {
     (state: ChessGameState) => state.currentGameState.status
   );
 
-  const isGameActive = ["IN PROGRESS", "INITIALIZING", "READY"].includes(
-    gameStatus
-  );
+  const isGameActive = [
+    "IN PROGRESS",
+    "INITIALIZING",
+    "READY",
+    "GAME OVER",
+  ].includes(gameStatus);
 
   const styles = css`
     position: relative;

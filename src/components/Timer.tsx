@@ -28,7 +28,7 @@ const Timer = ({
   const pause$ = React.useMemo(() => new BehaviorSubject(true), []);
 
   React.useEffect(() => {
-    pause$.next(currentTurn !== player);
+    pause$.next(currentTurn !== player || status !== "IN PROGRESS");
   }, [player, currentTurn, status]);
 
   React.useEffect(() => {
@@ -48,7 +48,13 @@ const Timer = ({
       .subscribe(
         (val) => null,
         (err) => console.log(err),
-        () => store.dispatch(actions.endGame({ winner: _getOpponent(player) }))
+        () =>
+          store.dispatch(
+            actions.endGame({
+              winner: _getOpponent(player),
+              winMode: "TIMEOUT",
+            })
+          )
       );
   }, [status]);
 

@@ -11,6 +11,52 @@ import * as React from "react";
 import { useSelector } from "react-redux";
 import Image from "./image";
 import useMakeMove from "../hooks/useMakeMove";
+import styled from "@emotion/styled";
+
+const StyledButton = styled("button")`
+  width: 40%;
+  font-size: 1.7rem;
+  margin-top: 12px;
+  padding: 12px 0;
+`;
+
+const GameOverModal = ({ winner, winMode }: ModalProps) => {
+  // store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
+  const winnerText = () => {
+    if (!!winner) {
+      const player = winner === "W" ? "White" : "Black";
+      return `${player} wins by ${winMode?.toLowerCase()}`;
+    }
+
+    return "Match tied";
+  };
+
+  return (
+    <div css={{ color: "white", width: 400 }}>
+      <h1>Well Played!</h1>
+      <Image
+        alt="winner"
+        filename={`${winner}Q.png`}
+        style={{ width: "33%", margin: "2rem 0 1rem 33%" }}
+      />
+      <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>{winnerText()}</p>
+      <div css={{ display: "flex", justifyContent: "space-evenly" }}>
+        <StyledButton onClick={() => store.dispatch(actions.reset())}>
+          MAIN MENU
+        </StyledButton>
+        <StyledButton
+          onClick={() =>
+            store.dispatch(
+              actions.setModalState({ modalState: { type: undefined } })
+            )
+          }
+        >
+          CLOSE
+        </StyledButton>
+      </div>
+    </div>
+  );
+};
 
 const PawnPromoteModal = ({ targetTileId }: ModalProps) => {
   const currentTurn = useSelector(
@@ -38,7 +84,6 @@ const PawnPromoteModal = ({ targetTileId }: ModalProps) => {
       <h2
         css={{
           width: "100%",
-          textAlign: "center",
           color: "white",
         }}
       >
@@ -65,23 +110,28 @@ export const Modal = () => {
   );
   const showModal = !!type;
 
-  const close = () =>
+  const onDismiss = () => {
+    if (type === "PAWN_PROMOTE") {
+      return null;
+    }
     store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
+  };
+
+  const modalWidth = type === "GAME_OVER" ? "fit-content" : "";
 
   return (
-    <DialogOverlay
-      css={{ zIndex: 2 }}
-      isOpen={showModal}
-      onDismiss={() => null}
-    >
+    <DialogOverlay css={{ zIndex: 2 }} isOpen={showModal} onDismiss={onDismiss}>
       <DialogContent
         style={{
           boxShadow: "0px 10px 50px hsla(0, 0%, 0%, 0.33)",
           backgroundColor: "rgb(9,40,117)",
+          textAlign: "center",
+          width: modalWidth,
         }}
         aria-label={type ? type : "MINIMIZED MODAL"}
       >
         {type === "PAWN_PROMOTE" && <PawnPromoteModal {...modalProps} />}
+        {type === "GAME_OVER" && <GameOverModal {...modalProps} />}
       </DialogContent>
     </DialogOverlay>
   );

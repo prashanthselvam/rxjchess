@@ -13,3 +13,5 @@ type GameStatus =
 type GameTypes = "REGULAR";
 
 type PlayModes = "PLAY FRIEND" | "PLAY COMPUTER" | "PLAY OVER THE BOARD";
+
+type WinModes = "CHECKMATE" | "TIMEOUT";

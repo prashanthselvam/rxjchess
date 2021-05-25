@@ -86,10 +86,12 @@ interface CheckState {
 
 export interface ModalProps {
   targetTileId?: TileId;
+  winner?: Player | undefined;
+  winMode?: WinModes | undefined;
 }
 
 export interface ModalState {
-  type: undefined | "PAWN_PROMOTE" | "GAME_OVER" | "SHARE_GAME_URL";
+  type: undefined | "PAWN_PROMOTE" | "GAME_OVER";
   modalProps?: ModalProps;
 }
 
@@ -189,9 +191,17 @@ const gameSlice = createSlice({
       state.currentGameState.currentTurn = "W";
       state.currentGameState.gameId = gameId;
     },
-    endGame(state: ChessGameState, action: PayloadAction<{ winner?: Player }>) {
+    endGame(
+      state: ChessGameState,
+      action: PayloadAction<{
+        winner?: Player;
+        winMode?: WinModes;
+      }>
+    ) {
+      const { winner, winMode } = action.payload;
       state.currentGameState.status = "GAME OVER";
-      state.currentGameState.winner = action.payload?.winner;
+      state.currentGameState.winner = winner;
+      state.modalState = { type: "GAME_OVER", modalProps: { winner, winMode } };
     },
     determineCheckmate(
       state: ChessGameState,

@@ -243,7 +243,10 @@ const determineCheckmateEpic: GameEpic = (action$, state$) =>
           return numPossibleMoves === 0;
         });
 
-      return iif(() => checkmate, of(actions.endGame({ winner: player })));
+      return iif(
+        () => checkmate,
+        of(actions.endGame({ winner: player, winMode: "CHECKMATE" }))
+      );
     })
   );
 
