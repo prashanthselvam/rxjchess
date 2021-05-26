@@ -45,7 +45,11 @@ const useAi = () => {
     aiGame
       .makeAiMove(lastMove)
       .then(({ from, to }) => {
-        setNextAiMove({ sourceTileId: from, targetTileId: to });
+        const delay = !!lastMove ? 0 : 1000;
+        setTimeout(
+          () => setNextAiMove({ sourceTileId: from, targetTileId: to }),
+          delay
+        );
       })
       .catch((error) => console.log(error));
   }, [moveHistory, status, isPlayersTurn]);

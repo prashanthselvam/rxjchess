@@ -3,6 +3,8 @@ import * as React from "react";
 import { PieceId } from "src/types/constants";
 import { _getPieceType, _getPlayer } from "../store/utils";
 import useEntryAnimate from "../hooks/useEntryAnimate";
+import { ChessGameState } from "../store";
+import { useSelector } from "react-redux";
 
 interface PieceProps {
   pieceId: PieceId;
@@ -15,6 +17,12 @@ const Piece = ({ pieceId }: PieceProps) => {
   const pieceType = _getPieceType(pieceId);
   const filename = `${player}${pieceType}.png`;
 
+  const gameStatus = useSelector(
+    (state: ChessGameState) => state.currentGameState.status
+  );
+
+  const doAnimate = gameStatus === "READY";
+
   return (
     <div
       css={{
@@ -23,8 +31,8 @@ const Piece = ({ pieceId }: PieceProps) => {
         left: "50%",
         transform: "translate(-50%, -50%)",
         width: "90%",
-        opacity: showPiece ? 1 : 0,
-        transition: "all 0.4s",
+        opacity: showPiece || !doAnimate ? 1 : 0,
+        transition: doAnimate ? "all 0.4s" : "",
       }}
     >
       <Image
