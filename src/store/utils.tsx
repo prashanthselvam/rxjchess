@@ -285,6 +285,16 @@ export const _getPeggedTile = (
   tileMap: TileMap,
   kingPlayer: Player
 ) => {
+  const cantPeg =
+    path.slice(1).findIndex((tileId) => {
+      const pieceId = tileMap[tileId].pieceId;
+      return pieceId && _getPlayer(pieceId) === _getOpponent(kingPlayer);
+    }) > -1;
+
+  if (cantPeg) {
+    return undefined;
+  }
+
   const nearestOpponentIndex = path.findIndex((tileId) => {
     const pieceId = tileMap[tileId].pieceId;
     return pieceId && _getPlayer(pieceId) === kingPlayer;
@@ -343,8 +353,6 @@ export const getPeggedTileMap = (tileMap: TileMap) => {
           return acc;
         }
 
-        console.log({ peggerX, kingX });
-
         const board = _getBoard(kingPlayer);
         const path: TileId[] = [];
 
@@ -367,8 +375,6 @@ export const getPeggedTileMap = (tileMap: TileMap) => {
         }
 
         const peggedTile = _getPeggedTile(path, tileMap, kingPlayer);
-
-        console.log({ path, kingPlayer, pieceId, peggedTile });
 
         if (peggedTile) {
           acc[peggedTile] = [tileId, ...path];
