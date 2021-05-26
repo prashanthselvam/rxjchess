@@ -2,19 +2,24 @@ import { actions, ChessGameState, Move, store } from "src/store";
 import { _getPieceType } from "src/store/utils";
 import * as React from "react";
 import { useSelector } from "react-redux";
+import { useRef } from "react";
 
 const MoveHistory = () => {
   const [highlightIndex, setHighlightIndex] = React.useState(0);
+  const divRef = useRef(null);
   const moves: Move[] = useSelector(
     (state: ChessGameState) => state.movesState.moveHistory
   );
 
   React.useEffect(() => {
     setHighlightIndex(moves.length - 1);
+    // @ts-ignore
+    divRef.current.scrollTop = divRef.current.scrollHeight;
   }, [moves]);
 
   return (
     <div
+      ref={divRef}
       css={{
         display: "grid",
         overflow: "scroll",
@@ -55,17 +60,22 @@ const MoveHistory = () => {
             setHighlightIndex(index);
           };
 
+          const isHighlighted = highlightIndex === index;
+
           return (
             <button
               key={index}
               onClick={onClick}
               css={{
+                border: "1px solid rgba(0,0,0,0.1)",
                 textAlign: "center",
                 width: "100%",
                 padding: 5,
                 fontFamily: "Oswald",
-                backgroundColor:
-                  highlightIndex === index ? "lightblue" : "grey",
+                color: isHighlighted ? "rgb(20,20,20)" : "rgb(220,220,220)",
+                backgroundColor: isHighlighted
+                  ? "rgb(237,205,132)"
+                  : "rgb(80,80,80)",
               }}
             >
               {label}

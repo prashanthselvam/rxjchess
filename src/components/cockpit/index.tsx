@@ -15,11 +15,12 @@ const Cockpit = () => {
   return (
     <div
       css={{
+        border: "1px solid rgba(56,56,56,0.5)",
         maxHeight: "80vh",
         position: "relative",
         width: showCockpit ? "300px" : "0px",
         opacity: showCockpit ? 1 : 0,
-        backgroundColor: "grey",
+        backgroundColor: "rgba(0,0,0,.1)",
         marginLeft: "1.5rem",
         transition: "all .4s",
         display: "flex",

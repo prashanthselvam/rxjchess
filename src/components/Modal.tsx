@@ -108,11 +108,11 @@ const PawnPromoteModal = ({ targetTileId }: ModalProps) => {
   const pieceTypes = ["Q", "B", "N", "R"];
 
   const onClick = (type) => {
+    store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
     makeMove({
       targetTileId: targetTileId!,
       promotePieceType: type,
     });
-    store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
   };
 
   return (
