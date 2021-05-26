@@ -13,11 +13,13 @@ import Image from "./image";
 import useMakeMove from "../hooks/useMakeMove";
 import styled from "@emotion/styled";
 import { _getOpponent } from "../store/utils";
+import { keyframes } from "@emotion/react";
 
 const StyledButton = styled("button")`
   font-size: 1.7rem;
   margin-top: 12px;
   padding: 8px 24px;
+  width: 150px;
 `;
 
 const QuitGameModal = ({ quitter }: ModalProps) => {
@@ -44,7 +46,7 @@ const QuitGameModal = ({ quitter }: ModalProps) => {
   };
 
   return (
-    <div css={{ color: "white" }}>
+    <div>
       <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>{modalText}</p>
       <div css={{ display: "flex", justifyContent: "space-evenly" }}>
         <StyledButton onClick={handleOnClick}>YES</StyledButton>
@@ -74,7 +76,7 @@ const GameOverModal = ({ winner, winMode }: ModalProps) => {
   };
 
   return (
-    <div css={{ color: "white", width: 400 }}>
+    <div>
       <h1>Well Played!</h1>
       <Image
         alt="winner"
@@ -82,7 +84,9 @@ const GameOverModal = ({ winner, winMode }: ModalProps) => {
         style={{ width: "33%", margin: "2rem 0 1rem 33%" }}
       />
       <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>{winnerText()}</p>
-      <div css={{ display: "flex", justifyContent: "space-evenly" }}>
+      <div
+        css={{ display: "flex", justifyContent: "space-evenly", width: 350 }}
+      >
         <StyledButton onClick={() => store.dispatch(actions.reset())}>
           MAIN MENU
         </StyledButton>
@@ -123,14 +127,14 @@ const PawnPromoteModal = ({ targetTileId }: ModalProps) => {
         flexWrap: "wrap",
       }}
     >
-      <h2
+      <h1
         css={{
           width: "100%",
-          color: "white",
+          marginBottom: 24,
         }}
       >
         PAWN PROMOTE
-      </h2>
+      </h1>
       {pieceTypes.map((type) => {
         return (
           <div
@@ -161,14 +165,36 @@ export const Modal = () => {
 
   const modalWidth = type !== "PAWN_PROMOTE" ? "fit-content" : "";
 
+  const appear = keyframes`
+      0% {
+        opacity: 0;
+        transform: scale(1.2)
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    `;
+
   return (
-    <DialogOverlay css={{ zIndex: 2 }} isOpen={showModal} onDismiss={onDismiss}>
+    <DialogOverlay
+      css={{ zIndex: 2, animation: `${appear} 0.2s ease` }}
+      isOpen={showModal}
+      onDismiss={onDismiss}
+    >
       <DialogContent
         style={{
+          color: "rgb(4, 26, 61)",
           boxShadow: "0px 10px 50px hsla(0, 0%, 0%, 0.33)",
-          backgroundColor: "rgb(9,40,117)",
+          backgroundColor: "rgb(251,253,253)",
           textAlign: "center",
           width: modalWidth,
+          position: "absolute",
+          top: "30%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          padding: 40,
+          borderRadius: 12,
         }}
         aria-label={type ? type : "MINIMIZED MODAL"}
       >
