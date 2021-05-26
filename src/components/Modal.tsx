@@ -72,15 +72,15 @@ const GameOverModal = ({ winner, winMode }: ModalProps) => {
       return `${player} wins by ${winMode?.toLowerCase()}`;
     }
 
-    return "Match tied";
+    return "It's a stalemate!";
   };
 
   return (
     <div>
-      <h1>Well Played!</h1>
+      <h1>GAME OVER</h1>
       <Image
         alt="winner"
-        filename={`${winner}Q.png`}
+        filename={winner ? `${winner}Q.png` : "stalemate.jpeg"}
         style={{ width: "33%", margin: "2rem 0 1rem 33%" }}
       />
       <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>{winnerText()}</p>

@@ -1,7 +1,7 @@
 import { filter, mergeMap, pluck } from "rxjs/operators";
 import { actions, ChessGameState } from "../index";
 import { TileId } from "src/types/constants";
-import { iif, of } from "rxjs";
+import { EMPTY, iif, of } from "rxjs";
 import {
   _getPieceType,
   _getPlayer,
@@ -13,8 +13,6 @@ import {
 } from "../utils";
 import { AnyAction } from "@reduxjs/toolkit";
 import { Epic } from "redux-observable";
-
-const consoleLog = (x) => console.log(x);
 
 export type GameEpic = Epic<AnyAction, AnyAction, ChessGameState>;
 
@@ -168,6 +166,7 @@ const postMoveCalcsEpic: GameEpic = (action$, state$) =>
           checkOriginTiles,
           checkBlockTiles,
         }),
+        actions.determineStalemate({ player }),
         actions.determineCastleEligibility(),
         actions.updatePeggedTileMap({ peggedTileMap }),
       ];
@@ -250,11 +249,81 @@ const determineCheckmateEpic: GameEpic = (action$, state$) =>
     })
   );
 
+/**
+ * determineCheckmateEpic: As the name suggests, this determines if we have a checkmate and if yes, it triggers the
+ * `endGame` action with the appropriate payload.
+ */
+const determineStaleMateEpic: GameEpic = (action$, state$) =>
+  action$.pipe(
+    filter(actions.determineStalemate.match),
+    pluck("payload"),
+    mergeMap(({ player }) => {
+      const {
+        boardState: {
+          tileMap,
+          blackAttackedTiles,
+          whiteAttackedTiles,
+          peggedTileMap,
+          canBeEnpassant,
+          canCastle,
+        },
+        checkState: { isActiveCheck },
+      } = state$.value;
+
+      if (isActiveCheck) {
+        return EMPTY;
+      }
+
+      const opponent = _getOpponent(player);
+
+      const stalemate = Object.entries(tileMap)
+        .filter(
+          ([, { pieceId }]) => pieceId && _getPlayer(pieceId) === opponent
+        )
+        .every(([tileId, { pieceId }]) => {
+          const isPegged = Object.keys(peggedTileMap).includes(tileId);
+          const allPossibleMoves = determinePossibleMoves(
+            opponent,
+            pieceId!,
+            tileId,
+            whiteAttackedTiles,
+            blackAttackedTiles,
+            tileMap,
+            canCastle,
+            canBeEnpassant
+          );
+
+          let numPossibleMoves = 0;
+
+          if (_getPieceType(pieceId!) === "K") {
+            const filterTiles =
+              opponent === "W" ? blackAttackedTiles : whiteAttackedTiles;
+
+            numPossibleMoves += allPossibleMoves.filter(
+              (id) => !filterTiles.includes(id)
+            ).length;
+          } else if (isPegged) {
+            const peggedPath = peggedTileMap[tileId];
+            numPossibleMoves += allPossibleMoves.filter((id) =>
+              peggedPath.includes(id)
+            ).length;
+          } else {
+            numPossibleMoves += allPossibleMoves.length;
+          }
+
+          return numPossibleMoves === 0;
+        });
+
+      return iif(() => stalemate, of(actions.endGame({ winner: undefined })));
+    })
+  );
+
 const gameEpics = [
   selectTileEpic,
   postMoveCleanupEpic,
   postMoveCalcsEpic,
   determineCheckmateEpic,
+  determineStaleMateEpic,
 ];
 
 export default gameEpics;

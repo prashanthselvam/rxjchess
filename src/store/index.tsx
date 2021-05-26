@@ -208,6 +208,10 @@ const gameSlice = createSlice({
       state: ChessGameState,
       action: PayloadAction<{ player: Player }>
     ) {},
+    determineStalemate(
+      state: ChessGameState,
+      action: PayloadAction<{ player: Player }>
+    ) {},
     togglePov(state: ChessGameState) {
       if (state.currentGameState.player) {
         state.currentGameState.player = _getOpponent(
