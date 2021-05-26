@@ -12,13 +12,55 @@ import { useSelector } from "react-redux";
 import Image from "./image";
 import useMakeMove from "../hooks/useMakeMove";
 import styled from "@emotion/styled";
+import { _getOpponent } from "../store/utils";
 
 const StyledButton = styled("button")`
-  width: 40%;
   font-size: 1.7rem;
   margin-top: 12px;
-  padding: 12px 0;
+  padding: 8px 24px;
 `;
+
+const QuitGameModal = ({ quitter }: ModalProps) => {
+  const { playMode } = useSelector(
+    (state: ChessGameState) => state.currentGameState
+  );
+
+  const modalText =
+    playMode === "PLAY FRIEND"
+      ? "Are you sure you would like to resign?"
+      : "Are you sure you would like to quit the game?";
+
+  const handleOnClick = () => {
+    if (playMode === "PLAY FRIEND") {
+      store.dispatch(
+        actions.endGame({
+          winner: _getOpponent(quitter!),
+          winMode: "RESIGNATION",
+        })
+      );
+    } else {
+      store.dispatch(actions.reset());
+    }
+  };
+
+  return (
+    <div css={{ color: "white" }}>
+      <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>{modalText}</p>
+      <div css={{ display: "flex", justifyContent: "space-evenly" }}>
+        <StyledButton onClick={handleOnClick}>YES</StyledButton>
+        <StyledButton
+          onClick={() =>
+            store.dispatch(
+              actions.setModalState({ modalState: { type: undefined } })
+            )
+          }
+        >
+          NO
+        </StyledButton>
+      </div>
+    </div>
+  );
+};
 
 const GameOverModal = ({ winner, winMode }: ModalProps) => {
   // store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
@@ -117,7 +159,7 @@ export const Modal = () => {
     store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
   };
 
-  const modalWidth = type === "GAME_OVER" ? "fit-content" : "";
+  const modalWidth = type !== "PAWN_PROMOTE" ? "fit-content" : "";
 
   return (
     <DialogOverlay css={{ zIndex: 2 }} isOpen={showModal} onDismiss={onDismiss}>
@@ -132,6 +174,7 @@ export const Modal = () => {
       >
         {type === "PAWN_PROMOTE" && <PawnPromoteModal {...modalProps} />}
         {type === "GAME_OVER" && <GameOverModal {...modalProps} />}
+        {type === "QUIT_GAME" && <QuitGameModal />}
       </DialogContent>
     </DialogOverlay>
   );

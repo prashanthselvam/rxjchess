@@ -88,10 +88,11 @@ export interface ModalProps {
   targetTileId?: TileId;
   winner?: Player | undefined;
   winMode?: WinModes | undefined;
+  quitter?: Player;
 }
 
 export interface ModalState {
-  type: undefined | "PAWN_PROMOTE" | "GAME_OVER";
+  type: undefined | "PAWN_PROMOTE" | "GAME_OVER" | "QUIT_GAME";
   modalProps?: ModalProps;
 }
 

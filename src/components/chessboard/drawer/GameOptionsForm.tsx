@@ -165,12 +165,6 @@ const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
           icon={faTimes}
           onClick={onClose}
         />
-        {/*<StyledSelect*/}
-        {/*  options={gameTypeOptions}*/}
-        {/*  placeholder={"Game Type"}*/}
-        {/*  value={formValues.gameType}*/}
-        {/*  onChange={(option) => handleOnChange(option, "gameType")}*/}
-        {/*/>*/}
         {!gameId && (
           <>
             <h3 css={{ textAlign: "center", marginBottom: 8 }}>Settings</h3>

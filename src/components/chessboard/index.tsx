@@ -2,11 +2,12 @@ import { graphql, useStaticQuery } from "gatsby";
 import BackgroundImage from "gatsby-background-image";
 import React from "react";
 import Drawer from "./drawer";
-import { BLACK_BOARD, WHITE_BOARD } from "../../types/constants";
+import { BLACK_BOARD, WHITE_BOARD } from "src/types/constants";
 import Tile from "./tile";
 import { useSelector } from "react-redux";
 import { css } from "@emotion/react";
-import { ChessGameState } from "../../store";
+import { ChessGameState } from "src/store";
+import Toolbar from "./Toolbar";
 
 const Chessboard = () => {
   const data = useStaticQuery(
@@ -25,12 +26,8 @@ const Chessboard = () => {
 
   const imageData = data.file.childImageSharp.fluid;
 
-  const player = useSelector(
-    (state: ChessGameState) => state.currentGameState.player
-  );
-
-  const gameStatus = useSelector(
-    (state: ChessGameState) => state.currentGameState.status
+  const { player, status: gameStatus } = useSelector(
+    (state: ChessGameState) => state.currentGameState
   );
 
   const isGameActive = [
@@ -40,7 +37,7 @@ const Chessboard = () => {
     "GAME OVER",
   ].includes(gameStatus);
 
-  const styles = css`
+  const boardStyles = css`
     position: relative;
     text-align: center;
     transition: all 0.5s;
@@ -79,7 +76,7 @@ const Chessboard = () => {
   };
 
   return (
-    <div css={styles}>
+    <div css={boardStyles}>
       <BackgroundImage
         Tag="div"
         fluid={imageData}
@@ -97,7 +94,7 @@ const Chessboard = () => {
           .sort((a, b) => b - a)
           .map((yPos) => drawRow(yPos))}
       </BackgroundImage>
-      <Drawer />
+      {isGameActive ? <Toolbar /> : <Drawer />}
     </div>
   );
 };

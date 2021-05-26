@@ -2,7 +2,7 @@ import { store } from "src/store";
 import { Provider } from "react-redux";
 import * as React from "react";
 import { Modal } from "./Modal";
-import Cockpit from "./Cockpit";
+import Cockpit from "./cockpit";
 import Chessboard from "./chessboard";
 import AiPlayer from "./AiPlayer";
 import PubNub from "pubnub";

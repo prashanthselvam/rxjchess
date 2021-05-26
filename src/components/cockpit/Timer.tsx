@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { actions, ChessGameState, store } from "src/store";
 import { interval, BehaviorSubject, of } from "rxjs";
 import { mapTo, scan, switchMap, takeWhile, tap } from "rxjs/operators";
-import { _getOpponent } from "../store/utils";
+import { _getOpponent } from "../../store/utils";
 
 interface TimerProps {
   maxTimeInSeconds: number;
@@ -64,10 +64,17 @@ const Timer = ({
     minimumIntegerDigits: 2,
   });
 
+  const warningTime = maxTimeInSeconds > 60 ? 60 : 30;
+  const isMyTurn = currentTurn === player;
+
   return (
     <div
       css={{
         width: "100%",
+        padding: 20,
+        color: isMyTurn && displayTime <= warningTime ? "white" : "inherit",
+        backgroundColor:
+          isMyTurn && displayTime <= warningTime ? "rgb(169,0,0)" : "inherit",
       }}
     >
       {`${displayMin}:${displaySec}`}
@@ -75,4 +82,38 @@ const Timer = ({
   );
 };
 
-export default Timer;
+const WrappedTimer = ({ player }) => {
+  const {
+    maxTime: maxTimeInMinutes,
+    increment: incrementInSeconds,
+    currentTurn,
+  } = useSelector((state: ChessGameState) => state.currentGameState);
+
+  const noTimeLimit = maxTimeInMinutes === "unlimited";
+  const isMyTurn = player === currentTurn;
+
+  return (
+    <div
+      css={{
+        fontSize: "4rem",
+        color: isMyTurn ? "rgb(34,119,26)" : "rgb(53,53,53)",
+        textAlign: "center",
+        width: "100%",
+        backgroundColor: isMyTurn ? "rgb(241,241,241)" : "rgb(103,103,103)",
+        padding: noTimeLimit ? 20 : "",
+      }}
+    >
+      {noTimeLimit ? (
+        "∞"
+      ) : (
+        <Timer
+          maxTimeInSeconds={maxTimeInMinutes * 60}
+          incrementInSeconds={incrementInSeconds}
+          player={player}
+        />
+      )}
+    </div>
+  );
+};
+
+export default WrappedTimer;
