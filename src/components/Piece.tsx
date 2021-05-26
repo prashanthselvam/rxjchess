@@ -2,6 +2,7 @@ import Image from "./image";
 import * as React from "react";
 import { PieceId } from "src/types/constants";
 import { _getPieceType, _getPlayer } from "../store/utils";
+import useEntryAnimate from "../hooks/useEntryAnimate";
 
 interface PieceProps {
   pieceId: PieceId;
@@ -9,6 +10,7 @@ interface PieceProps {
 }
 
 const Piece = ({ pieceId }: PieceProps) => {
+  const showPiece = useEntryAnimate(500);
   const player = _getPlayer(pieceId);
   const pieceType = _getPieceType(pieceId);
   const filename = `${player}${pieceType}.png`;
@@ -21,6 +23,8 @@ const Piece = ({ pieceId }: PieceProps) => {
         left: "50%",
         transform: "translate(-50%, -50%)",
         width: "90%",
+        opacity: showPiece ? 1 : 0,
+        transition: "all 0.4s",
       }}
     >
       <Image

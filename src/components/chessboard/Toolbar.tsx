@@ -2,27 +2,13 @@ import { actions, ChessGameState, store } from "src/store";
 import { css } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import useEntryAnimate from "src/hooks/useEntryAnimate";
 
 const Toolbar = () => {
+  const showToolbar = useEntryAnimate(500);
   const { currentTurn, status, playMode, player } = useSelector(
     (state: ChessGameState) => state.currentGameState
   );
-  const [showToolbar, setShowToolbar] = useState<boolean>(false);
-
-  const isGameActive = [
-    "IN PROGRESS",
-    "INITIALIZING",
-    "READY",
-    "GAME OVER",
-  ].includes(status);
-
-  useEffect(() => {
-    if (isGameActive) {
-      setTimeout(() => setShowToolbar(true), 500);
-    } else {
-      setShowToolbar(false);
-    }
-  }, [isGameActive]);
 
   const toolbarStyles = css`
     color: rgb(235, 235, 235);

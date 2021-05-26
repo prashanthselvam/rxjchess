@@ -131,7 +131,7 @@ const GameOptionsForm = ({
       setIsFormComplete(false);
     } else {
       closeDrawer();
-      setTimeout(() => store.dispatch(actions.newGame(options)), 300);
+      setTimeout(() => store.dispatch(actions.newGame(options)), 400);
     }
   };
 

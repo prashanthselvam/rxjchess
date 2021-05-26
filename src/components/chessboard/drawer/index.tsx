@@ -33,7 +33,7 @@ const Drawer = () => {
     height: 40rem;
     position: relative;
     text-align: center;
-    transition: all 0.3s;
+    transition: all 0.4s;
     transform: ${isOpen ? `none` : `translateY(-40rem)`};
   `;
 

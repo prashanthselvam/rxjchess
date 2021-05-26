@@ -5,7 +5,7 @@ import Drawer from "./drawer";
 import { BLACK_BOARD, WHITE_BOARD } from "src/types/constants";
 import Tile from "./tile";
 import { useSelector } from "react-redux";
-import { css } from "@emotion/react";
+import { css, keyframes } from "@emotion/react";
 import { ChessGameState } from "src/store";
 import Toolbar from "./Toolbar";
 
@@ -37,7 +37,17 @@ const Chessboard = () => {
     "GAME OVER",
   ].includes(gameStatus);
 
+  const appear = keyframes`
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    `;
+
   const boardStyles = css`
+    animation: ${appear} 1s ease;
     position: relative;
     text-align: center;
     transition: all 0.5s;

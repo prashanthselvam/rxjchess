@@ -4,28 +4,13 @@ import WrappedTimer from "./Timer";
 import MoveHistory from "./MoveHistory";
 import { _getOpponent } from "src/store/utils";
 import { ChessGameState } from "src/store";
-import { useEffect, useState } from "react";
+import useEntryAnimate from "src/hooks/useEntryAnimate";
 
 const Cockpit = () => {
-  const [showCockpit, setShowCockpit] = useState<boolean>(false);
-  const { player, status: gameStatus } = useSelector(
-    (state: ChessGameState) => state.currentGameState
+  const showCockpit = useEntryAnimate(500);
+  const player = useSelector(
+    (state: ChessGameState) => state.currentGameState.player
   );
-
-  const isGameActive = [
-    "INITIALIZING",
-    "IN PROGRESS",
-    "READY",
-    "GAME OVER",
-  ].includes(gameStatus);
-
-  useEffect(() => {
-    if (isGameActive) {
-      setTimeout(() => setShowCockpit(true), 500);
-    } else {
-      setShowCockpit(false);
-    }
-  }, [isGameActive]);
 
   return (
     <div
