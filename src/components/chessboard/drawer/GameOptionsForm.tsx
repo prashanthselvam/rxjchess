@@ -9,6 +9,7 @@ import { usePubNub } from "pubnub-react";
 interface GameOptionsFormProps {
   playMode: PlayModes;
   onClose: () => void;
+  closeDrawer: () => void;
 }
 
 type Option<T> = {
@@ -23,7 +24,11 @@ interface FormValues {
   increment: Option<number> | undefined;
 }
 
-const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
+const GameOptionsForm = ({
+  playMode,
+  onClose,
+  closeDrawer,
+}: GameOptionsFormProps) => {
   const pubNub = usePubNub();
 
   const gameIdRef = useRef<string>("");
@@ -125,7 +130,8 @@ const GameOptionsForm = ({ playMode, onClose }: GameOptionsFormProps) => {
       pubNub.addListener({ message: handleOnlineGameCreate });
       setIsFormComplete(false);
     } else {
-      store.dispatch(actions.newGame(options));
+      closeDrawer();
+      setTimeout(() => store.dispatch(actions.newGame(options)), 300);
     }
   };
 

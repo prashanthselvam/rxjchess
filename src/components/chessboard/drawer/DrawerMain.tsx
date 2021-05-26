@@ -3,7 +3,7 @@ import BackgroundImage from "gatsby-background-image";
 import React from "react";
 import DrawerMenu from "./DrawerMenu";
 
-const DrawerMain = ({ isOpen, ...props }) => {
+const DrawerMain = ({ isOpen, closeDrawer, ...props }) => {
   const data = useStaticQuery(
     graphql`
       query {
@@ -97,7 +97,7 @@ const DrawerMain = ({ isOpen, ...props }) => {
         <LeftSidePiece />
         <BottomSidePiece />
         <RightSidePiece />
-        <DrawerMenu />
+        <DrawerMenu closeDrawer={closeDrawer} />
       </div>
     </BackgroundImage>
   );

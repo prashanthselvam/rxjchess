@@ -7,7 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import GameOptionsForm from "./GameOptionsForm";
 
-const DrawerMenu = () => {
+const DrawerMenu = ({ closeDrawer }) => {
   const [gameMode, setGameMode] = useState<PlayModes | undefined>(undefined);
 
   const handleOnClick = (option: PlayModes) => {
@@ -33,6 +33,7 @@ const DrawerMenu = () => {
           <GameOptionsForm
             playMode={gameMode}
             onClose={() => setGameMode(undefined)}
+            closeDrawer={closeDrawer}
           />
         )}
       </div>

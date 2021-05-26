@@ -1,5 +1,5 @@
 import React from "react";
-import { actions, ChessGameState, store } from "src/store";
+import { ChessGameState } from "src/store";
 import { css } from "@emotion/react";
 import { useSelector } from "react-redux";
 import DrawerMain from "./DrawerMain";
@@ -20,6 +20,7 @@ const Drawer = () => {
   ].includes(gameStatus);
 
   const handleOnClick = () => setIsOpen(!isOpen);
+  const closeDrawer = () => setIsOpen(false);
 
   React.useEffect(() => {
     if (isGameActive) {
@@ -32,13 +33,13 @@ const Drawer = () => {
     height: 40rem;
     position: relative;
     text-align: center;
-    transition: all 0.5s;
+    transition: all 0.3s;
     transform: ${isOpen ? `none` : `translateY(-40rem)`};
   `;
 
   return (
     <div css={containerStyles}>
-      <DrawerMain isOpen={isOpen} />
+      <DrawerMain isOpen={isOpen} closeDrawer={closeDrawer} />
       <DrawerHandle
         onClick={handleOnClick}
         handleText={isOpen ? "CANCEL" : "NEW GAME"}
