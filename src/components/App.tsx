@@ -1,4 +1,4 @@
-import { store } from "src/store";
+import { ChessGameState, store } from "src/store";
 import { Provider } from "react-redux";
 import * as React from "react";
 import { Modal } from "./Modal";
@@ -8,16 +8,20 @@ import AiPlayer from "./AiPlayer";
 import PubNub from "pubnub";
 import { PubNubProvider } from "pubnub-react";
 import useOnlineMultiplayer from "../hooks/useOnlineMultiplayer";
+import { useSelector } from "react-redux";
 
 const Game = ({ urlGameId }) => {
   const _ = useOnlineMultiplayer(urlGameId);
+  const playMode = useSelector(
+    (state: ChessGameState) => state.currentGameState.playMode
+  );
 
   return (
     <>
       <div
         css={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}
       >
-        <AiPlayer />
+        {playMode === "PLAY COMPUTER" && <AiPlayer />}
         <Chessboard />
         <Cockpit />
       </div>

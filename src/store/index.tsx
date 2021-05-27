@@ -250,12 +250,13 @@ const gameSlice = createSlice({
       }>
     ) {
       const {
-        currentGameState: { currentTurn },
+        currentGameState: { currentTurn, playMode, player },
         boardState: { selectedTile, selectedPiece, tileMap, canBeEnpassant },
         movesState: { movedPieces },
       } = state;
 
-      const { targetTileId, sourceTileId, promotePieceType } = action.payload;
+      const { targetTileId, sourceTileId } = action.payload;
+      let { promotePieceType } = action.payload;
       let pieceId;
 
       if (sourceTileId && !selectedTile) {
@@ -266,6 +267,19 @@ const gameSlice = createSlice({
 
       if (!pieceId) {
         throw Error;
+      }
+
+      // If the move was made by AI it's possible it's a pawn promotion
+      if (
+        playMode === "PLAY COMPUTER" &&
+        _getPieceType(pieceId) === "P" &&
+        currentTurn !== player
+      ) {
+        // @ts-ignore
+        const [_, y] = _getRelativePos(currentTurn!, targetTileId);
+        if (y === 7) {
+          promotePieceType = "Q";
+        }
       }
 
       const board = _getBoard(currentTurn!);
