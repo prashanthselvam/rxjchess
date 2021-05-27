@@ -544,16 +544,39 @@ const gameSlice = createSlice({
 
       moveHistory
         .slice(0, index + 1)
-        .forEach(({ pieceId, sourceTileId, targetTileId }, i) => {
-          initialTileMapClone[sourceTileId] = {
-            pieceId: undefined,
-            highlight: i === index,
-          };
-          initialTileMapClone[targetTileId] = {
-            pieceId,
-            highlight: i === index,
-          };
-        });
+        .forEach(
+          (
+            { pieceId, sourceTileId, targetTileId, castledRook, promotedPiece },
+            i
+          ) => {
+            initialTileMapClone[sourceTileId] = {
+              pieceId: undefined,
+              highlight: i === index,
+            };
+            initialTileMapClone[targetTileId] = {
+              pieceId: promotedPiece ? promotedPiece : pieceId,
+              highlight: i === index,
+            };
+
+            if (castledRook) {
+              const rookPositions = {
+                WR1: ["A1", "D1"],
+                WR2: ["H1", "F1"],
+                BR1: ["A8", "D8"],
+                BR2: ["H8", "F8"],
+              };
+
+              initialTileMapClone[rookPositions[castledRook][0]] = {
+                pieceId: undefined,
+                highlight: false,
+              };
+              initialTileMapClone[rookPositions[castledRook][1]] = {
+                pieceId: castledRook,
+                highlight: false,
+              };
+            }
+          }
+        );
 
       state.movesState.historyTileMap = initialTileMapClone;
       state.movesState.isShowingHistory = true;
