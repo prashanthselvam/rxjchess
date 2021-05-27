@@ -3,9 +3,26 @@ import { css } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import useEntryAnimate from "src/hooks/useEntryAnimate";
+import { graphql, useStaticQuery } from "gatsby";
+import useSound from "use-sound";
 
 const Toolbar = () => {
+  const moveSound = useStaticQuery(
+    graphql`
+      query {
+        file(base: { eq: "move.mp3" }) {
+          publicURL
+        }
+      }
+    `
+  );
+
+  const moveSoundURL = moveSound.file.publicURL;
+
   const showToolbar = useEntryAnimate(500);
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  const [play] = useSound(moveSoundURL, { volume: 0.2, soundEnabled });
+
   const { currentTurn, status, playMode, player } = useSelector(
     (state: ChessGameState) => state.currentGameState
   );
@@ -34,6 +51,7 @@ const Toolbar = () => {
   const buttonStyles = css`
     font-size: 1.4rem;
     padding: 6px 12px;
+    margin: 0 4px;
   `;
 
   const currentTurnText = currentTurn === "W" ? "WHITE" : "BLACK";
@@ -65,12 +83,24 @@ const Toolbar = () => {
     }
   };
 
+  useEffect(() => {
+    play();
+  }, [currentTurn]);
+
   return (
     <div css={toolbarStyles}>
       <p>{`CURRENT TURN: ${currentTurnText}`}</p>
-      <button css={buttonStyles} onClick={onClick}>
-        {btnText()}
-      </button>
+      <div css={{ display: "inline-block" }}>
+        <button css={buttonStyles} onClick={onClick}>
+          {btnText()}
+        </button>
+        <button
+          css={buttonStyles}
+          onClick={() => setSoundEnabled(!soundEnabled)}
+        >
+          {"SOUND"}
+        </button>
+      </div>
     </div>
   );
 };
