@@ -105,6 +105,14 @@ const GameOptionsForm = ({
     const options = getGameOptions();
 
     if (message.type === "PLAYER_ARRIVED") {
+      store.dispatch(
+        actions.setModalState({
+          modalState: {
+            type: "MULTIPLAYER_STATUS",
+            modalProps: { multiplayerGameStatus: "SUCCESS" },
+          },
+        })
+      );
       pubNub
         .publish({
           channel: gameIdRef.current,
@@ -126,8 +134,12 @@ const GameOptionsForm = ({
       })();
       gameIdRef.current = myGameId;
       setGameId(myGameId);
-      pubNub.subscribe({ channels: [myGameId] });
+      pubNub.subscribe({ channels: [myGameId], withPresence: true });
       pubNub.addListener({ message: handleOnlineGameCreate });
+      pubNub.publish({
+        channel: myGameId,
+        message: { type: "CHANNEL_READY" },
+      });
       setIsFormComplete(false);
     } else {
       closeDrawer();
@@ -215,14 +227,14 @@ const GameOptionsForm = ({
         )}
         {gameId && (
           <>
-            <div css={{ textAlign: "center", fontSize: "1.5rem" }}>
+            <div css={{ textAlign: "center", fontSize: "1.8rem" }}>
               Invite your friend using the link below
             </div>
             <div
               css={{
                 textAlign: "center",
-                fontSize: "1.2rem",
-                marginTop: 8,
+                fontSize: "1.5rem",
+                marginTop: 14,
                 padding: "4px 0px",
                 background: "white",
                 borderRadius: 4,
@@ -260,7 +272,8 @@ const GameOptionsForm = ({
                   }}
                   icon={faCopy}
                   onClick={() => {
-                    navigator.clipboard.writeText(url);
+                    const inviteText = `Let's plays some chess!\n\n${url}`;
+                    navigator.clipboard.writeText(inviteText);
                     setUrlCopySuccess(true);
                   }}
                 />
@@ -273,7 +286,8 @@ const GameOptionsForm = ({
             css={{
               textAlign: "center",
               color: "green",
-              fontSize: "1.2rem",
+              fontSize: "1.3rem",
+              marginTop: 4,
             }}
           >
             Copied successfully!

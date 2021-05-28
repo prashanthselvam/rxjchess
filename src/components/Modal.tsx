@@ -1,10 +1,4 @@
-import {
-  store,
-  actions,
-  ChessGameState,
-  ModalState,
-  ModalProps,
-} from "src/store";
+import { store, actions, ChessGameState, ModalProps } from "src/store";
 import { DialogContent, DialogOverlay } from "@reach/dialog";
 import "@reach/dialog/styles.css";
 import * as React from "react";
@@ -14,6 +8,7 @@ import useMakeMove from "../hooks/useMakeMove";
 import styled from "@emotion/styled";
 import { _getOpponent } from "../store/utils";
 import { keyframes } from "@emotion/react";
+import { useEffect } from "react";
 
 const StyledButton = styled("button")`
   font-size: 1.7rem;
@@ -60,6 +55,47 @@ const QuitGameModal = ({ quitter }: ModalProps) => {
           NO
         </StyledButton>
       </div>
+    </div>
+  );
+};
+
+const MultiplayerStatusModal = ({ multiplayerGameStatus }: ModalProps) => {
+  let modalText = "";
+
+  switch (multiplayerGameStatus) {
+    case "INVALID_URL":
+      modalText =
+        "Game URL is no longer valid.\nRedirecting to the main site in just a second where you can start a new game.";
+      break;
+    case "HOST_LEFT":
+      modalText =
+        "Game host has already exited.\nRedirecting to the main site in just a second where you can start a new game.";
+      break;
+    case "SUCCESS":
+      modalText = "Connection successful! Your game will begin shortly.";
+      break;
+  }
+
+  useEffect(() => {
+    if (multiplayerGameStatus === "SUCCESS") {
+      setTimeout(
+        () =>
+          store.dispatch(
+            actions.setModalState({ modalState: { type: undefined } })
+          ),
+        2000
+      );
+    } else if (
+      multiplayerGameStatus === "INVALID_URL" ||
+      multiplayerGameStatus === "HOST_LEFT"
+    ) {
+      setTimeout(() => (window.location.href = window.location.origin), 3000);
+    }
+  }, [multiplayerGameStatus]);
+
+  return (
+    <div css={{ width: 300 }}>
+      <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>{modalText}</p>
     </div>
   );
 };
@@ -157,7 +193,7 @@ export const Modal = () => {
   const showModal = !!type;
 
   const onDismiss = () => {
-    if (type === "PAWN_PROMOTE") {
+    if (type === "PAWN_PROMOTE" || "MULTIPLAYER_STATUS") {
       return null;
     }
     store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
@@ -201,6 +237,9 @@ export const Modal = () => {
         {type === "PAWN_PROMOTE" && <PawnPromoteModal {...modalProps} />}
         {type === "GAME_OVER" && <GameOverModal {...modalProps} />}
         {type === "QUIT_GAME" && <QuitGameModal />}
+        {type === "MULTIPLAYER_STATUS" && (
+          <MultiplayerStatusModal {...modalProps} />
+        )}
       </DialogContent>
     </DialogOverlay>
   );

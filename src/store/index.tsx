@@ -89,10 +89,16 @@ export interface ModalProps {
   winner?: Player | undefined;
   winMode?: WinModes | undefined;
   quitter?: Player;
+  multiplayerGameStatus?: MultiplayerGameStatus;
 }
 
 export interface ModalState {
-  type: undefined | "PAWN_PROMOTE" | "GAME_OVER" | "QUIT_GAME";
+  type:
+    | undefined
+    | "PAWN_PROMOTE"
+    | "GAME_OVER"
+    | "QUIT_GAME"
+    | "MULTIPLAYER_STATUS";
   modalProps?: ModalProps;
 }
 

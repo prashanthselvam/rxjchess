@@ -50,9 +50,12 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
     isGameInProgress &&
     isCurrentTurnPieceOnTile &&
     (canSelectBothSides || isPlayersTurn);
-  const isKingTile = pieceId && _getPieceType(pieceId) === "K";
+  const isCurrentTurnKingTile =
+    pieceId &&
+    _getPieceType(pieceId) === "K" &&
+    _getPlayer(pieceId) === currentTurn;
 
-  const checkHighlight = isActiveCheck && isSelectable && isKingTile;
+  const checkHighlight = isActiveCheck && isCurrentTurnKingTile;
 
   const onClick = () => {
     if (isShowingHistory) {

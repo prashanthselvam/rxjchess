@@ -1,4 +1,4 @@
-import { ChessGameState, store } from "src/store";
+import { actions, ChessGameState, store } from "src/store";
 import { Provider } from "react-redux";
 import * as React from "react";
 import { Modal } from "./Modal";
@@ -9,12 +9,33 @@ import PubNub from "pubnub";
 import { PubNubProvider } from "pubnub-react";
 import useOnlineMultiplayer from "../hooks/useOnlineMultiplayer";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
 
 const Game = ({ urlGameId }) => {
-  const _ = useOnlineMultiplayer(urlGameId);
+  const [showGame, setShowGame] = useState<boolean>(!urlGameId);
+  const { multiplayerGameStatus } = useOnlineMultiplayer(urlGameId);
   const playMode = useSelector(
     (state: ChessGameState) => state.currentGameState.playMode
   );
+
+  useEffect(() => {
+    if (!!urlGameId) {
+      if (multiplayerGameStatus === "SUCCESS") {
+        setShowGame(true);
+      }
+
+      if (multiplayerGameStatus !== "VALIDATING") {
+        store.dispatch(
+          actions.setModalState({
+            modalState: {
+              type: "MULTIPLAYER_STATUS",
+              modalProps: { multiplayerGameStatus },
+            },
+          })
+        );
+      }
+    }
+  }, [multiplayerGameStatus, urlGameId]);
 
   return (
     <>
@@ -22,8 +43,12 @@ const Game = ({ urlGameId }) => {
         css={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}
       >
         {playMode === "PLAY COMPUTER" && <AiPlayer />}
-        <Chessboard />
-        <Cockpit />
+        {showGame && (
+          <>
+            <Chessboard />
+            <Cockpit />
+          </>
+        )}
       </div>
       <Modal />
     </>
@@ -34,7 +59,7 @@ const App = ({ urlGameId }) => {
   const pubnub = new PubNub({
     publishKey: "pub-c-d4a424e5-efde-498e-af55-ead4fe257bed",
     subscribeKey: "sub-c-9437e116-6e8b-11eb-889a-ee4206f2a398",
-    uuid: "myUniqueUUID",
+    uuid: urlGameId ? "GAME_HOST_1" : "GAME_GUEST",
   });
 
   return (
