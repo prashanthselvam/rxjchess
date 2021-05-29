@@ -97,10 +97,16 @@ const postMoveCleanupEpic: GameEpic = (action$, state$) =>
     mergeMap(({ targetTileId }) => {
       const {
         boardState: { tileMap },
+        movesState: { isShowingHistory },
       } = state$.value;
       const pieceId = tileMap[targetTileId].pieceId!;
 
+      const maybeRestoreToLatest: AnyAction[] = isShowingHistory
+        ? [actions.restoreBoardAtMove({ latest: true })]
+        : [];
+
       return of(
+        ...maybeRestoreToLatest,
         actions.deselect(),
         actions.switchTurns(),
         actions.runPostMoveCalcs({ pieceId, targetTileId })

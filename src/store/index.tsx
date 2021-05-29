@@ -524,16 +524,19 @@ const gameSlice = createSlice({
         state.boardState.tileMap[id].highlight = true;
       });
     },
-    restoreBoardAtMove(state, action: PayloadAction<{ index: number }>) {
+    restoreBoardAtMove(
+      state,
+      action: PayloadAction<{ index?: number; latest?: boolean }>
+    ) {
       const { moveHistory } = state.movesState;
       const initialTileMapClone = Object.assign(
         {},
         getInitialTileMap(state.currentGameState.gameType)
       );
-      const index = action.payload.index;
+      const { index, latest } = action.payload;
 
-      // Restore to latest move
-      if (index === moveHistory.length - 1) {
+      // Restore to latest move and highlight last move
+      if (index === moveHistory.length - 1 || latest) {
         const { sourceTileId, targetTileId } = moveHistory.slice(-1)[0];
         initialTileMapClone[sourceTileId] = {
           pieceId: undefined,
@@ -549,7 +552,7 @@ const gameSlice = createSlice({
       }
 
       moveHistory
-        .slice(0, index + 1)
+        .slice(0, index!! + 1)
         .forEach(
           (
             { pieceId, sourceTileId, targetTileId, castledRook, promotedPiece },
