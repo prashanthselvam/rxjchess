@@ -8,10 +8,10 @@ import { useSelector } from "react-redux";
 import { css, keyframes } from "@emotion/react";
 import { ChessGameState } from "src/store";
 import Toolbar from "./Toolbar";
-import { mq } from "../../styles/constants";
-import WrappedTimer from "../cockpit/Timer";
-import { _getOpponent } from "../../store/utils";
-import { useMobileView } from "../App";
+import { mq } from "src/styles/constants";
+import WrappedTimer from "src/components/cockpit/Timer";
+import { _getOpponent } from "src/store/utils";
+import useMobileView from "src/hooks/useMobileView";
 
 const Chessboard = () => {
   const data = useStaticQuery(
@@ -100,6 +100,7 @@ const Chessboard = () => {
         Tag="div"
         fluid={imageData}
         style={{
+          opacity: 1,
           boxShadow: "0.2px .2rem 0 rgba(1,1,1,0.6)",
           zIndex: 1,
           padding: "2%",

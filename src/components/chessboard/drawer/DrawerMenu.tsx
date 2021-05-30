@@ -50,11 +50,12 @@ const DrawerMenu = ({ closeDrawer }) => {
           position: "absolute",
           display: "flex",
           top: "0%",
-          bottom: "10%",
+          bottom: "8%",
           left: "2.5%",
           right: "2.5%",
           justifyContent: "flex-start",
           alignItems: "center",
+          paddingTop: 12,
           [mq[0]]: {
             flexDirection: "column",
             display: gameMode && "none",

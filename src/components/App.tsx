@@ -10,25 +10,13 @@ import { PubNubProvider } from "pubnub-react";
 import useOnlineMultiplayer from "../hooks/useOnlineMultiplayer";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { mq } from "../styles/constants";
-
-export const useMobileView = () => {
-  const [mobileView, setIsMobileView] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (typeof window !== `undefined`) {
-      const mql = window.matchMedia("(max-width: 768px)");
-      setIsMobileView(mql.matches);
-    }
-  });
-
-  return mobileView;
-};
+import { mq } from "src/styles/constants";
+import useMobileView from "src/hooks/useMobileView";
 
 const Game = ({ urlGameId }) => {
   const [showGame, setShowGame] = useState<boolean>(!urlGameId);
   const { multiplayerGameStatus } = useOnlineMultiplayer(urlGameId);
-  const { playMode, player } = useSelector(
+  const { playMode } = useSelector(
     (state: ChessGameState) => state.currentGameState
   );
   const mobileView = useMobileView();
