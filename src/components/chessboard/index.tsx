@@ -90,6 +90,7 @@ const Chessboard = () => {
       <BackgroundImage
         Tag="div"
         fluid={imageData}
+        preserveStackingContext={true}
         style={{
           opacity: 1,
           boxShadow: "0.2px .2rem 0 rgba(1,1,1,0.6)",
