@@ -114,17 +114,19 @@ const useOnlineMultiplayer = (urlGameId: string) => {
     }
   }, [status]);
 
-  window.onbeforeunload = (e) => {
-    if (gameId && playMode === "PLAY FRIEND") {
-      pubNub.publish({
-        channel: gameId,
-        message: {
-          type: "LEFT_GAME",
-          player: player,
-        },
-      });
-    }
-  };
+  if (typeof window !== `undefined`) {
+    window.onbeforeunload = (e) => {
+      if (gameId && playMode === "PLAY FRIEND") {
+        pubNub.publish({
+          channel: gameId,
+          message: {
+            type: "LEFT_GAME",
+            player: player,
+          },
+        });
+      }
+    };
+  }
 
   return { multiplayerGameStatus };
 };
