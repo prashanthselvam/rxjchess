@@ -4,6 +4,7 @@ import { actions, ChessGameState, store } from "src/store";
 import { interval, BehaviorSubject, of } from "rxjs";
 import { mapTo, scan, switchMap, takeWhile, tap } from "rxjs/operators";
 import { _getOpponent } from "../../store/utils";
+import { mq } from "../../styles/constants";
 
 interface TimerProps {
   maxTimeInSeconds: number;
@@ -75,6 +76,9 @@ const Timer = ({
         color: isMyTurn && displayTime <= warningTime ? "white" : "inherit",
         backgroundColor:
           isMyTurn && displayTime <= warningTime ? "rgb(169,0,0)" : "inherit",
+        [mq[1]]: {
+          padding: 2,
+        },
       }}
     >
       {`${displayMin}:${displaySec}`}
@@ -101,6 +105,11 @@ const WrappedTimer = ({ player }) => {
         width: "100%",
         backgroundColor: isMyTurn ? "rgb(241,241,241)" : "rgb(103,103,103)",
         padding: noTimeLimit ? 20 : "",
+        [mq[1]]: {
+          padding: 2,
+          width: "100%",
+          margin: "6px auto",
+        },
       }}
     >
       {noTimeLimit ? (

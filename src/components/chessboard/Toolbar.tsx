@@ -37,15 +37,8 @@ const Toolbar = () => {
     background: rgba(0, 0, 0, 0.2);
     text-align: center;
     transition: all 0.5s;
-    width: "80vh";
     height: ${showToolbar ? "60px" : "0px"};
     opacity: ${showToolbar ? "1" : "0"};
-    @media (max-width: 1024px) {
-      width: "70vw";
-    }
-    @media (max-width: 768px) {
-      width: 95vw;
-    }
   `;
 
   const buttonStyles = css`

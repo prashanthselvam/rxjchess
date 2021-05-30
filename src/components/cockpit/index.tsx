@@ -5,6 +5,7 @@ import MoveHistory from "./MoveHistory";
 import { _getOpponent } from "src/store/utils";
 import { ChessGameState } from "src/store";
 import useEntryAnimate from "src/hooks/useEntryAnimate";
+import { mq } from "src/styles/constants";
 
 const Cockpit = () => {
   const showCockpit = useEntryAnimate(500);
@@ -33,6 +34,9 @@ const Cockpit = () => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
+        [mq[1]]: {
+          display: "none",
+        },
       }}
     >
       <WrappedTimer player={_getOpponent(player)} />

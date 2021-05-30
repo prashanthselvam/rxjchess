@@ -12,6 +12,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { _getOpponent } from "../store/utils";
 import WrappedTimer from "./cockpit/Timer";
+import { mq } from "../styles/constants";
 
 const Game = ({ urlGameId }) => {
   const [showGame, setShowGame] = useState<boolean>(!urlGameId);
@@ -50,15 +51,16 @@ const Game = ({ urlGameId }) => {
           display: "flex",
           justifyContent: "center",
           marginTop: "1.5rem",
+          [mq[1]]: {
+            marginTop: 0,
+          },
         }}
       >
         {playMode === "PLAY COMPUTER" && <AiPlayer />}
         {showGame && (
           <>
-            {/*<WrappedTimer player={_getOpponent(player)} />*/}
             <Chessboard />
-            {/*<WrappedTimer player={player} />*/}
-            {/*<Cockpit />*/}
+            <Cockpit />
           </>
         )}
       </div>

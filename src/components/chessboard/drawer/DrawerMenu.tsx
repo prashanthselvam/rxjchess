@@ -28,7 +28,7 @@ const DrawerMenu = ({ closeDrawer }) => {
           alignItems: "center",
           justifyContent: "center",
           zIndex: gameMode && 3,
-          [mq[0]]: {
+          [mq[1]]: {
             position: "relative",
             width: "initial",
             right: 0,

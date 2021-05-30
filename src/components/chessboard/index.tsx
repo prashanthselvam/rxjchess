@@ -9,6 +9,8 @@ import { css, keyframes } from "@emotion/react";
 import { ChessGameState } from "src/store";
 import Toolbar from "./Toolbar";
 import { mq } from "../../styles/constants";
+import WrappedTimer from "../cockpit/Timer";
+import { _getOpponent } from "../../store/utils";
 
 const Chessboard = () => {
   const data = useStaticQuery(
@@ -56,14 +58,14 @@ const Chessboard = () => {
     height: ${isGameActive ? "80vh" : "80vw"};
     margin-top: ${isGameActive ? "0px" : "-72%"};
     ${mq[0]} {
-      width: 95vw;
-      height: 95vw;
-      margin-top: ${isGameActive ? "0px" : "-66%"};
-    }
-    ${mq[1]} {
       width: ${isGameActive ? "70vw" : "90vw"};
       height: ${isGameActive ? "70vw" : "90vw"};
       margin-top: ${isGameActive ? "0px" : "-66%"};
+    }
+    ${mq[1]} {
+      width: 100vw;
+      height: 95vw;
+      margin-top: ${isGameActive ? "0px" : "-72%"};
     }
   `;
 
@@ -88,6 +90,7 @@ const Chessboard = () => {
 
   return (
     <div css={boardStyles}>
+      {isGameActive && <WrappedTimer player={_getOpponent(player)} />}
       <BackgroundImage
         Tag="div"
         fluid={imageData}
@@ -105,7 +108,14 @@ const Chessboard = () => {
           .sort((a, b) => b - a)
           .map((yPos) => drawRow(yPos))}
       </BackgroundImage>
-      {isGameActive ? <Toolbar /> : <Drawer />}
+      {isGameActive ? (
+        <>
+          <WrappedTimer player={player} />
+          <Toolbar />
+        </>
+      ) : (
+        <Drawer />
+      )}
     </div>
   );
 };
