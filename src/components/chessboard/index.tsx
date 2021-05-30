@@ -11,6 +11,7 @@ import Toolbar from "./Toolbar";
 import { mq } from "../../styles/constants";
 import WrappedTimer from "../cockpit/Timer";
 import { _getOpponent } from "../../store/utils";
+import { useMobileView } from "../App";
 
 const Chessboard = () => {
   const data = useStaticQuery(
@@ -32,6 +33,8 @@ const Chessboard = () => {
   const { player, status: gameStatus } = useSelector(
     (state: ChessGameState) => state.currentGameState
   );
+
+  const mobileView = useMobileView();
 
   const isGameActive = [
     "IN PROGRESS",
@@ -90,7 +93,9 @@ const Chessboard = () => {
 
   return (
     <div css={boardStyles}>
-      {isGameActive && <WrappedTimer player={_getOpponent(player)} />}
+      {isGameActive && mobileView && (
+        <WrappedTimer player={_getOpponent(player)} />
+      )}
       <BackgroundImage
         Tag="div"
         fluid={imageData}
@@ -108,14 +113,8 @@ const Chessboard = () => {
           .sort((a, b) => b - a)
           .map((yPos) => drawRow(yPos))}
       </BackgroundImage>
-      {isGameActive ? (
-        <>
-          <WrappedTimer player={player} />
-          <Toolbar />
-        </>
-      ) : (
-        <Drawer />
-      )}
+      {isGameActive && mobileView && <WrappedTimer player={player} />}
+      {isGameActive ? <Toolbar /> : <Drawer />}
     </div>
   );
 };

@@ -10,9 +10,12 @@ import { PubNubProvider } from "pubnub-react";
 import useOnlineMultiplayer from "../hooks/useOnlineMultiplayer";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { _getOpponent } from "../store/utils";
-import WrappedTimer from "./cockpit/Timer";
 import { mq } from "../styles/constants";
+
+export const useMobileView = () => {
+  const mql = window.matchMedia("(max-width: 768px)");
+  return mql.matches;
+};
 
 const Game = ({ urlGameId }) => {
   const [showGame, setShowGame] = useState<boolean>(!urlGameId);
@@ -20,10 +23,7 @@ const Game = ({ urlGameId }) => {
   const { playMode, player } = useSelector(
     (state: ChessGameState) => state.currentGameState
   );
-
-  const mql = window.matchMedia("(max-width: 480px)");
-  console.log(mql);
-  console.log("JAHAHAH");
+  const mobileView = useMobileView();
 
   useEffect(() => {
     if (!!urlGameId) {
@@ -57,12 +57,8 @@ const Game = ({ urlGameId }) => {
         }}
       >
         {playMode === "PLAY COMPUTER" && <AiPlayer />}
-        {showGame && (
-          <>
-            <Chessboard />
-            <Cockpit />
-          </>
-        )}
+        {showGame && <Chessboard />}
+        {showGame && !mobileView && <Cockpit />}
       </div>
       <Modal />
     </>
