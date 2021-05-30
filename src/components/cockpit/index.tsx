@@ -24,7 +24,6 @@ const Cockpit = () => {
     <div
       css={{
         border: "1px solid rgba(56,56,56,0.5)",
-        maxHeight: "80vh",
         position: "relative",
         width: showCockpit ? "300px" : "0px",
         opacity: showCockpit ? 1 : 0,
@@ -34,6 +33,10 @@ const Cockpit = () => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
+        height: "80vh",
+        [mq[0]]: {
+          height: "70vw",
+        },
         [mq[1]]: {
           display: "none",
         },

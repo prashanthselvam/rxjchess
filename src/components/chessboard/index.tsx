@@ -54,7 +54,7 @@ const Chessboard = () => {
     ${mq[0]} {
       width: ${isGameActive ? "70vw" : "90vw"};
       height: ${isGameActive ? "70vw" : "90vw"};
-      margin-top: ${isGameActive ? "0px" : "-66%"};
+      margin-top: ${isGameActive ? "0px" : "-78%"};
     }
     ${mq[1]} {
       width: 100vw;

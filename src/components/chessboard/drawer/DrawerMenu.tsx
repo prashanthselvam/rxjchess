@@ -44,11 +44,9 @@ const DrawerMenu = ({ closeDrawer }) => {
             zIndex: gameMode && 3,
             opacity: gameMode ? 1 : 0,
             transition: "all 0.5s",
-            [mq[1]]: {
-              position: "relative",
-              width: "initial",
-              right: 0,
-              top: "2rem",
+            [mq[0]]: {
+              left: 0,
+              width: "100%",
             },
           }}
         >
