@@ -19,7 +19,7 @@ import { _getOpponent } from "src/store/utils";
 
 const useOnlineMultiplayer = (urlGameId: string) => {
   const pubNub = usePubNub();
-  const { gameId, playMode, player } = useSelector(
+  const { gameId, playMode, player, status } = useSelector(
     (state: ChessGameState) => state.currentGameState
   );
   const opponent = _getOpponent(player);
@@ -43,6 +43,19 @@ const useOnlineMultiplayer = (urlGameId: string) => {
         actions.newGame({
           ...options,
           player: _getOpponent(options.player),
+        })
+      );
+    }
+  };
+
+  const resignOrLeftListener = ({ message }) => {
+    console.log({ message });
+    const type = message.type;
+    if (["RESIGN", "LEFT_GAME"].includes(type)) {
+      store.dispatch(
+        actions.endGame({
+          winner: player,
+          winMode: type === "RESIGN" ? "RESIGNATION" : "PLAYER LEFT",
         })
       );
     }
@@ -79,7 +92,6 @@ const useOnlineMultiplayer = (urlGameId: string) => {
             setMultiplayerGameStatus(
               responseReceivedRef.current ? "SUCCESS" : "HOST_LEFT"
             );
-            console.log("THIS HAPPENED!!!");
           }, 200);
         } else {
           setMultiplayerGameStatus("INVALID_URL");
@@ -91,9 +103,28 @@ const useOnlineMultiplayer = (urlGameId: string) => {
   useEffect(() => {
     if (gameId && playMode === "PLAY FRIEND") {
       pubNub.addListener({ message: moveListener });
+      pubNub.addListener({ message: resignOrLeftListener });
       pubNub.subscribe({ channels: [gameId] });
     }
   }, [gameId, playMode]);
+
+  useEffect(() => {
+    if (status === "GAME OVER") {
+      pubNub.unsubscribeAll();
+    }
+  }, [status]);
+
+  window.onbeforeunload = (e) => {
+    if (gameId && playMode === "PLAY FRIEND") {
+      pubNub.publish({
+        channel: gameId,
+        message: {
+          type: "LEFT_GAME",
+          player: player,
+        },
+      });
+    }
+  };
 
   return { multiplayerGameStatus };
 };

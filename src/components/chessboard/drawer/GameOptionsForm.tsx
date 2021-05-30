@@ -5,8 +5,7 @@ import { faTimes, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { actions, store } from "src/store";
 import Select from "react-select";
 import { usePubNub } from "pubnub-react";
-import { keyframes } from "@emotion/react";
-import { appear, mq } from "../../../styles/constants";
+import { appear, mq } from "src/styles/constants";
 
 interface GameOptionsFormProps {
   playMode: PlayModes;
@@ -136,6 +135,7 @@ const GameOptionsForm = ({
       })();
       gameIdRef.current = myGameId;
       setGameId(myGameId);
+      pubNub.unsubscribeAll();
       pubNub.subscribe({ channels: [myGameId], withPresence: true });
       pubNub.addListener({ message: handleOnlineGameCreate });
       pubNub.publish({

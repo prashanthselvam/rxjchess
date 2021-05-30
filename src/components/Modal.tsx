@@ -9,6 +9,7 @@ import styled from "@emotion/styled";
 import { _getOpponent } from "../store/utils";
 import { keyframes } from "@emotion/react";
 import { useEffect } from "react";
+import { usePubNub } from "pubnub-react";
 
 const StyledButton = styled("button")`
   font-size: 1.7rem;
@@ -18,17 +19,27 @@ const StyledButton = styled("button")`
 `;
 
 const QuitGameModal = ({ quitter }: ModalProps) => {
-  const { playMode } = useSelector(
+  const { playMode, gameId } = useSelector(
     (state: ChessGameState) => state.currentGameState
   );
+  const pubNub = usePubNub();
 
   const modalText =
     playMode === "PLAY FRIEND"
       ? "Are you sure you would like to resign?"
       : "Are you sure you would like to quit the game?";
 
+  console.log(quitter);
+
   const handleOnClick = () => {
     if (playMode === "PLAY FRIEND") {
+      pubNub.publish({
+        channel: gameId,
+        message: {
+          type: "RESIGN",
+          player: quitter,
+        },
+      });
       store.dispatch(
         actions.endGame({
           winner: _getOpponent(quitter!),
@@ -236,7 +247,7 @@ export const Modal = () => {
       >
         {type === "PAWN_PROMOTE" && <PawnPromoteModal {...modalProps} />}
         {type === "GAME_OVER" && <GameOverModal {...modalProps} />}
-        {type === "QUIT_GAME" && <QuitGameModal />}
+        {type === "QUIT_GAME" && <QuitGameModal {...modalProps} />}
         {type === "MULTIPLAYER_STATUS" && (
           <MultiplayerStatusModal {...modalProps} />
         )}

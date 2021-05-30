@@ -14,7 +14,7 @@ type GameTypes = "REGULAR";
 
 type PlayModes = "PLAY FRIEND" | "PLAY COMPUTER" | "PLAY OVER THE BOARD";
 
-type WinModes = "CHECKMATE" | "TIMEOUT" | "RESIGNATION";
+type WinModes = "CHECKMATE" | "TIMEOUT" | "RESIGNATION" | "PLAYER LEFT";
 
 type MultiplayerGameStatus =
   | "VALIDATING"
