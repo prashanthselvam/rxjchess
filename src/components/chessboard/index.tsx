@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { css, keyframes } from "@emotion/react";
 import { ChessGameState } from "src/store";
 import Toolbar from "./Toolbar";
-import { mq } from "src/styles/constants";
+import { appear, mq } from "src/styles/constants";
 import WrappedTimer from "src/components/cockpit/Timer";
 import { _getOpponent } from "src/store/utils";
 import useMobileView from "src/hooks/useMobileView";
@@ -42,15 +42,6 @@ const Chessboard = () => {
     "READY",
     "GAME OVER",
   ].includes(gameStatus);
-
-  const appear = keyframes`
-      0% {
-        opacity: 0;
-      }
-      100% {
-        opacity: 1;
-      }
-    `;
 
   const boardStyles = css`
     animation: ${appear} 1s ease;

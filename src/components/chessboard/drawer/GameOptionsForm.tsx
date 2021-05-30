@@ -5,6 +5,8 @@ import { faTimes, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { actions, store } from "src/store";
 import Select from "react-select";
 import { usePubNub } from "pubnub-react";
+import { keyframes } from "@emotion/react";
+import { appear, mq } from "../../../styles/constants";
 
 interface GameOptionsFormProps {
   playMode: PlayModes;
@@ -158,16 +160,19 @@ const GameOptionsForm = ({
     <div>
       <div
         css={{
+          animation: `${appear} 0.2s ease`,
           position: "relative",
           borderRadius: "1.5rem",
           backgroundColor: "rgba(250,245,245,1)",
           minWidth: 400,
           maxWidth: "fit-content",
           margin: "auto",
-          minHeight: "100%",
           fontSize: "2rem",
           padding: 16,
           textAlign: "initial",
+          [mq[1]]: {
+            minWidth: 300,
+          },
         }}
       >
         <FontAwesomeIcon
