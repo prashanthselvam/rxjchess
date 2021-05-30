@@ -8,11 +8,18 @@ import useEntryAnimate from "src/hooks/useEntryAnimate";
 
 const Cockpit = () => {
   const showCockpit = useEntryAnimate(500);
-  const player = useSelector(
-    (state: ChessGameState) => state.currentGameState.player
+  const { player, status } = useSelector(
+    (state: ChessGameState) => state.currentGameState
   );
 
-  return (
+  const isGameActive = [
+    "IN PROGRESS",
+    "INITIALIZING",
+    "READY",
+    "GAME OVER",
+  ].includes(status);
+
+  return isGameActive ? (
     <div
       css={{
         border: "1px solid rgba(56,56,56,0.5)",
@@ -32,7 +39,7 @@ const Cockpit = () => {
       <MoveHistory />
       <WrappedTimer player={player} />
     </div>
-  );
+  ) : null;
 };
 
 export default Cockpit;

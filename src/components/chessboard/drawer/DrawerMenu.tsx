@@ -6,6 +6,7 @@ import {
   faChessBoard,
 } from "@fortawesome/free-solid-svg-icons";
 import GameOptionsForm from "./GameOptionsForm";
+import { mq } from "../../../styles/constants";
 
 const DrawerMenu = ({ closeDrawer }) => {
   const [gameMode, setGameMode] = useState<PlayModes | undefined>(undefined);
@@ -27,6 +28,12 @@ const DrawerMenu = ({ closeDrawer }) => {
           alignItems: "center",
           justifyContent: "center",
           zIndex: gameMode && 3,
+          [mq[0]]: {
+            position: "relative",
+            width: "initial",
+            right: 0,
+            top: "2rem",
+          },
         }}
       >
         {gameMode && (
@@ -48,6 +55,10 @@ const DrawerMenu = ({ closeDrawer }) => {
           right: "2.5%",
           justifyContent: "flex-start",
           alignItems: "center",
+          [mq[0]]: {
+            flexDirection: "column",
+            display: gameMode && "none",
+          },
         }}
       >
         <DrawerMenuOption

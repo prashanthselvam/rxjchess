@@ -2,6 +2,7 @@ import { actions, store } from "src/store";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { mq } from "../../../styles/constants";
 
 interface DrawerMenuOptionProps {
   text: string;
@@ -27,6 +28,11 @@ const DrawerMenuOption = ({
         padding: "0 5rem",
         opacity: selected === false && "0%",
         transform: selected && `translateX(${-100 * position}%)`,
+        [mq[0]]: {
+          width: "95%",
+          height: "80%",
+          paddingTop: 12,
+        },
       }}
     >
       <div
@@ -56,6 +62,9 @@ const DrawerMenuOption = ({
             margin: "3rem 0 5rem 0",
             fontSize: "5rem",
             color: "rgb(36,54,45)",
+            [mq[0]]: {
+              display: "none",
+            },
           }}
           icon={icon}
         />

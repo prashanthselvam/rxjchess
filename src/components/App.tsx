@@ -10,13 +10,19 @@ import { PubNubProvider } from "pubnub-react";
 import useOnlineMultiplayer from "../hooks/useOnlineMultiplayer";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import { _getOpponent } from "../store/utils";
+import WrappedTimer from "./cockpit/Timer";
 
 const Game = ({ urlGameId }) => {
   const [showGame, setShowGame] = useState<boolean>(!urlGameId);
   const { multiplayerGameStatus } = useOnlineMultiplayer(urlGameId);
-  const playMode = useSelector(
-    (state: ChessGameState) => state.currentGameState.playMode
+  const { playMode, player } = useSelector(
+    (state: ChessGameState) => state.currentGameState
   );
+
+  const mql = window.matchMedia("(max-width: 480px)");
+  console.log(mql);
+  console.log("JAHAHAH");
 
   useEffect(() => {
     if (!!urlGameId) {
@@ -40,13 +46,19 @@ const Game = ({ urlGameId }) => {
   return (
     <>
       <div
-        css={{ display: "flex", justifyContent: "center", marginTop: "1.5rem" }}
+        css={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "1.5rem",
+        }}
       >
         {playMode === "PLAY COMPUTER" && <AiPlayer />}
         {showGame && (
           <>
+            {/*<WrappedTimer player={_getOpponent(player)} />*/}
             <Chessboard />
-            <Cockpit />
+            {/*<WrappedTimer player={player} />*/}
+            {/*<Cockpit />*/}
           </>
         )}
       </div>
