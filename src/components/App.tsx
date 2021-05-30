@@ -13,8 +13,16 @@ import { useEffect, useState } from "react";
 import { mq } from "../styles/constants";
 
 export const useMobileView = () => {
-  const mql = window.matchMedia("(max-width: 768px)");
-  return mql.matches;
+  const [mobileView, setIsMobileView] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== `undefined`) {
+      const mql = window.matchMedia("(max-width: 768px)");
+      setIsMobileView(mql.matches);
+    }
+  });
+
+  return mobileView;
 };
 
 const Game = ({ urlGameId }) => {
