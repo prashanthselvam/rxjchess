@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DrawerMenuOption from "./DrawerMenuOption";
 import {
   faUserFriends,
@@ -9,7 +9,7 @@ import GameOptionsForm from "./GameOptionsForm";
 import { mq } from "../../../styles/constants";
 import useMobileView from "../../../hooks/useMobileView";
 
-const DrawerMenu = ({ closeDrawer }) => {
+const DrawerMenu = ({ closeDrawer, isOpen }) => {
   const [gameMode, setGameMode] = useState<PlayModes | undefined>(undefined);
 
   const handleOnClick = (option: PlayModes) => {
@@ -23,6 +23,12 @@ const DrawerMenu = ({ closeDrawer }) => {
     left: px,
     right: px,
   }));
+
+  useEffect(() => {
+    setTimeout(() => {
+      !isOpen && setGameMode(undefined);
+    }, 300);
+  }, [isOpen]);
 
   return (
     <div

@@ -2,8 +2,6 @@ import { graphql, useStaticQuery } from "gatsby";
 import BackgroundImage from "gatsby-background-image";
 import React from "react";
 import DrawerMenu from "./DrawerMenu";
-import { mq } from "../../../styles/constants";
-import useMobileView from "../../../hooks/useMobileView";
 
 const DrawerMain = ({ isOpen, closeDrawer, ...props }) => {
   const data = useStaticQuery(
@@ -69,7 +67,7 @@ const DrawerMain = ({ isOpen, closeDrawer, ...props }) => {
       style={{
         height: "100%",
         position: "relative",
-        backgroundSize: "auto",
+        backgroundSize: "5%",
         backgroundRepeat: "repeat",
         boxShadow: ".1rem 1rem 1rem rgba(0,0,0,.2)",
       }}
@@ -77,7 +75,7 @@ const DrawerMain = ({ isOpen, closeDrawer, ...props }) => {
       <LeftSidePiece />
       <BottomSidePiece />
       <RightSidePiece />
-      <DrawerMenu closeDrawer={closeDrawer} />
+      <DrawerMenu closeDrawer={closeDrawer} isOpen={isOpen} />
     </BackgroundImage>
   );
 };
