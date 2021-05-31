@@ -4,23 +4,12 @@ import "@reach/dialog/styles.css";
 import * as React from "react";
 import { useSelector } from "react-redux";
 import Image from "./image";
-import useMakeMove from "../hooks/useMakeMove";
-import styled from "@emotion/styled";
-import { _getOpponent } from "../store/utils";
+import useMakeMove from "src/hooks/useMakeMove";
+import { _getOpponent } from "src/store/utils";
 import { keyframes } from "@emotion/react";
 import { useEffect } from "react";
 import { usePubNub } from "pubnub-react";
-
-const StyledButton = styled("button")`
-  font-size: 1.7rem;
-  margin: 12px 6px 0 6px;
-  padding: 8px 12px;
-  width: fit-content;
-  border: 1px solid hsl(0, 0%, 80%);
-  border-radius: 4px;
-  color: hsl(0, 0%, 20%);
-  --webkit-appearance: none;
-`;
+import { StyledButton } from "./StyledButton";
 
 const QuitGameModal = ({ quitter }: ModalProps) => {
   const { playMode, gameId } = useSelector(
@@ -242,6 +231,7 @@ export const Modal = () => {
           transform: "translate(-50%, -50%)",
           padding: 40,
           borderRadius: 12,
+          minWidth: 280,
         }}
         aria-label={type ? type : "MINIMIZED MODAL"}
       >

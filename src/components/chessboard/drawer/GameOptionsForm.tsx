@@ -6,6 +6,7 @@ import { actions, store } from "src/store";
 import Select from "react-select";
 import { usePubNub } from "pubnub-react";
 import { appear, mq } from "src/styles/constants";
+import { StyledButton } from "src/components/StyledButton";
 
 interface GameOptionsFormProps {
   playMode: PlayModes;
@@ -227,25 +228,13 @@ const GameOptionsForm = ({
               />
             </div>
             <div>
-              <button
+              <StyledButton
                 disabled={!isFormComplete}
-                css={{
-                  border: "1px solid hsl(0, 0%, 80%)",
-                  width: "100%",
-                  padding: "12px 0",
-                  marginTop: 12,
-                  fontSize: "1.7rem",
-                  borderRadius: 4,
-                  WebkitAppearance: "none",
-                  color: "hsl(0, 0%, 20%)",
-                  "&:disabled": {
-                    color: "hsl(0, 0%, 70%)",
-                  },
-                }}
                 onClick={handleCreateGame}
+                css={{ width: "100%", margin: "12px 0", padding: "12px 0" }}
               >
                 CREATE GAME
-              </button>
+              </StyledButton>
             </div>
           </>
         )}

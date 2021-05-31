@@ -3,8 +3,8 @@ import { useSelector } from "react-redux";
 import { actions, ChessGameState, store } from "src/store";
 import { interval, BehaviorSubject, of } from "rxjs";
 import { mapTo, scan, switchMap, takeWhile, tap } from "rxjs/operators";
-import { _getOpponent } from "../../store/utils";
-import { mq } from "../../styles/constants";
+import { _getOpponent } from "src/store/utils";
+import { mq } from "src/styles/constants";
 
 interface TimerProps {
   maxTimeInSeconds: number;
@@ -29,7 +29,9 @@ const Timer = ({
   const pause$ = React.useMemo(() => new BehaviorSubject(true), []);
 
   React.useEffect(() => {
-    pause$.next(currentTurn !== player || status !== "IN PROGRESS");
+    if (status === "IN PROGRESS") {
+      pause$.next(currentTurn !== player);
+    }
   }, [player, currentTurn, status]);
 
   React.useEffect(() => {
@@ -43,8 +45,10 @@ const Timer = ({
           pause ? of(incrementInSeconds * 1000) : interval$
         ),
         scan((acc, curr) => (curr ? curr + acc : acc), maxTimeInSeconds * 1000),
-        tap((val) => setTimeRemaining(val)),
-        takeWhile((val) => val > 0)
+        tap((val) => {
+          setTimeRemaining(val);
+        }),
+        takeWhile((val) => val > 0 && status === "IN PROGRESS")
       )
       .subscribe(
         (val) => null,
@@ -57,6 +61,11 @@ const Timer = ({
             })
           )
       );
+
+    return () => {
+      pause$.next(true);
+      pause$.unsubscribe();
+    };
   }, [status]);
 
   const displayTime = Math.ceil(timeRemaining / 1000);
