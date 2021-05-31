@@ -23,11 +23,19 @@ const IndexPage = ({ location }) => {
         meta={[
           {
             property: `og:title`,
-            content: "Chess application built using React, Redux, and RxJs",
+            content: `RxJChess`,
           },
           {
             property: `og:type`,
             content: `website`,
+          },
+          {
+            property: `og:url`,
+            content: `https://rxjchess.com/`,
+          },
+          {
+            property: `og:description`,
+            content: `Chess application built using React, Redux, and RxJs`,
           },
           {
             property: `og:image`,
