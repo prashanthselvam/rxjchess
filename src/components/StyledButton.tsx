@@ -6,7 +6,8 @@ interface StyledButtonProps extends ButtonHTMLAttributes<any> {
 }
 
 export const StyledButton = styled.button`
-  font-size: 1.7rem;
+  font-family: oswald;
+  font-size: 2rem;
   margin: 12px 6px 0 6px;
   padding: 8px 16px;
   width: fit-content;

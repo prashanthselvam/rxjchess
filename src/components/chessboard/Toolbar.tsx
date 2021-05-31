@@ -43,8 +43,9 @@ const Toolbar = () => {
   `;
 
   const buttonStyles = css`
-    fontsize: 1.4rem;
+    font-size: 1.4rem;
     margin: 0 4px;
+    padding: 8px 8px;
   `;
 
   const currentTurnText = currentTurn === "W" ? "WHITE" : "BLACK";
@@ -96,7 +97,7 @@ const Toolbar = () => {
           variant={"secondary"}
           css={buttonStyles}
         >
-          {"SOUND"}
+          {soundEnabled ? `SOUND OFF` : `SOUND ON`}
         </StyledButton>
       </div>
     </div>

@@ -285,26 +285,25 @@ const GameOptionsForm = ({
                   }}
                   icon={faCopy}
                   onClick={() => {
-                    const inviteText = `Let's plays some chess!\n\n${url}`;
+                    const inviteText = `Let's play some chess!\n\n${url}`;
                     navigator.clipboard.writeText(inviteText);
                     setUrlCopySuccess(true);
                   }}
                 />
               </div>
             </div>
+            <div
+              css={{ textAlign: "center", fontSize: "1.3rem", marginTop: 4 }}
+            >
+              {urlCopySuccess && (
+                <p css={{ color: "green" }}>Copied successfully!</p>
+              )}
+              <p>
+                Game will start in this window as soon as your friend clicks the
+                invite link
+              </p>
+            </div>
           </>
-        )}
-        {urlCopySuccess && (
-          <div
-            css={{
-              textAlign: "center",
-              color: "green",
-              fontSize: "1.3rem",
-              marginTop: 4,
-            }}
-          >
-            Copied successfully!
-          </div>
         )}
       </div>
     </div>
