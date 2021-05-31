@@ -43,7 +43,6 @@ const Drawer = () => {
       <DrawerHandle
         onClick={handleOnClick}
         handleText={isOpen ? "CANCEL" : "NEW GAME"}
-        hideKnob={false}
       />
     </div>
   );

@@ -196,6 +196,10 @@ const GameOptionsForm = ({
               placeholder={"Your Side"}
               value={formValues.player}
               onChange={(option) => handleOnChange(option, "player")}
+              menuPortalTarget={document.body}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+              }}
             />
             <div css={{ display: "flex", justifyContent: "space-between" }}>
               <StyledSelect
@@ -204,14 +208,22 @@ const GameOptionsForm = ({
                 value={formValues.maxTime}
                 onChange={(option) => handleOnChange(option, "maxTime")}
                 css={{ width: "48%" }}
+                menuPortalTarget={document.body}
+                styles={{
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                }}
               />
               <StyledSelect
                 options={incrementOptions}
-                placeholder={"Increment"}
+                placeholder={"Increment (sec)"}
                 onChange={(option) => handleOnChange(option, "increment")}
                 value={formValues.increment}
                 isDisabled={formValues.maxTime?.value === "unlimited"}
                 css={{ width: "48%" }}
+                menuPortalTarget={document.body}
+                styles={{
+                  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                }}
               />
             </div>
             <div>

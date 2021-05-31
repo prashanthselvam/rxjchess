@@ -91,7 +91,7 @@ const useOnlineMultiplayer = (urlGameId: string) => {
             setMultiplayerGameStatus(
               responseReceivedRef.current ? "SUCCESS" : "HOST_LEFT"
             );
-          }, 1000);
+          }, 500);
         } else {
           setMultiplayerGameStatus("INVALID_URL");
         }
