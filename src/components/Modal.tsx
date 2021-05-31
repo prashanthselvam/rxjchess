@@ -14,7 +14,7 @@ import { usePubNub } from "pubnub-react";
 const StyledButton = styled("button")`
   font-size: 1.7rem;
   margin: 12px 6px 0 6px;
-  padding: 8px 6px;
+  padding: 8px 12px;
   width: fit-content;
 `;
 
