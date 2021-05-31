@@ -49,7 +49,6 @@ const useOnlineMultiplayer = (urlGameId: string) => {
   };
 
   const resignOrLeftListener = ({ message }) => {
-    console.log({ message });
     const type = message.type;
     if (["RESIGN", "LEFT_GAME"].includes(type)) {
       store.dispatch(
@@ -92,7 +91,7 @@ const useOnlineMultiplayer = (urlGameId: string) => {
             setMultiplayerGameStatus(
               responseReceivedRef.current ? "SUCCESS" : "HOST_LEFT"
             );
-          }, 200);
+          }, 1000);
         } else {
           setMultiplayerGameStatus("INVALID_URL");
         }

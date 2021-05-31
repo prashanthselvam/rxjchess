@@ -8,7 +8,7 @@ export async function makeAiMove(lastMove) {
     game.move(lastMove.sourceTileId, lastMove.targetTileId);
   }
 
-  // AI moves with difficulty set to 2 and returns the move it just made
-  game.aiMove(2);
+  // AI moves with difficulty set to 4 and returns the move it just made
+  game.aiMove(3);
   return game.getHistory(true)[0];
 }
