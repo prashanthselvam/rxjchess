@@ -18,10 +18,25 @@ const IndexPage = ({ location }) => {
 
   return (
     <main>
-      <Helmet>
+      <Helmet
+        title="RxJChess"
+        meta={[
+          {
+            property: `og:title`,
+            content: "Chess application built using react, redux, and rxJs",
+          },
+          {
+            property: `og:type`,
+            content: `website`,
+          },
+          {
+            property: `og:image`,
+            content: `${icon.file.publicURL}`,
+          },
+        ]}
+      >
         <link rel="icon" href={icon.file.publicURL} />
       </Helmet>
-      <title>RxJChess</title>
       <App urlGameId={urlGameId} />
     </main>
   );
