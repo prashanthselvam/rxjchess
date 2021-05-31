@@ -18,16 +18,22 @@ const DrawerMenu = ({ closeDrawer }) => {
 
   const mobileView = useMobileView();
 
+  const spacing = [28, 24, 18, 10].map((px) => ({
+    bottom: px,
+    left: px,
+    right: px,
+  }));
+
   return (
     <div
       css={{
-        boxShadow: "inset .1rem 1rem 1.5rem 0 #000000",
+        boxShadow: "inset 0 1rem 3rem 0 #000000",
         position: "absolute",
-        top: "0%",
-        bottom: "8%",
-        left: "2.5%",
-        right: "2.5%",
-        paddingTop: 12,
+        top: 0,
+        ...spacing[0],
+        [mq[0]]: { ...spacing[1] },
+        [mq[1]]: { ...spacing[2] },
+        [mq[2]]: { ...spacing[3] },
       }}
     >
       {gameMode && (

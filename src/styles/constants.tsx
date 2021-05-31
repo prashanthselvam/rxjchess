@@ -1,8 +1,10 @@
 import { keyframes } from "@emotion/react";
 
-const breakpoints = [1024, 768];
-
-export const mq = breakpoints.map((bp) => `@media (max-width: ${bp}px)`);
+export const mq = [
+  `@media (max-width: 1024px)`,
+  `@media (max-width: 768px)`,
+  `@media (max-width: 480px)`,
+];
 
 export const appear = keyframes`
       0% {

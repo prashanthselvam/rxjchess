@@ -2,6 +2,8 @@ import { graphql, useStaticQuery } from "gatsby";
 import BackgroundImage from "gatsby-background-image";
 import React from "react";
 import DrawerMenu from "./DrawerMenu";
+import { mq } from "../../../styles/constants";
+import useMobileView from "../../../hooks/useMobileView";
 
 const DrawerMain = ({ isOpen, closeDrawer, ...props }) => {
   const data = useStaticQuery(
@@ -33,11 +35,8 @@ const DrawerMain = ({ isOpen, closeDrawer, ...props }) => {
       <BackgroundImage
         Tag="div"
         fluid={woodImage}
+        className={"sidepiece"}
         style={{
-          position: "absolute",
-          height: "100%",
-          width: "2.5%",
-          top: 0,
           left: 0,
         }}
       />
@@ -49,11 +48,8 @@ const DrawerMain = ({ isOpen, closeDrawer, ...props }) => {
       <BackgroundImage
         Tag="div"
         fluid={woodImage}
+        className={"sidepiece"}
         style={{
-          position: "absolute",
-          height: "100%",
-          width: "2.5%",
-          top: 0,
           right: 0,
         }}
       />
@@ -62,17 +58,7 @@ const DrawerMain = ({ isOpen, closeDrawer, ...props }) => {
 
   const BottomSidePiece = () => {
     return (
-      <BackgroundImage
-        Tag="div"
-        fluid={woodImage}
-        style={{
-          position: "absolute",
-          height: "8%",
-          width: "95%",
-          bottom: 0,
-          left: "2.5%",
-        }}
-      />
+      <BackgroundImage Tag="div" fluid={woodImage} className={"bottompiece"} />
     );
   };
 
@@ -88,17 +74,10 @@ const DrawerMain = ({ isOpen, closeDrawer, ...props }) => {
         boxShadow: ".1rem 1rem 1rem rgba(0,0,0,.2)",
       }}
     >
-      <div
-        css={{
-          height: "100%",
-          position: "relative",
-        }}
-      >
-        <LeftSidePiece />
-        <BottomSidePiece />
-        <RightSidePiece />
-        <DrawerMenu closeDrawer={closeDrawer} />
-      </div>
+      <LeftSidePiece />
+      <BottomSidePiece />
+      <RightSidePiece />
+      <DrawerMenu closeDrawer={closeDrawer} />
     </BackgroundImage>
   );
 };

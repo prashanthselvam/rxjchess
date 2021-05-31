@@ -164,14 +164,14 @@ const GameOptionsForm = ({
           position: "relative",
           borderRadius: "1.5rem",
           backgroundColor: "rgba(250,245,245,1)",
-          minWidth: 400,
+          minWidth: 380,
           maxWidth: "fit-content",
           margin: "auto",
           fontSize: "2rem",
           padding: 16,
           textAlign: "initial",
           [mq[1]]: {
-            minWidth: 300,
+            minWidth: 280,
           },
         }}
       >

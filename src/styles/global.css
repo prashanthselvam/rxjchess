@@ -48,3 +48,51 @@ body {
 .btn:active {
     transform: translateY(-.1rem);
 }
+
+.sidepiece {
+    position: absolute !important;
+    height: 100%;
+    width: 28px;
+    top: 0;
+}
+
+.bottompiece {
+    position: absolute !important;
+    height: 28px;
+    width: calc(100% - 56px);
+    bottom: 0;
+    left: 28px;
+}
+
+@media (max-width: 1024px) {
+    .sidepiece {
+        width: 24px;
+    }
+    .bottompiece {
+        height: 24px;
+        width: calc(100% - 48px);
+        left: 24px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidepiece {
+        width: 18px;
+    }
+    .bottompiece {
+        height: 18px;
+        width: calc(100% - 36px);
+        left: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidepiece {
+        width: 10px;
+    }
+    .bottompiece {
+        height: 10px;
+        width: calc(100% - 20px);
+        left: 10px;
+    }
+}
