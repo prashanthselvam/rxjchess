@@ -230,11 +230,17 @@ const GameOptionsForm = ({
               <button
                 disabled={!isFormComplete}
                 css={{
+                  border: "1px solid hsl(0, 0%, 80%)",
                   width: "100%",
                   padding: "12px 0",
                   marginTop: 12,
                   fontSize: "1.7rem",
+                  borderRadius: 4,
                   WebkitAppearance: "none",
+                  color: "hsl(0, 0%, 20%)",
+                  "&:disabled": {
+                    color: "hsl(0, 0%, 70%)",
+                  },
                 }}
                 onClick={handleCreateGame}
               >

@@ -16,6 +16,10 @@ const StyledButton = styled("button")`
   margin: 12px 6px 0 6px;
   padding: 8px 12px;
   width: fit-content;
+  border: 1px solid hsl(0, 0%, 80%);
+  border-radius: 4px;
+  color: hsl(0, 0%, 20%);
+  --webkit-appearance: none;
 `;
 
 const QuitGameModal = ({ quitter }: ModalProps) => {

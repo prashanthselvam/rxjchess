@@ -45,6 +45,10 @@ const Toolbar = () => {
     font-size: 1.4rem;
     padding: 6px 12px;
     margin: 0 4px;
+    border: 1px solid hsl(0, 0%, 80%);
+    border-radius: 4px;
+    color: hsl(0, 0%, 20%);
+    --webkit-appearance: none;
   `;
 
   const currentTurnText = currentTurn === "W" ? "WHITE" : "BLACK";
