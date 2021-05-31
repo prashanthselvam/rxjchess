@@ -68,6 +68,8 @@ const App = ({ urlGameId }) => {
     uuid: urlGameId ? "GAME_HOST_1" : "GAME_GUEST",
   });
 
+  console.log(process.env);
+
   return (
     <Provider store={store}>
       <PubNubProvider client={pubnub}>
