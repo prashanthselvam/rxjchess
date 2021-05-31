@@ -234,6 +234,7 @@ const GameOptionsForm = ({
                   padding: "12px 0",
                   marginTop: 12,
                   fontSize: "1.7rem",
+                  WebkitAppearance: "none",
                 }}
                 onClick={handleCreateGame}
               >
