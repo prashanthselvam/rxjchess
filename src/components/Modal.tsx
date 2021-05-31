@@ -13,9 +13,9 @@ import { usePubNub } from "pubnub-react";
 
 const StyledButton = styled("button")`
   font-size: 1.7rem;
-  margin-top: 12px;
-  padding: 8px 24px;
-  width: 150px;
+  margin: 12px 6px 0 6px;
+  padding: 8px 6px;
+  width: fit-content;
 `;
 
 const QuitGameModal = ({ quitter }: ModalProps) => {
@@ -28,8 +28,6 @@ const QuitGameModal = ({ quitter }: ModalProps) => {
     playMode === "PLAY FRIEND"
       ? "Are you sure you would like to resign?"
       : "Are you sure you would like to quit the game?";
-
-  console.log(quitter);
 
   const handleOnClick = () => {
     if (playMode === "PLAY FRIEND") {
@@ -105,7 +103,7 @@ const MultiplayerStatusModal = ({ multiplayerGameStatus }: ModalProps) => {
   }, [multiplayerGameStatus]);
 
   return (
-    <div css={{ width: 300 }}>
+    <div css={{ width: "fit-content" }}>
       <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>{modalText}</p>
     </div>
   );
@@ -130,9 +128,7 @@ const GameOverModal = ({ winner, winMode }: ModalProps) => {
         style={{ width: "33%", margin: "2rem 0 1rem 33%" }}
       />
       <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>{winnerText()}</p>
-      <div
-        css={{ display: "flex", justifyContent: "space-evenly", width: 350 }}
-      >
+      <div css={{ display: "flex", justifyContent: "space-evenly" }}>
         <StyledButton onClick={() => store.dispatch(actions.reset())}>
           MAIN MENU
         </StyledButton>
@@ -235,6 +231,7 @@ export const Modal = () => {
           backgroundColor: "rgb(251,253,253)",
           textAlign: "center",
           width: modalWidth,
+          maxWidth: "95%",
           position: "absolute",
           top: "30%",
           left: "50%",

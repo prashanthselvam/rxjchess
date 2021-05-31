@@ -39,7 +39,7 @@ const IndexPage = ({ location }) => {
           },
           {
             property: `og:image`,
-            content: `https://gblobscdn.gitbook.com/spaces%2F-LwY_OXUQHvmdEoy0xNa%2Favatar.png?alt=media`,
+            content: `https://rxjchess.com/${icon.file.publicURL}`,
           },
         ]}
       >
