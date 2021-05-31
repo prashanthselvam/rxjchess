@@ -14,6 +14,7 @@ const StyledButton = styled("button")`
   border: 1px solid hsl(0, 0%, 80%);
   border-radius: 4px;
   color: hsl(0, 0%, 20%);
+  background-color: hsl(0, 0%, 94%);
   --webkit-appearance: none;
 `;
 
