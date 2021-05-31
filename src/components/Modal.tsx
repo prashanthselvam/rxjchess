@@ -112,7 +112,6 @@ const MultiplayerStatusModal = ({ multiplayerGameStatus }: ModalProps) => {
 };
 
 const GameOverModal = ({ winner, winMode }: ModalProps) => {
-  // store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
   const winnerText = () => {
     if (!!winner) {
       const player = winner === "W" ? "White" : "Black";

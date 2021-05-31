@@ -63,12 +63,10 @@ const Game = ({ urlGameId }) => {
 
 const App = ({ urlGameId }) => {
   const pubnub = new PubNub({
-    publishKey: "pub-c-d4a424e5-efde-498e-af55-ead4fe257bed",
-    subscribeKey: "sub-c-9437e116-6e8b-11eb-889a-ee4206f2a398",
+    publishKey: process.env.GATSBY_PUBLISH_KEY,
+    subscribeKey: process.env.GATSBY_SUBSCRIBE_KEY,
     uuid: urlGameId ? "GAME_HOST_1" : "GAME_GUEST",
   });
-
-  console.log(process.env);
 
   return (
     <Provider store={store}>
