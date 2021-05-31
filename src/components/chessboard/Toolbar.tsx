@@ -5,6 +5,17 @@ import { useSelector } from "react-redux";
 import useEntryAnimate from "src/hooks/useEntryAnimate";
 import { graphql, useStaticQuery } from "gatsby";
 import useSound from "use-sound";
+import styled from "@emotion/styled";
+
+const StyledButton = styled("button")`
+  font-size: 1.4rem;
+  padding: 6px 12px;
+  margin: 0 4px;
+  border: 1px solid hsl(0, 0%, 80%);
+  border-radius: 4px;
+  color: hsl(0, 0%, 20%);
+  --webkit-appearance: none;
+`;
 
 const Toolbar = () => {
   const moveSound = useStaticQuery(
@@ -39,16 +50,6 @@ const Toolbar = () => {
     transition: all 0.5s;
     height: ${showToolbar ? "60px" : "0px"};
     opacity: ${showToolbar ? "1" : "0"};
-  `;
-
-  const buttonStyles = css`
-    font-size: 1.4rem;
-    padding: 6px 12px;
-    margin: 0 4px;
-    border: 1px solid hsl(0, 0%, 80%);
-    border-radius: 4px;
-    color: hsl(0, 0%, 20%);
-    --webkit-appearance: none;
   `;
 
   const currentTurnText = currentTurn === "W" ? "WHITE" : "BLACK";
@@ -88,15 +89,10 @@ const Toolbar = () => {
     <div css={toolbarStyles}>
       <p>{`CURRENT TURN: ${currentTurnText}`}</p>
       <div css={{ display: "inline-block" }}>
-        <button css={buttonStyles} onClick={onClick}>
-          {btnText()}
-        </button>
-        <button
-          css={buttonStyles}
-          onClick={() => setSoundEnabled(!soundEnabled)}
-        >
+        <StyledButton onClick={onClick}>{btnText()}</StyledButton>
+        <StyledButton onClick={() => setSoundEnabled(!soundEnabled)}>
           {"SOUND"}
-        </button>
+        </StyledButton>
       </div>
     </div>
   );
