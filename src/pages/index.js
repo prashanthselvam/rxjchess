@@ -23,7 +23,7 @@ const IndexPage = ({ location }) => {
         meta={[
           {
             property: `og:title`,
-            content: "Chess application built using react, redux, and rxJs",
+            content: "Chess application built using React, Redux, and RxJs",
           },
           {
             property: `og:type`,
@@ -31,7 +31,7 @@ const IndexPage = ({ location }) => {
           },
           {
             property: `og:image`,
-            content: `${icon.file.publicURL}`,
+            content: `https://gblobscdn.gitbook.com/spaces%2F-LwY_OXUQHvmdEoy0xNa%2Favatar.png?alt=media`,
           },
         ]}
       >
