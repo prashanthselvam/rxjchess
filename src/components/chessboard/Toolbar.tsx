@@ -52,9 +52,9 @@ const Toolbar = () => {
 
   const btnText = () => {
     if (status === "IN PROGRESS") {
-      return playMode === "PLAY FRIEND" ? "RESIGN" : "QUIT GAME";
+      return playMode !== "PLAY OVER THE BOARD" ? "RESIGN" : "QUIT GAME";
     } else if (status === "GAME OVER") {
-      return "EXIT GAME";
+      return "MAIN MENU";
     } else {
       return "QUIT GAME";
     }

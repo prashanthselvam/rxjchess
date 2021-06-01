@@ -12,25 +12,27 @@ import { usePubNub } from "pubnub-react";
 import { StyledButton } from "./StyledButton";
 
 const QuitGameModal = ({ quitter }: ModalProps) => {
-  const { playMode, gameId } = useSelector(
+  const { playMode, gameId, status } = useSelector(
     (state: ChessGameState) => state.currentGameState
   );
   const pubNub = usePubNub();
+  const isResigning =
+    playMode !== "PLAY OVER THE BOARD" && status === "IN PROGRESS";
 
-  const modalText =
-    playMode === "PLAY FRIEND"
-      ? "Are you sure you would like to resign?"
-      : "Are you sure you would like to quit the game?";
+  const modalText = isResigning
+    ? "Are you sure you would like to resign?"
+    : "Are you sure you would like to quit the game?";
 
   const handleOnClick = () => {
-    if (playMode === "PLAY FRIEND") {
-      pubNub.publish({
-        channel: gameId,
-        message: {
-          type: "RESIGN",
-          player: quitter,
-        },
-      });
+    if (isResigning) {
+      playMode === "PLAY FRIEND" &&
+        pubNub.publish({
+          channel: gameId,
+          message: {
+            type: "RESIGN",
+            player: quitter,
+          },
+        });
       store.dispatch(
         actions.endGame({
           winner: _getOpponent(quitter!),
@@ -103,14 +105,41 @@ const MultiplayerStatusModal = ({ multiplayerGameStatus }: ModalProps) => {
 };
 
 const GameOverModal = ({ winner, winMode }: ModalProps) => {
-  const winnerText = () => {
-    if (!!winner) {
-      const player = winner === "W" ? "White" : "Black";
-      return `${player} wins by ${winMode?.toLowerCase()}`;
-    }
+  const player = useSelector(
+    (state: ChessGameState) => state.currentGameState.player
+  );
 
-    return "It's a stalemate!";
-  };
+  let wp, lp, winnerText, loserText;
+
+  if (winner === "W") {
+    wp = "White";
+    lp = "Black";
+  } else {
+    wp = "Black";
+    lp = "White";
+  }
+
+  switch (winMode) {
+    case "CHECKMATE":
+      winnerText = "Congrats! You won by checkmate.";
+      loserText =
+        "Well played! You were defeated by checkmate. Better luck next time!";
+      break;
+    case "RESIGNATION":
+      winnerText = `${lp} resigned. You win!`;
+      loserText = `Well played! ${wp} wins.`;
+      break;
+    case "TIMEOUT":
+      winnerText = `${lp} ran out of time. You win!`;
+      loserText = `You ran out of time. ${wp} wins.`;
+      break;
+    case "PLAYER LEFT":
+      winnerText = `${lp} left the game. You win!`;
+      loserText = "";
+      break;
+    default:
+      winnerText = loserText = "It's a stalemate! Nobody wins.";
+  }
 
   return (
     <div>
@@ -120,7 +149,9 @@ const GameOverModal = ({ winner, winMode }: ModalProps) => {
         filename={winner ? `${winner}Q.png` : "stalemate.jpeg"}
         style={{ width: "33%", margin: "2rem 0 1rem 33%" }}
       />
-      <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>{winnerText()}</p>
+      <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>
+        {player === winner ? winnerText : loserText}
+      </p>
       <div css={{ display: "flex", justifyContent: "space-evenly" }}>
         <StyledButton onClick={() => store.dispatch(actions.reset())}>
           MAIN MENU
