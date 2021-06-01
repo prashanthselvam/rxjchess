@@ -98,7 +98,9 @@ export interface ModalState {
     | "PAWN_PROMOTE"
     | "GAME_OVER"
     | "QUIT_GAME"
-    | "MULTIPLAYER_STATUS";
+    | "MULTIPLAYER_STATUS"
+    | "ABOUT";
+
   modalProps?: ModalProps;
 }
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { ChessGameState } from "src/store";
+import { actions, ChessGameState, store } from "src/store";
 import { css } from "@emotion/react";
 import { useSelector } from "react-redux";
 import DrawerMain from "./DrawerMain";
@@ -37,14 +37,41 @@ const Drawer = () => {
     transform: ${isOpen ? `none` : `translateY(-40rem)`};
   `;
 
+  const aboutStyles = css`
+    letter-spacing: 0.2rem;
+    transition: all 0.2s;
+    position: fixed;
+    font-size: 2rem;
+    color: white;
+    text-shadow: 0.2rem 0.2rem 1rem rgba(0, 0, 0, 0.4);
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    transform: ${isOpen ? "scale(0.001)" : "none"};
+  `;
+
   return (
-    <div css={containerStyles}>
-      <DrawerMain isOpen={isOpen} closeDrawer={closeDrawer} />
-      <DrawerHandle
-        onClick={handleOnClick}
-        handleText={isOpen ? "CANCEL" : "NEW GAME"}
-      />
-    </div>
+    <>
+      <div css={containerStyles}>
+        <DrawerMain isOpen={isOpen} closeDrawer={closeDrawer} />
+        <DrawerHandle
+          onClick={handleOnClick}
+          handleText={isOpen ? "CANCEL" : "NEW GAME"}
+        />
+      </div>
+      <p
+        css={aboutStyles}
+        className={"btn"}
+        onClick={() =>
+          store.dispatch(
+            actions.setModalState({ modalState: { type: "ABOUT" } })
+          )
+        }
+      >
+        ABOUT
+      </p>
+    </>
   );
 };
 

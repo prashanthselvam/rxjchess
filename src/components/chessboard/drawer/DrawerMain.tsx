@@ -2,6 +2,8 @@ import { graphql, useStaticQuery } from "gatsby";
 import BackgroundImage from "gatsby-background-image";
 import React from "react";
 import DrawerMenu from "./DrawerMenu";
+import { css } from "@emotion/react";
+import { mq } from "../../../styles/constants";
 
 const DrawerMain = ({ isOpen, closeDrawer, ...props }) => {
   const data = useStaticQuery(
@@ -61,22 +63,24 @@ const DrawerMain = ({ isOpen, closeDrawer, ...props }) => {
   };
 
   return (
-    <BackgroundImage
-      Tag="div"
-      fluid={feltImage}
-      style={{
-        height: "100%",
-        position: "relative",
-        backgroundSize: "5%",
-        backgroundRepeat: "repeat",
-        boxShadow: ".1rem 1rem 1rem rgba(0,0,0,.2)",
-      }}
-    >
-      <LeftSidePiece />
-      <BottomSidePiece />
-      <RightSidePiece />
-      <DrawerMenu closeDrawer={closeDrawer} isOpen={isOpen} />
-    </BackgroundImage>
+    <>
+      <BackgroundImage
+        Tag="div"
+        fluid={feltImage}
+        style={{
+          height: "100%",
+          position: "relative",
+          backgroundSize: "5%",
+          backgroundRepeat: "repeat",
+          boxShadow: ".1rem 1rem 1rem rgba(0,0,0,.2)",
+        }}
+      >
+        <LeftSidePiece />
+        <BottomSidePiece />
+        <RightSidePiece />
+        <DrawerMenu closeDrawer={closeDrawer} isOpen={isOpen} />
+      </BackgroundImage>
+    </>
   );
 };
 

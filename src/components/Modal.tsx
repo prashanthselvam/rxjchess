@@ -73,6 +73,18 @@ const QuitGameModal = ({ quitter }: ModalProps) => {
   );
 };
 
+const AboutModal = () => {
+  const modalText = `
+    This is a website where you play chess. Pretty simple. Hope you enjoy yourself.
+  `;
+
+  return (
+    <div>
+      <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>{modalText}</p>
+    </div>
+  );
+};
+
 const MultiplayerStatusModal = ({ multiplayerGameStatus }: ModalProps) => {
   let modalText = "";
 
@@ -232,7 +244,7 @@ export const Modal = () => {
   const showModal = !!type;
 
   const onDismiss = () => {
-    if (type === "PAWN_PROMOTE" || "MULTIPLAYER_STATUS") {
+    if (type === "PAWN_PROMOTE" || type === "MULTIPLAYER_STATUS") {
       return null;
     }
     store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
@@ -281,6 +293,7 @@ export const Modal = () => {
         {type === "MULTIPLAYER_STATUS" && (
           <MultiplayerStatusModal {...modalProps} />
         )}
+        {type === "ABOUT" && <AboutModal />}
       </DialogContent>
     </DialogOverlay>
   );

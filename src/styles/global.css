@@ -20,6 +20,7 @@ body {
             rgba(0, 15, 88, .8),
             rgba(4, 26, 61, 1));
     min-height: 100vh;
+    height: fit-content;
     font-family: "Oswald", sans-serif;
     font-weight: 400;
     font-size: 1.8rem;
