@@ -256,10 +256,14 @@ const gameSlice = createSlice({
       }>
     ) {
       const {
-        currentGameState: { currentTurn, playMode, player },
+        currentGameState: { currentTurn, playMode, player, status },
         boardState: { selectedTile, selectedPiece, tileMap, canBeEnpassant },
         movesState: { movedPieces },
       } = state;
+
+      if (status === "GAME OVER") {
+        return;
+      }
 
       const { targetTileId, sourceTileId } = action.payload;
       let { promotePieceType } = action.payload;

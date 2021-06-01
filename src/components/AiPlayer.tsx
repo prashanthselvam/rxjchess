@@ -47,7 +47,9 @@ const useAi = () => {
       .then(({ from, to }) => {
         const delay = !!lastMove ? 0 : 1000;
         setTimeout(
-          () => setNextAiMove({ sourceTileId: from, targetTileId: to }),
+          () =>
+            isGameActive &&
+            setNextAiMove({ sourceTileId: from, targetTileId: to }),
           delay
         );
       })

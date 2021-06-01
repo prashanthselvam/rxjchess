@@ -98,6 +98,7 @@ const postMoveCleanupEpic: GameEpic = (action$, state$) =>
       const {
         boardState: { tileMap },
         movesState: { isShowingHistory },
+        currentGameState: { status },
       } = state$.value;
       const pieceId = tileMap[targetTileId].pieceId!;
 
@@ -105,12 +106,14 @@ const postMoveCleanupEpic: GameEpic = (action$, state$) =>
         ? [actions.restoreBoardAtMove({ latest: true })]
         : [];
 
-      return of(
-        ...maybeRestoreToLatest,
-        actions.deselect(),
-        actions.switchTurns(),
-        actions.runPostMoveCalcs({ pieceId, targetTileId })
-      );
+      return ["READY", "IN PROGRESS"].includes(status)
+        ? of(
+            ...maybeRestoreToLatest,
+            actions.deselect(),
+            actions.switchTurns(),
+            actions.runPostMoveCalcs({ pieceId, targetTileId })
+          )
+        : EMPTY;
     })
   );
 
