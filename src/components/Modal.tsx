@@ -18,6 +18,7 @@ const QuitGameModal = ({ quitter }: ModalProps) => {
   const pubNub = usePubNub();
   const isResigning =
     playMode !== "PLAY OVER THE BOARD" && status === "IN PROGRESS";
+  const playerLeaving = playMode === "PLAY FRIEND" && status === "READY";
 
   const modalText = isResigning
     ? "Are you sure you would like to resign?"
@@ -40,6 +41,15 @@ const QuitGameModal = ({ quitter }: ModalProps) => {
         })
       );
     } else {
+      if (playerLeaving) {
+        pubNub.publish({
+          channel: gameId,
+          message: {
+            type: "LEFT_GAME",
+            player: quitter,
+          },
+        });
+      }
       store.dispatch(actions.reset());
     }
   };
@@ -122,8 +132,7 @@ const GameOverModal = ({ winner, winMode }: ModalProps) => {
   switch (winMode) {
     case "CHECKMATE":
       winnerText = "Congrats! You won by checkmate.";
-      loserText =
-        "Well played! You were defeated by checkmate. Better luck next time!";
+      loserText = `${wp} wins by checkmate. Better luck next time!`;
       break;
     case "RESIGNATION":
       winnerText = `${lp} resigned. You win!`;

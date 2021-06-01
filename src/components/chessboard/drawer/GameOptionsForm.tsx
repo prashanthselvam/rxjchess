@@ -102,11 +102,10 @@ const GameOptionsForm = ({
     margin-top: 12px;
   `;
 
-  const handleOnlineGameCreate = (event) => {
-    const message = event.message;
+  const handleOnlineGameCreate = ({ message, channel }) => {
     const options = getGameOptions();
 
-    if (message.type === "PLAYER_ARRIVED") {
+    if (message.type === "PLAYER_ARRIVED" && channel === gameIdRef.current) {
       store.dispatch(
         actions.setModalState({
           modalState: {
@@ -137,8 +136,8 @@ const GameOptionsForm = ({
       gameIdRef.current = myGameId;
       setGameId(myGameId);
       pubNub.unsubscribeAll();
-      pubNub.subscribe({ channels: [myGameId], withPresence: true });
       pubNub.addListener({ message: handleOnlineGameCreate });
+      pubNub.subscribe({ channels: [myGameId], withPresence: true });
       pubNub.publish({
         channel: myGameId,
         message: { type: "CHANNEL_READY" },

@@ -29,8 +29,12 @@ const useOnlineMultiplayer = (urlGameId: string) => {
     setMultiplayerGameStatus,
   ] = useState<MultiplayerGameStatus>("VALIDATING");
 
-  const moveListener = ({ message }) => {
-    if (message.type === "MOVE" && message.player === opponent) {
+  const moveListener = ({ message, channel }) => {
+    if (
+      channel === gameId &&
+      message.type === "MOVE" &&
+      message.player === opponent
+    ) {
       store.dispatch(actions.moveToTile(message.moveParams));
     }
   };
@@ -48,9 +52,13 @@ const useOnlineMultiplayer = (urlGameId: string) => {
     }
   };
 
-  const resignOrLeftListener = ({ message }) => {
-    const type = message.type;
-    if (["RESIGN", "LEFT_GAME"].includes(type)) {
+  const resignOrLeftListener = ({ message, channel }) => {
+    const { type, player: leavingPlayer } = message;
+    if (
+      channel === gameId &&
+      ["RESIGN", "LEFT_GAME"].includes(type) &&
+      player !== leavingPlayer
+    ) {
       store.dispatch(
         actions.endGame({
           winner: player,
