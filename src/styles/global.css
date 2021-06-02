@@ -123,6 +123,7 @@ body {
         left: 10px;
     }
     .modal {
-        min-width: 95%;
+        max-width: 95%;
+        top: 40%;
     }
 }
