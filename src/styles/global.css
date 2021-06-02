@@ -73,7 +73,7 @@ body {
     text-align: center;
     max-width: 620px;
     position: absolute;
-    top: 30%;
+    top: 40%;
     left: 50%;
     transform: translate(-50%, -50%);
     padding: 40px !important;
@@ -124,6 +124,5 @@ body {
     }
     .modal {
         max-width: 95%;
-        top: 40%;
     }
 }
