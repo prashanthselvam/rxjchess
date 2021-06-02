@@ -66,6 +66,25 @@ body {
     left: 28px;
 }
 
+.modal {
+    color: rgb(4, 26, 61);
+    box-shadow: 0 10px 50px hsla(0, 0%, 0%, 0.33);
+    background-color: rgb(251,253,253);
+    text-align: center;
+    max-width: 620px;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 40px !important;
+    width: inherit !important;
+    border-radius: 12px;
+}
+
+[data-reach-dialog-content] {
+    width: auto;
+}
+
 @media (max-width: 1024px) {
     .sidepiece {
         width: 24px;
@@ -74,6 +93,9 @@ body {
         height: 24px;
         width: calc(100% - 48px);
         left: 24px;
+    }
+    .modal {
+        max-width: 560px;
     }
 }
 
@@ -86,6 +108,9 @@ body {
         width: calc(100% - 36px);
         left: 18px;
     }
+    .modal {
+        max-width: 80%;
+    }
 }
 
 @media (max-width: 480px) {
@@ -96,5 +121,8 @@ body {
         height: 10px;
         width: calc(100% - 20px);
         left: 10px;
+    }
+    .modal {
+        min-width: 95%;
     }
 }

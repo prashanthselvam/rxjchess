@@ -41,6 +41,7 @@
     "react-helmet": "^6.1.0",
     "react-redux": "^7.2.2",
     "react-select": "^4.3.0",
+    "react-social-icons": "^5.4.1",
     "redux-devtools-extension": "^2.13.8",
     "redux-observable": "^1.2.0",
     "rxjs": "^6.6.3",

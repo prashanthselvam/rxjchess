@@ -1,5 +1,6 @@
 import "fontsource-oswald";
 import "fontsource-oswald/500.css";
+import "fontsource-oswald/300.css";
 import "./src/styles/global.css";
 
 export const onClientEntry = () => {

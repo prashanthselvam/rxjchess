@@ -6,10 +6,11 @@ import { useSelector } from "react-redux";
 import Image from "./image";
 import useMakeMove from "src/hooks/useMakeMove";
 import { _getOpponent } from "src/store/utils";
-import { keyframes } from "@emotion/react";
+import { css, keyframes } from "@emotion/react";
 import { useEffect } from "react";
 import { usePubNub } from "pubnub-react";
 import { StyledButton } from "./StyledButton";
+import { SocialIcon } from "react-social-icons";
 
 const QuitGameModal = ({ quitter }: ModalProps) => {
   const { playMode, gameId, status } = useSelector(
@@ -74,13 +75,47 @@ const QuitGameModal = ({ quitter }: ModalProps) => {
 };
 
 const AboutModal = () => {
-  const modalText = `
-    This is a website where you play chess. Pretty simple. Hope you enjoy yourself.
+  const textStyles = css`
+    font-size: 2rem;
+    font-family: "Times New Roman";
+    p {
+      margin-bottom: 24px;
+    }
+  `;
+
+  const iconStyles = css`
+    transform: scale(0.7);
   `;
 
   return (
-    <div>
-      <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>{modalText}</p>
+    <div css={textStyles}>
+      <p>{`I built this site using React, Redux, RxJs (hence the name!) and a handful of other frontend technologies. I always enjoyed 
+    playing chess and over the years racked up a lot of hours on apps like chess.com and lichess. At some point 
+    during the pandemic, I decided it would be fun to build my own app with a little more visual flair than what 
+    these popular apps generally offer, and so this site was born.`}</p>
+      <p>{`I hope you enjoy RxJChess as much as I enjoyed building it. Please feel free to reach out with any questions, 
+    comments, or feedback. I'd especially love to discuss alternate approaches to building a chess engine.`}</p>
+      <p css={{ margin: "42px 0 0 0" }}>{`- Prashanth Selvam`}</p>
+      <div css={{ display: "flex", justifyContent: "center" }}>
+        <SocialIcon
+          css={iconStyles}
+          url="https://github.com/prashanthselvam"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+        <SocialIcon
+          css={iconStyles}
+          url="https://www.linkedin.com/in/prashanthselvam/"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+        <SocialIcon
+          css={iconStyles}
+          url="https://twitter.com/preshdamesh/"
+          target="_blank"
+          rel="noopener noreferrer"
+        />
+      </div>
     </div>
   );
 };
@@ -250,7 +285,7 @@ export const Modal = () => {
     store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
   };
 
-  const modalWidth = type !== "PAWN_PROMOTE" ? "fit-content" : "";
+  const wideModal = type === "ABOUT";
 
   const appear = keyframes`
       0% {
@@ -265,27 +300,17 @@ export const Modal = () => {
 
   return (
     <DialogOverlay
-      css={{ zIndex: 2, animation: `${appear} 0.2s ease` }}
+      css={{
+        zIndex: 2,
+        animation: `${appear} 0.2s ease`,
+      }}
       isOpen={showModal}
       onDismiss={onDismiss}
     >
       <DialogContent
-        style={{
-          color: "rgb(4, 26, 61)",
-          boxShadow: "0px 10px 50px hsla(0, 0%, 0%, 0.33)",
-          backgroundColor: "rgb(251,253,253)",
-          textAlign: "center",
-          width: modalWidth,
-          maxWidth: "95%",
-          position: "absolute",
-          top: "30%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          padding: 40,
-          borderRadius: 12,
-          minWidth: 280,
-        }}
+        className={"modal"}
         aria-label={type ? type : "MINIMIZED MODAL"}
+        css={{ width: wideModal ? "80vw !important" : "inherit" }}
       >
         {type === "PAWN_PROMOTE" && <PawnPromoteModal {...modalProps} />}
         {type === "GAME_OVER" && <GameOverModal {...modalProps} />}

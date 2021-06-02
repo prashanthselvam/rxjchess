@@ -12,7 +12,6 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { mq } from "src/styles/constants";
 import useMobileView from "src/hooks/useMobileView";
-import { css } from "@emotion/react";
 
 const Game = ({ urlGameId }) => {
   const [showGame, setShowGame] = useState<boolean>(!urlGameId);
