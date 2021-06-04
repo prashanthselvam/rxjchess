@@ -45,7 +45,7 @@ const IndexPage = ({ location }) => {
       >
         <link rel="icon" href={icon.file.publicURL} />
       </Helmet>
-      <App urlGameId={urlGameId} />
+      <App urlGameId={urlGameId.length === 9 ? urlGameId : undefined} />
     </main>
   );
 };
