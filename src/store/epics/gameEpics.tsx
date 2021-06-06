@@ -55,7 +55,9 @@ const selectTileEpic: GameEpic = (action$, state$) =>
         canBeEnpassant
       );
 
-      if (_getPieceType(pieceId) === "K") {
+      const pieceType = _getPieceType(pieceId);
+
+      if (pieceType === "K") {
         const filterTiles =
           currentTurn === "W" ? blackAttackedTiles : whiteAttackedTiles;
 
@@ -68,10 +70,14 @@ const selectTileEpic: GameEpic = (action$, state$) =>
           ...allPossibleMoves.filter((id) => peggedPath.includes(id))
         );
       } else if (isActiveCheck) {
+        const checkBlockTilesCopy = [...checkBlockTiles];
         const numCheckingPieces = checkOriginTiles.length;
         if (numCheckingPieces === 1) {
+          if (canBeEnpassant && pieceType === "P") {
+            checkBlockTilesCopy.push(canBeEnpassant);
+          }
           possibleMoves.push(
-            ...allPossibleMoves.filter((id) => checkBlockTiles.includes(id))
+            ...allPossibleMoves.filter((id) => checkBlockTilesCopy.includes(id))
           );
         }
       } else {
