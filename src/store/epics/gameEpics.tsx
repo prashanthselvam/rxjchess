@@ -42,7 +42,7 @@ const selectTileEpic: GameEpic = (action$, state$) =>
 
       const pieceId = tileMap[tileId].pieceId!;
       const isPegged = Object.keys(peggedTileMap).includes(tileId);
-      const possibleMoves: TileId[] = [];
+      let possibleMoves: TileId[] = [];
 
       const allPossibleMoves = determinePossibleMoves(
         currentTurn!,
@@ -64,11 +64,6 @@ const selectTileEpic: GameEpic = (action$, state$) =>
         possibleMoves.push(
           ...allPossibleMoves.filter((id) => !filterTiles.includes(id))
         );
-      } else if (isPegged) {
-        const peggedPath = peggedTileMap[tileId];
-        possibleMoves.push(
-          ...allPossibleMoves.filter((id) => peggedPath.includes(id))
-        );
       } else if (isActiveCheck) {
         const checkBlockTilesCopy = [...checkBlockTiles];
         const numCheckingPieces = checkOriginTiles.length;
@@ -82,6 +77,12 @@ const selectTileEpic: GameEpic = (action$, state$) =>
         }
       } else {
         possibleMoves.push(...allPossibleMoves);
+      }
+
+      // If the piece is pegged, then it can only move to tiles on its peggedPath
+      if (isPegged) {
+        const peggedPath = peggedTileMap[tileId];
+        possibleMoves = possibleMoves.filter((id) => peggedPath.includes(id));
       }
 
       return of(actions.highlightPossibleMoves({ pieceId, possibleMoves }));
