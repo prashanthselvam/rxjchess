@@ -12,6 +12,8 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { mq } from "src/styles/constants";
 import useMobileView from "src/hooks/useMobileView";
+import { HTML5Backend } from "react-dnd-html5-backend";
+import { DndProvider } from "react-dnd";
 
 const Game = ({ urlGameId }) => {
   const [showGame, setShowGame] = useState<boolean>(!urlGameId);
@@ -71,7 +73,9 @@ const App = ({ urlGameId }) => {
   return (
     <Provider store={store}>
       <PubNubProvider client={pubnub}>
-        <Game urlGameId={urlGameId} />
+        <DndProvider backend={HTML5Backend}>
+          <Game urlGameId={urlGameId} />
+        </DndProvider>
       </PubNubProvider>
     </Provider>
   );

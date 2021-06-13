@@ -2,7 +2,13 @@ import * as React from "react";
 import { css } from "@emotion/react";
 
 interface TileHighlightProps {
-  variant: "SELECTED" | "MOVE_HISTORY" | "CAN_TAKE" | "CAN_MOVE" | "CHECK";
+  variant:
+    | "SELECTED"
+    | "MOVE_HISTORY"
+    | "CAN_TAKE"
+    | "CAN_MOVE"
+    | "CHECK"
+    | "HOVER";
 }
 
 const TileHighlight = ({ variant }: TileHighlightProps) => {
@@ -42,7 +48,7 @@ const TileHighlight = ({ variant }: TileHighlightProps) => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            backgroundColor: "rgba(103,174,104,0.4)",
+            backgroundColor: "rgba(103,172,103,0.4)",
           }}
         />
       );
@@ -66,6 +72,15 @@ const TileHighlight = ({ variant }: TileHighlightProps) => {
           css={css`
             ${defaultStyles};
             background-color: rgb(255, 211, 0, 0.4);
+          `}
+        />
+      );
+    case "HOVER":
+      return (
+        <div
+          css={css`
+            ${defaultStyles};
+            background-color: rgba(103, 174, 104, 0.8);
           `}
         />
       );

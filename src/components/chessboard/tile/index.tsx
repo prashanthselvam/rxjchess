@@ -7,6 +7,8 @@ import { store, actions, ChessGameState } from "src/store";
 import { _getPieceType, _getPlayer } from "src/store/utils";
 import TileHighlight from "./TileHighlight";
 import useMakeMove from "src/hooks/useMakeMove";
+import { useDrag, useDrop } from "react-dnd";
+import { useEffect } from "react";
 
 interface TileProps {
   id: TileId;
@@ -48,6 +50,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
 
   const isSelectable =
     isGameInProgress &&
+    !isShowingHistory &&
     isCurrentTurnPieceOnTile &&
     (canSelectBothSides || isPlayersTurn);
   const isCurrentTurnKingTile =
@@ -82,6 +85,38 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
     }
   };
 
+  const [{ isDragging }, dragRef] = useDrag(
+    () => ({
+      type: "PIECE",
+      item: { pieceId },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    }),
+    []
+  );
+
+  useEffect(() => {
+    if (isSelectable && isDragging) {
+      store.dispatch(actions.selectTile({ tileId: id }));
+    } else {
+      store.dispatch(actions.deselect());
+    }
+  }, [isDragging]);
+
+  const [{ isOver, canDrop }, dropRef] = useDrop(
+    () => ({
+      accept: "PIECE",
+      drop: () => makeMove({ targetTileId: id }),
+      canDrop: () => !isShowingHistory && highlight,
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      }),
+    }),
+    [highlight, id, isShowingHistory]
+  );
+
   return (
     <div
       css={{
@@ -94,6 +129,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
             : "rgba(255,255,255,0.55)",
       }}
       onClick={onClick}
+      ref={dropRef}
     >
       {yPos === 0 && (
         <Marker xPos={xPos} yPos={yPos} variant="horizontal">
@@ -109,15 +145,20 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
       {!isShowingHistory && checkHighlight && (
         <TileHighlight variant={"CHECK"} />
       )}
-      {!isShowingHistory && highlight && (
+      {!isShowingHistory && highlight && !isOver && (
         <TileHighlight variant={!!pieceId ? "CAN_TAKE" : "CAN_MOVE"} />
       )}
-      {!isShowingHistory && isSelected && (
+      {!isShowingHistory && isSelected && !isDragging && (
         <TileHighlight variant={"SELECTED"} />
       )}
+      {canDrop && isOver && <TileHighlight variant={"HOVER"} />}
       {((!isShowingHistory && pieceId) ||
         (isShowingHistory && historyPieceId)) && (
-        <Piece pieceId={isShowingHistory ? historyPieceId : pieceId} />
+        <Piece
+          ref={dragRef}
+          pieceId={isShowingHistory ? historyPieceId : pieceId}
+          isDragging={isDragging}
+        />
       )}
     </div>
   );
