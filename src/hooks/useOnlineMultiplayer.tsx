@@ -1,6 +1,6 @@
 import { usePubNub } from "pubnub-react";
 import { useSelector } from "react-redux";
-import { actions, ChessGameState, store } from "../store";
+import { actions, ChessGameState, store } from "src/store";
 import { useEffect, useRef, useState } from "react";
 import { _getOpponent } from "src/store/utils";
 
@@ -23,7 +23,8 @@ const useOnlineMultiplayer = (urlGameId: string) => {
     (state: ChessGameState) => state.currentGameState
   );
   const opponent = _getOpponent(player);
-  const responseReceivedRef = useRef<boolean>(false);
+  const timerIdRef = useRef<any>(undefined);
+
   const [
     multiplayerGameStatus,
     setMultiplayerGameStatus,
@@ -42,7 +43,8 @@ const useOnlineMultiplayer = (urlGameId: string) => {
   const gameOptionsListener = ({ message }) => {
     if (message.type === "GAME_OPTIONS" && urlGameId) {
       const options = message.gameOptions;
-      responseReceivedRef.current = true;
+      clearTimeout(timerIdRef.current);
+      setMultiplayerGameStatus("SUCCESS");
       store.dispatch(
         actions.newGame({
           ...options,
@@ -95,11 +97,10 @@ const useOnlineMultiplayer = (urlGameId: string) => {
             channel: urlGameId,
             message: { type: "PLAYER_ARRIVED" },
           });
-          setTimeout(() => {
-            setMultiplayerGameStatus(
-              responseReceivedRef.current ? "SUCCESS" : "HOST_LEFT"
-            );
-          }, 500);
+          const timer = () =>
+            setTimeout(() => setMultiplayerGameStatus("HOST_LEFT"), 10000);
+          timerIdRef.current = timer();
+          setMultiplayerGameStatus("CONNECTING");
         } else {
           setMultiplayerGameStatus("INVALID_URL");
         }

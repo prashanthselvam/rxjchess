@@ -20,4 +20,5 @@ type MultiplayerGameStatus =
   | "VALIDATING"
   | "INVALID_URL"
   | "HOST_LEFT"
-  | "SUCCESS";
+  | "SUCCESS"
+  | "CONNECTING";
