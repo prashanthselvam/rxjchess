@@ -6,8 +6,8 @@ import {
   faChessBoard,
 } from "@fortawesome/free-solid-svg-icons";
 import GameOptionsForm from "./GameOptionsForm";
-import { mq } from "../../../styles/constants";
-import useMobileView from "../../../hooks/useMobileView";
+import { mq } from "src/styles/constants";
+import useMobileView from "src/hooks/useMobileView";
 
 const DrawerMenu = ({ closeDrawer, isOpen }) => {
   const [gameMode, setGameMode] = useState<PlayModes | undefined>(undefined);

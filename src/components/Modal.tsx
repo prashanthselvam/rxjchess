@@ -130,11 +130,13 @@ const MultiplayerStatusModal = ({ multiplayerGameStatus }: ModalProps) => {
       break;
     case "HOST_LEFT":
       modalText =
-        "Game host has already exited.\nRedirecting to the main site in just a second where you can start a new game.";
+        "Unable to establish connection, likely due to host leaving.\nRedirecting to the main site in just a second where you can start a new game.";
       break;
     case "SUCCESS":
       modalText = "Connection successful! Your game will begin shortly.";
       break;
+    case "CONNECTING":
+      modalText = "Please wait. Establishing connection with the game host...";
   }
 
   useEffect(() => {
