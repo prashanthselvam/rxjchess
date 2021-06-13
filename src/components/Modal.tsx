@@ -202,7 +202,7 @@ const GameOverModal = ({ winner, winMode }: ModalProps) => {
       <h1>GAME OVER</h1>
       <Image
         alt="winner"
-        filename={winner ? `${winner}Q.png` : "stalemate.jpeg"}
+        fileName={winner ? `${winner}Q.png` : "stalemate.jpeg"}
         style={{ width: "33%", margin: "2rem 0 1rem 33%" }}
       />
       <p css={{ fontSize: "2rem", marginBottom: "2rem" }}>

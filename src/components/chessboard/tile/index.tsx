@@ -96,14 +96,6 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
     []
   );
 
-  useEffect(() => {
-    if (isSelectable && isDragging) {
-      store.dispatch(actions.selectTile({ tileId: id }));
-    } else {
-      store.dispatch(actions.deselect());
-    }
-  }, [isDragging]);
-
   const [{ isOver, canDrop }, dropRef] = useDrop(
     () => ({
       accept: "PIECE",
@@ -116,6 +108,14 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
     }),
     [highlight, id, isShowingHistory]
   );
+
+  useEffect(() => {
+    if (isSelectable && isDragging) {
+      store.dispatch(actions.selectTile({ tileId: id }));
+    } else {
+      store.dispatch(actions.deselect());
+    }
+  }, [isDragging]);
 
   return (
     <div
