@@ -125,7 +125,7 @@ const Tile = ({ id, xPos, yPos }: TileProps) => {
         width: "12.5%",
         backgroundColor:
           (xPos + yPos) % 2 === 0
-            ? "rgba(50,32,15,0.55)"
+            ? "rgba(0, 0, 0, 0.1)"
             : "rgba(255,255,255,0.55)",
       }}
       onClick={onClick}
