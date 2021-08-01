@@ -266,7 +266,7 @@ const PawnPromoteModal = ({ targetTileId }: ModalProps) => {
             css={{ width: "20%", height: "20%", cursor: "pointer" }}
             key={type}
           >
-            <Image alt={type} filename={`${currentTurn}${type}.png`} />
+            <Image alt={type} fileName={`${currentTurn}${type}.png`} />
           </div>
         );
       })}
@@ -287,7 +287,7 @@ export const Modal = () => {
     store.dispatch(actions.setModalState({ modalState: { type: undefined } }));
   };
 
-  const wideModal = type === "ABOUT";
+  const wideModal = type === "ABOUT" || type === "PAWN_PROMOTE";
 
   const appear = keyframes`
       0% {
